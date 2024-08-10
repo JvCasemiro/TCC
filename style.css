@@ -5,14 +5,21 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background-image: url('img/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; 
 }
 
 .container {
-    background: white;
+    background-color: rgba(255, 255, 255, 0.3);
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 350px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
 }
 
 h2 {
@@ -27,14 +34,14 @@ label {
 input {
     width: 100%;
     padding: 10px;
-    margin-bottom: 50px;
+    margin-bottom: 20px; 
     border: 1px solid #ccc;
     border-radius: 3px;
+    box-sizing: border-box; 
 }
 
 button {
     width: 100%;
-    margin-top: 20px;
     padding: 10px;
     border: none;
     background-color: #28a745;
@@ -50,4 +57,16 @@ button:hover {
 .error {
     color: red;
     margin-bottom: 10px;
+}
+.form-control {
+    margin-bottom: 10px;
+}
+.btn {
+    margin-top: 15px;
+}
+
+@media (max-width: 576px) {
+    .container {
+        max-width: 90%;
+    }
 }
