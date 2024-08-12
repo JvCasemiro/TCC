@@ -2,6 +2,16 @@
     display: none;
 }
 
+.hide-bg {
+    background-image: none;
+    background-color: #c4c4c4;
+}
+
+.hide-form {
+    display: none;
+}
+
+
 body {
     font-family: Arial, sans-serif;
     display: flex;

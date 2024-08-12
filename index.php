@@ -3,6 +3,11 @@ include('config.php');
 
 $error = '';
 $success = '';
+$showForm = true; 
+
+if (isset($_GET['page']) && $_GET['page'] === 'management') {
+    $showForm = false;
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -11,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($username) || empty($password)) {
         $error = 'Por favor, preencha todos os campos.';
     } else {
-
         $stmt = $conn->prepare('INSERT INTO users (username, password) VALUES (?, ?)');
         
         if ($stmt === false) {
@@ -27,6 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+function getUsers($conn) {
+    $result = $conn->query('SELECT id, username FROM users');
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+$users = getUsers($conn);
 ?>
 
 <!DOCTYPE html>
@@ -37,19 +47,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Cadastro</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-</head>
-<body>
+<body class="<?php echo !$showForm ? 'hide-bg' : ''; ?>">
     <h1 id="tituloForm">EJ TechHouse</h1>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <div class="container col-md-4 col-sm-6">
+    <div class="container col-md-4 col-sm-6 <?php echo !$showForm ? 'hide-form' : ''; ?>">
         <h2 id="tituloForm" class="mb-4">Cadastro</h2>
         <?php if ($error): ?>
             <p class="error"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
         <?php if ($success): ?>
             <p class="success"><?php echo htmlspecialchars($success); ?></p>
-            <button id="registrationForm" class="btn btn-primary mt-3" onclick="window.location.href='app/index.php'">Ir para o Login</button>
-        <?php else: ?>
+            <button id="loginButton" class="btn btn-primary mt-3" onclick="window.location.href='index.php?page=management'">Ir para o Gerenciamento de Usuários</button>
+            <button id="loginButton" class="btn btn-primary mt-3" onclick="window.location.href='app/index.php'">Ir para o Login</button>
+            <?php else: ?>
             <form action="index.php" method="post" onsubmit="return validateForm()">
                 <div class="mb-3">
                     <label id="tituloForm" for="username" class="form-label">Usuário:</label>
@@ -63,6 +73,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         <?php endif; ?>
     </div>
+
+    <?php if (!$showForm): ?>
+        <div class="container col-md-8 col-sm-12 mt-4">
+            <h2 id="tituloForm" class="mb-4">Gerenciamento de Usuários</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuário</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($users as $user): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($user['id']); ?></td>
+                            <td><?php echo htmlspecialchars($user['username']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+            <button id="backButton" class="btn btn-secondary mt-3" onclick="window.location.href='index.php'">Voltar</button>
+        </div>
+    <?php endif; ?>
+
     <script src="script.js"></script>
 </body>
 </html>
