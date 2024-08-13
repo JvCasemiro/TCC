@@ -59,16 +59,9 @@ button:hover {
     color: red;
     margin-bottom: 10px;
 }
-
-.success {
-    color: #00f138;
-    margin-bottom: 10px;
-}
-
 .form-control {
     margin-bottom: 10px;
 }
-
 .btn {
     margin-top: 15px;
 }
@@ -79,7 +72,7 @@ button:hover {
     }
 }
 
-#tituloForm {
+#tituloForm{
     text-align: center;
     color: #fff; 
     text-shadow: 
@@ -87,22 +80,4 @@ button:hover {
         0 0 10px #A3CDF7, 
         0 0 15px #A3CDF7, 
         0 0 20px #A3CDF7;
-}
-
-.hidden {
-    display: none;
-}
-
-.hide-bg {
-    background-image: none;
-    background-color: #c4c4c4;
-}
-
-.hide-form {
-    display: none;
-}
-
-.table {
-    width: 100%; 
-    text-align: center; 
 }
