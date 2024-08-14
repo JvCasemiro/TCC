@@ -35,7 +35,6 @@ label {
 input {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px; 
     border: 1px solid #ccc;
     border-radius: 3px;
     box-sizing: border-box; 
@@ -74,6 +73,19 @@ button:hover {
 
 #tituloForm{
     text-align: center;
+    color: #fff; 
+    text-shadow: 
+        0 0 5px #A3CDF7, 
+        0 0 10px #A3CDF7, 
+        0 0 15px #A3CDF7, 
+        0 0 20px #A3CDF7;
+}
+
+.input-group-text {
+    height: 37.5px; 
+}
+
+.form-check{
     color: #fff; 
     text-shadow: 
         0 0 5px #A3CDF7, 
