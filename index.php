@@ -44,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -54,11 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="shortcut icon" href="img/icon.png" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <h1 id ="tituloForm">EJ TechHouse</h1>
+    <h1 id="tituloForm">EJ TechHouse</h1>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <div class="container col-md-10 col-sm-6">
+    <div class="container col-md-4 col-sm-6">
     <h2 id="tituloForm" class="mb-4">Login</h2>
     <?php if ($error): ?>
         <p class="error"><?php echo htmlspecialchars($error); ?></p>
@@ -83,7 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1"></path>
                 </svg>
             </span>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" value="<?php echo isset($_COOKIE['password']) ? htmlspecialchars($_COOKIE['password']) : ''; ?>">
+            <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha">
+            <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                <i class="fa fa-eye" id="passwordIcon"></i>
+            </span>
         </div>
     </div>
     <div class="form-check mb-3">
@@ -96,3 +99,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="script.js"></script>
 </body>
 </html>
+

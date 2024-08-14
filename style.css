@@ -58,9 +58,11 @@ button:hover {
     color: red;
     margin-bottom: 10px;
 }
+
 .form-control {
     margin-bottom: 10px;
 }
+
 .btn {
     margin-top: 15px;
 }
@@ -83,6 +85,7 @@ button:hover {
 
 .input-group-text {
     height: 37.5px; 
+    cursor: pointer;
 }
 
 .form-check{
@@ -93,3 +96,4 @@ button:hover {
         0 0 15px #A3CDF7, 
         0 0 20px #A3CDF7;
 }
+
