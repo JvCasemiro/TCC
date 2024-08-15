@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="col-md-6 mb-3">
                 <h2 id="tituloForm" class="mb-4">Cadastrar</h2>
                 <div class="d-grid gap-2">
-                    <a href="#" id="gerenciamentoBtn" class="btn btn-secondary">Gerenciamento de Usuários</a>
+                    <a href="crud.php" id="gerenciamentoBtn" class="btn btn-secondary">Gerenciamento de Usuários</a>
                 </div>
             </div>
 
