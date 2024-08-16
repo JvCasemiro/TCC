@@ -7,6 +7,7 @@ body {
     height: 100vh;
     margin: 0;
     background-image: url('img/background.jpg');
+    backdrop-filter: blur(2px);
     background-size: cover;
     background-position: center;
     background-attachment: fixed; 
@@ -97,3 +98,16 @@ button:hover {
         0 0 20px #A3CDF7;
 }
 
+.registro{
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+#btnCrud{
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+#crud{
+    margin: 20px;
+}

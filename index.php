@@ -60,15 +60,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <div class="container">
         <div class="row">
-            <!-- Botões em vez de Formulário 1 -->
+            <!-- Botão -->
             <div class="col-md-6 mb-3">
-                <h2 id="tituloForm" class="mb-4">Cadastrar</h2>
+                <h2 id="tituloForm" class="mb-4">Gerenciamento de Usuários</h2>
                 <div class="d-grid gap-2">
-                    <a href="crud.php" id="gerenciamentoBtn" class="btn btn-secondary">Gerenciamento de Usuários</a>
+                    <a id="cadastroBtn" class="btn btn-secondary">Gerenciar</a>
                 </div>
             </div>
 
-            <!-- Segundo formulário -->
+            <!-- Formulário -->
             <div class="col-md-6 mb-3">
                 <h2 id="tituloForm" class="mb-4">Login</h2>
                 <?php if ($error): ?>

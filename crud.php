@@ -17,6 +17,7 @@ if (isset($_POST['add'])) {
         
         if ($stmt->execute()) {
             $success = 'Usuário adicionado com sucesso!';
+            
         } else {
             $error = 'Erro ao adicionar usuário: ' . $stmt->error;
         }
@@ -66,12 +67,13 @@ $result = $conn->query('SELECT * FROM users');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD de Usuários</title>
+    <title>Gerenciamento de Usuários</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">CRUD de Usuários</h1>
+        <h1 id="tituloForm" class="mt-5">Gerenciamento de Usuários</h1>
         <?php if ($error): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
@@ -81,15 +83,32 @@ $result = $conn->query('SELECT * FROM users');
 
         <!-- Formulário para adicionar usuário -->
         <form method="post" class="mt-4">
-            <h2>Adicionar Usuário</h2>
+            <h2 class="form-check">Adicionar Usuário</h2>
             <div class="mb-3">
-                <label for="username" class="form-label">Usuário</label>
-                <input type="text" id="username" name="username" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Senha</label>
-                <input type="password" id="password" name="password" class="form-control" required>
-            </div>
+                        <label id="tituloForm" for="username" class="form-label">Usuário:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"></path>
+                                </svg>
+                            </span>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Digite seu usuário" value="<?php echo isset($_COOKIE['username']) ? htmlspecialchars($_COOKIE['username']) : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label id="tituloForm" for="password" class="form-label">Senha:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+                                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1"></path>
+                                </svg>
+                            </span>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha">
+                            <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                <i class="fa fa-eye" id="passwordIcon"></i>
+                            </span>
+                        </div>
+                    </div>
             <button type="submit" name="add" class="btn btn-primary">Adicionar</button>
             <button type="submit" name="add" class="btn btn-secondary" onclick="window.location.href='index.php'">Voltar</button>
         </form>
@@ -133,17 +152,35 @@ $result = $conn->query('SELECT * FROM users');
                 <h2>Editar Usuário</h2>
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($user['id']); ?>">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Usuário</label>
-                    <input type="text" id="username" name="username" class="form-control" value="<?php echo htmlspecialchars($user['username']); ?>" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Senha</label>
-                    <input type="password" id="password" name="password" class="form-control" value="<?php echo htmlspecialchars($user['password']); ?>" required>
-                </div>
+                        <label id="tituloForm" for="username" class="form-label">Usuário:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"></path>
+                                </svg>
+                            </span>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Digite seu usuário" value="<?php echo isset($_COOKIE['username']) ? htmlspecialchars($_COOKIE['username']) : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label id="tituloForm" for="password" class="form-label">Senha:</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+                                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1"></path>
+                                </svg>
+                            </span>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha">
+                            <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                <i class="fa fa-eye" id="passwordIcon"></i>
+                            </span>
+                        </div>
+                    </div>
                 <button type="submit" name="edit" class="btn btn-primary">Atualizar</button>
             </form>
         <?php endif; ?>
     </div>
+    <script src="script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>

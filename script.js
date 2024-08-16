@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cadastroBtn').addEventListener('click', function(event) {
         event.preventDefault();
         verificarSenha(() => {
-            window.location.href = 'adicionar.php';
+            window.location.href = 'crud.php';
         });
     });
 
