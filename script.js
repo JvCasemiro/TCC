@@ -69,11 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'crud.php';
         });
     });
-
-    document.getElementById('gerenciamentoBtn').addEventListener('click', function(event) {
-        event.preventDefault();
-        verificarSenha(() => {
-            window.location.href = 'crud.php'; 
-        });
-    });
 });
+
+
+

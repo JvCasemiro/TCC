@@ -99,15 +99,20 @@ button:hover {
 }
 
 .registro{
+    text-align: center;
     font-weight: bold;
     font-size: 1.5rem;
+    color: #fff; 
+    text-shadow: 
+        0 0 5px #A3CDF7, 
+        0 0 10px #A3CDF7, 
+        0 0 15px #A3CDF7, 
+        0 0 20px #A3CDF7;
 }
 
 #btnCrud{
-    font-size: 1rem;
+    text-align: center;
     margin: 5px 0;
+    font-size: 1rem;
 }
 
-#crud{
-    margin: 20px;
-}

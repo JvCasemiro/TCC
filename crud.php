@@ -53,6 +53,7 @@ if (isset($_GET['delete'])) {
     
     if ($stmt->execute()) {
         $success = 'Usuário excluído com sucesso!';
+        
     } else {
         $error = 'Erro ao excluir usuário: ' . $stmt->error;
     }
@@ -70,6 +71,7 @@ $result = $conn->query('SELECT * FROM users');
     <title>Gerenciamento de Usuários</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
@@ -104,7 +106,7 @@ $result = $conn->query('SELECT * FROM users');
                                 </svg>
                             </span>
                             <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha">
-                            <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                            <span class="input-group-text"id="togglePassword"style="cursor: pointer;">
                                 <i class="fa fa-eye" id="passwordIcon"></i>
                             </span>
                         </div>
@@ -130,7 +132,7 @@ $result = $conn->query('SELECT * FROM users');
                         <td class="registro"><?php echo htmlspecialchars($row['id']); ?></td>
                         <td class="registro"><?php echo htmlspecialchars($row['username']); ?></td>
                         <td class="registro"><?php echo htmlspecialchars($row['password']); ?></td>
-                        <td>
+                        <td align = "center">
                             <a id="btnCrud" href="crud.php?edit=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
                             <a id="btnCrud" href="crud.php?delete=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
                         </td>
@@ -181,6 +183,5 @@ $result = $conn->query('SELECT * FROM users');
         <?php endif; ?>
     </div>
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>
