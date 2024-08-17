@@ -114,10 +114,10 @@ $result = $conn->query('SELECT * FROM users');
         </form>
 
         <!-- Tabela para listar usuários -->
-        <h2 class="mt-5">Usuários</h2>
+        <h2 id="tituloForm" class="mt-5">Usuários</h2>
         <table class="table mt-3">
             <thead>
-                <tr>
+                <tr id="tituloForm">
                     <th>ID</th>
                     <th>Usuário</th>
                     <th>Senha</th>
@@ -127,12 +127,12 @@ $result = $conn->query('SELECT * FROM users');
             <tbody>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['id']); ?></td>
-                        <td><?php echo htmlspecialchars($row['username']); ?></td>
-                        <td><?php echo htmlspecialchars($row['password']); ?></td>
+                        <td class="registro"><?php echo htmlspecialchars($row['id']); ?></td>
+                        <td class="registro"><?php echo htmlspecialchars($row['username']); ?></td>
+                        <td class="registro"><?php echo htmlspecialchars($row['password']); ?></td>
                         <td>
-                            <a href="crud.php?edit=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="crud.php?delete=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
+                            <a id="btnCrud" href="crud.php?edit=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                            <a id="btnCrud" href="crud.php?delete=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir?')">Excluir</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>
@@ -149,7 +149,7 @@ $result = $conn->query('SELECT * FROM users');
             $user = $stmt->get_result()->fetch_assoc();
             ?>
             <form method="post" class="mt-5">
-                <h2>Editar Usuário</h2>
+                <h2 id="tituloForm">Editar Usuário</h2>
                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($user['id']); ?>">
                 <div class="mb-3">
                         <label id="tituloForm" for="username" class="form-label">Usuário:</label>
