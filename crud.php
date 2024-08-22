@@ -17,9 +17,22 @@ if (isset($_POST['add'])) {
         
         if ($stmt->execute()) {
             $success = 'Usuário adicionado com sucesso!';
-            
+            echo '<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    setTimeout(function() {
+                    window.location.href = "crud.php";
+                    }, 2500); 
+                });
+            </script>';
         } else {
             $error = 'Erro ao adicionar usuário: ' . $stmt->error;
+            echo '<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    setTimeout(function() {
+                    window.location.href = "crud.php";
+                    }, 2500); 
+                });
+            </script>';
         }
     }
 }
@@ -38,8 +51,22 @@ if (isset($_POST['edit'])) {
         
         if ($stmt->execute()) {
             $success = 'Usuário atualizado com sucesso!';
+            echo '<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    setTimeout(function() {
+                    window.location.href = "crud.php";
+                    }, 2500); 
+                });
+            </script>';
         } else {
             $error = 'Erro ao atualizar usuário: ' . $stmt->error;
+            echo '<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    setTimeout(function() {
+                    window.location.href = "crud.php";
+                    }, 2500); 
+                });
+            </script>';
         }
     }
 }
@@ -53,9 +80,22 @@ if (isset($_GET['delete'])) {
     
     if ($stmt->execute()) {
         $success = 'Usuário excluído com sucesso!';
-        
+        echo '<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    setTimeout(function() {
+                    window.location.href = "crud.php";
+                    }, 2500); 
+                });
+            </script>';
     } else {
         $error = 'Erro ao excluir usuário: ' . $stmt->error;
+        echo '<script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    setTimeout(function() {
+                    window.location.href = "crud.php";
+                    }, 2500); 
+                });
+            </script>';
     }
 }
 
@@ -113,7 +153,7 @@ $result = $conn->query('SELECT * FROM users');
                         </div>
                     </div>
             <button type="submit" name="add" class="btn btn-primary">Adicionar</button>
-            <button type="submit" name="add" class="btn btn-secondary" onclick="window.location.href='index.php'">Voltar</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location.href='index.php'">Voltar</button>
         </form>
 
         <!-- Tabela para listar usuários -->
@@ -172,7 +212,7 @@ $result = $conn->query('SELECT * FROM users');
                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2M5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1"></path>
                     </svg>
                 </span>
-                <input type="password" id="password" name="password" class="form-control" placeholder="Digite sua senha" value="<?php echo htmlspecialchars($user['password']); ?>">
+                <input type="text" id="password" name="password" class="form-control" placeholder="Digite sua senha" value="<?php echo htmlspecialchars($user['password']); ?>">
                 
             </div>
         </div>
