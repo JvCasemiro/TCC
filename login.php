@@ -23,7 +23,7 @@ if (empty($username) || empty($password)) {
 
 try {
     // Prepare SQL statement
-    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = :username");
+    $stmt = $conn->prepare("SELECT ID_Usuario as id, Nome_Usuario as username, Senha as password FROM Usuarios WHERE Nome_Usuario = :username");
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     
@@ -39,11 +39,9 @@ try {
             // Set session cookie to expire in 30 days if "Remember me" is implemented
             // setcookie('user_id', $user['id'], time() + (86400 * 30), "/");
             
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Login realizado com sucesso',
-                'redirect' => 'dashboard.php' // Redirect to dashboard after login
-            ]);
+            // Redirect directly to menu page
+            header('Location: menu.php');
+            exit;
         } else {
             http_response_code(401);
             echo json_encode(['success' => false, 'message' => 'Credenciais inválidas']);

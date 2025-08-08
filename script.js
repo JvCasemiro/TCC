@@ -58,21 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
     passwordField.addEventListener('change', validatePassword);
     confirmPasswordField.addEventListener('keyup', validatePassword);
 
-    // Form submission handling
+    // Form submission handling - let the form submit naturally to PHP
     loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        // Add your login logic here
+        // Don't prevent default - let the form submit to login.php
+        // The PHP will handle validation and redirect to menu.php
         console.log('Login form submitted');
-        // Simulate form submission
-        const formData = new FormData(loginForm);
-        const formProps = Object.fromEntries(formData);
-        console.log('Login data:', formProps);
-        
-        // Here you would typically make an AJAX call to your PHP backend
-        // For now, we'll just show an alert
-        alert('Login realizado com sucesso!');
-        // Reset form
-        loginForm.reset();
     });
 
     registerForm.addEventListener('submit', function(e) {
