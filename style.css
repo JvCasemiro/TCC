@@ -61,9 +61,9 @@ body {
 }
 
 .overlay {
-    background: #4a90e2;
-    background: -webkit-linear-gradient(to right, #4a90e2, #4a90e2);
-    background: linear-gradient(to right, #4a90e2, #4a90e2);
+    background: #084d9b;
+    background: -webkit-linear-gradient(to right, #084d9b, #084d9b);
+    background: linear-gradient(to right, #084d9b, #084d9b);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 0 0;
@@ -166,13 +166,13 @@ a {
 }
 
 a:hover {
-    color: #4a90e2;
+    color: #084d9b;
 }
 
 button {
     border-radius: 20px;
-    border: 1px solid #4a90e2;
-    background-color: #4a90e2;
+    border: 1px solid #084d9b;
+    background-color: #084d9b;
     color: #ffffff;
     font-size: 12px;
     font-weight: bold;
@@ -220,13 +220,13 @@ input {
 
 input:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #4a90e2;
+    box-shadow: 0 0 0 2px #084d9b;
 }
 
 button {
     border-radius: 20px;
-    border: 1px solid #4a90e2;
-    background-color: #4a90e2;
+    border: 1px solid #084d9b;
+    background-color: #084d9b;
     color: #ffffff;
     font-size: 12px;
     font-weight: bold;
