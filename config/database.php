@@ -1,8 +1,8 @@
 <?php
 // Configuração do banco de dados
-$db_host = 'EUCLIDESMARQUES\\BRATECH';  // Nome do servidor SQL
+$db_host = 'localhost';  // Nome do servidor SQL
 $db_name = 'TCC';                      // Nome do banco de dados
-$db_user = '';                         // Vazio para autenticação do Windows
+$db_user = 'root';                         // Vazio para autenticação do Windows
 $db_password = '';                     // Vazio para autenticação do Windows
 
 // String de conexão para SQL Server com autenticação do Windows
