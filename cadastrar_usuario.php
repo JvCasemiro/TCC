@@ -50,7 +50,7 @@ if ($password !== $confirm_password) {
 }
 
 // Validate user type
-$tipos_validos = ['admin', 'user', 'guest'];
+$tipos_validos = ['admin', 'user'];
 if (!in_array($tipo_usuario, $tipos_validos)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Tipo de usuário inválido']);
@@ -84,7 +84,7 @@ try {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
     // Insert new user
-    $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario, Data_Criacao) VALUES (:username, :email, :password, :tipo_usuario, GETDATE())");
+    $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario) VALUES (:username, :email, :password, :tipo_usuario)");
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':email', $email);
     $stmt->bindParam(':password', $hashed_password);
@@ -103,6 +103,6 @@ try {
 } catch(PDOException $e) {
     error_log("Database error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Erro interno do servidor']);
+    echo json_encode(['success' => false, 'message' => 'Erro interno do servidor: ' . $e->getMessage()]);
 }
 ?>
