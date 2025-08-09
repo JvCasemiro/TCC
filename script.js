@@ -1,7 +1,5 @@
 // Configuração global de tratamento de erros
 window.addEventListener('error', function(event) {
-    console.error('Erro não tratado:', event.error);
-    showAlert('danger', 'Ocorreu um erro inesperado. Por favor, recarregue a página e tente novamente.');
     return false;
 });
 
