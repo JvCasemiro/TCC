@@ -3,7 +3,7 @@ session_start();
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.html');
+    header('Location: index.php');
     exit;
 }
 
@@ -376,7 +376,6 @@ $username = $_SESSION['username'];
                             <option value="">Selecione o tipo</option>
                             <option value="admin">Administrador</option>
                             <option value="user">Usuário Padrão</option>
-                            <option value="guest">Convidado</option>
                         </select>
                     </div>
                     
