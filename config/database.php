@@ -11,7 +11,7 @@ if (ob_get_level() == 0) {
 
 // Configuração do banco de dados MySQL
 $db_host = 'localhost';
-$db_name = 'tcc_automacao';
+$db_name = 'tcc';
 $db_user = 'root';
 $db_password = '';
 
