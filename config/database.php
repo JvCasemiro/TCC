@@ -1,7 +1,17 @@
 <?php
+// Verificar se há saída antes do cabeçalho
+if (headers_sent($filename, $linenum)) {
+    die("Erro: Cabeçalhos já foram enviados em $filename na linha $linenum");
+}
+
+// Iniciar buffer de saída se ainda não estiver ativo
+if (ob_get_level() == 0) {
+    ob_start();
+}
+
 // Configuração do banco de dados MySQL
 $db_host = 'localhost';
-$db_name = 'tcc_automacao';
+$db_name = 'tcc';
 $db_user = 'root';
 $db_password = '';
 
