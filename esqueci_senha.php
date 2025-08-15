@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Redefinir Senha</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,13 +37,30 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"],
-        input[type="password"] {
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
             width: 100%;
-            padding: 10px;
+        }
+        
+        .input-group input[type="text"],
+        .input-group input[type="password"] {
+            width: 100%;
+            padding: 10px 35px 10px 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            z-index: 10;
+            padding: 5px;
         }
         button {
             width: 100%;
@@ -102,15 +120,23 @@
         <form id="resetForm">
             <div class="form-group">
                 <label for="username">Nome de Usuário:</label>
-                <input type="text" id="username" name="username" required>
+                <div class="input-group">
+                    <input type="text" id="username" name="username" required>
+                </div>
             </div>
             <div class="form-group">
                 <label for="nova_senha">Nova Senha (mínimo 8 caracteres):</label>
-                <input type="password" id="nova_senha" name="nova_senha" minlength="8" required>
+                <div class="input-group">
+                    <input type="password" id="nova_senha" name="nova_senha" minlength="8" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('nova_senha', event)"></i>
+                </div>
             </div>
             <div class="form-group">
                 <label for="confirmar_senha">Confirmar Nova Senha:</label>
-                <input type="password" id="confirmar_senha" name="confirmar_senha" minlength="8" required>
+                <div class="input-group">
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" minlength="8" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmar_senha', event)"></i>
+                </div>
             </div>
             <button type="submit">Redefinir Senha</button>
         </form>
@@ -120,6 +146,22 @@
     </div>
 
     <script>
+        function togglePassword(inputId, event) {
+            event = event || window.event;
+            const passwordInput = document.getElementById(inputId);
+            const icon = event.currentTarget || event.srcElement;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
         document.getElementById('resetForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
