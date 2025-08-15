@@ -6,6 +6,7 @@
     <title>Automação Residencial - Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
     <style>
         .container {
             background-color: #fff;
@@ -35,6 +36,20 @@
             left: 0;
             width: 100%;
             z-index: 2;
+            padding-top: 30px;
+            position: relative;
+        }
+        
+        .logo-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 3;
+        }
+        
+        .logo-container img {
+            max-width: 100px;
+            height: auto;
         }
         
         form {
@@ -109,6 +124,9 @@
 <body>
     <div class="container" id="container">
         <div class="form-container sign-in-container">
+            <div class="logo-container">
+                <img src="img/logo.png" alt="Logo">
+            </div>
             <form action="index.php" method="POST" id="loginForm">
                 <h1>Bem-vindo</h1>
                 <p>Faça login para acessar o sistema de automação residencial</p>
