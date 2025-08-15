@@ -70,13 +70,28 @@
             color: #333;
         }
         
-        input {
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin: 8px 0;
+        }
+        
+        .input-group input {
             background-color: #eee;
             border: none;
-            padding: 12px 15px;
-            margin: 8px 0;
+            padding: 12px 40px 12px 15px;
             width: 100%;
             border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
         }
         
         button {
@@ -130,13 +145,33 @@
             <form action="login.php" method="POST" id="loginForm">
                 <h1>Bem-vindo</h1>
                 <p>Faça login para acessar o sistema de automação residencial</p>
-                <input type="text" name="username" placeholder="Usuário" required />
-                <input type="password" name="password" placeholder="Senha" required />
+                <div class="input-group">
+                    <input type="text" name="username" placeholder="Usuário" required />
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" id="password" placeholder="Senha" required />
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword('password')"></i>
+                </div>
                 <a href="esqueci_senha.php">Esqueceu sua senha?</a>
                 <button type="submit">Entrar</button>
             </form>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script>
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = event.currentTarget;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </body>
 </html>
