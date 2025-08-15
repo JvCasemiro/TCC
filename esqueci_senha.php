@@ -173,7 +173,6 @@
         .login-link a:hover {
             text-decoration: underline;
         }
-        /* Removed old message styles as we're using toast notifications now */
     </style>
 </head>
 <body>
@@ -276,7 +275,6 @@
             const toastType = type === 'error' ? 'toastify-error' : 
                            type === 'success' ? 'toastify-success' : 'toastify-info';
             
-            // Remove any existing toasts to prevent stacking
             document.querySelectorAll('.toastify').forEach(toast => {
                 toast.remove();
             });
@@ -293,10 +291,8 @@
                 }
             });
             
-            // Add animation class after the element is created
             toast.showToast();
             
-            // Add margin to the first toast to prevent it from being too close to the edge
             const toastElement = document.querySelector('.toastify');
             if (toastElement) {
                 toastElement.style.marginBottom = '20px';
