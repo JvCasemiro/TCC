@@ -449,15 +449,14 @@ $username = $_SESSION['username'];
                 const data = await response.json();
                 
                 if (data.success) {
-                    showAlert(data.message, 'success');
+                    showMessage(data.message, 'success');
                     this.reset();
                     loadUsers();
                 } else {
-                    showAlert(data.message, 'error');
+                    showMessage(data.message, 'error');
                 }
             } catch (error) {
-                showAlert('Erro ao cadastrar usuário. Tente novamente.', 'error');
-                console.error('Error:', error);
+                showMessage('Erro ao cadastrar usuário. Tente novamente.', 'error');
             }
         });
 
@@ -495,7 +494,7 @@ $username = $_SESSION['username'];
                 }
             } catch (error) {
                 document.getElementById('users-list').innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 2rem;">Erro ao carregar usuários.</p>';
-                console.error('Error loading users:', error);
+                showMessage('Erro ao carregar usuários. Tente novamente.', 'error');
             }
         }
     </script>

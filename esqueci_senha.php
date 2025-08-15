@@ -266,7 +266,6 @@
                 }
             })
             .catch(error => {
-                console.error('Erro:', error);
                 showMessage('Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.', 'error');
             });
         });

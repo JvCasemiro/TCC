@@ -84,8 +84,7 @@ function showAlert(type, message) {
             }
         }, 5000);
     } catch (error) {
-        console.error('Erro ao exibir alerta:', error);
-        window.alert(message);
+        showMessage('Erro ao exibir alerta. Tente novamente.', 'error');
     }
 }
 
@@ -143,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmPasswordField.addEventListener('keyup', validatePassword);
 
     loginForm.addEventListener('submit', function(e) {
-        console.log('Login form submitted');
+        showMessage('Login form submitted', 'success');
     });
 
     registerForm.addEventListener('submit', async function(e) {
@@ -177,15 +176,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 const text = await response.text();
-                console.error('Resposta inesperada do servidor:', text);
-                throw new Error('Resposta inválida do servidor. Por favor, tente novamente.');
+                showMessage('Resposta inesperada do servidor. Por favor, tente novamente.', 'error');
             }
             
             const result = await response.json();
-            console.log('Resposta do servidor:', result);
+            showMessage('Resposta do servidor:', result);
             
             if (result.success) {
-                showAlert('success', 'Cadastro realizado com sucesso! Redirecionando...');
+                showMessage('Cadastro realizado com sucesso! Redirecionando...', 'success');
                 
                 if (result.redirect) {
                     setTimeout(() => {
@@ -196,8 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(result.message || 'Erro desconhecido ao realizar o cadastro.');
             }
         } catch (error) {
-            console.error('Erro ao enviar formulário:', error);
-            showAlert('danger', error.message || 'Erro ao conectar com o servidor. Tente novamente mais tarde.');
+            showMessage('Erro ao enviar formulário:', error);
         } finally {
             submitButton.disabled = false;
             submitButton.innerHTML = originalButtonText;

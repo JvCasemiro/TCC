@@ -212,7 +212,7 @@ if (!isset($_SESSION['user_id'])) {
             const buttons = document.querySelectorAll('.control-btn');
             buttons.forEach(button => {
                 button.addEventListener('click', function() {
-                    alert('Funcionalidade em desenvolvimento. Em breve disponível!');
+                    showMessage('Funcionalidade em desenvolvimento. Em breve disponível!', 'warning');
                 });
             });
         });
