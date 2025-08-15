@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -209,9 +208,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
     
     <script>
-        // Add interactivity to the dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click event to all control buttons
             const buttons = document.querySelectorAll('.control-btn');
             buttons.forEach(button => {
                 button.addEventListener('click', function() {

@@ -253,7 +253,6 @@ button.ghost {
     margin-top: 20px;
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
     .container {
         width: 90%;
@@ -273,7 +272,6 @@ button.ghost {
     }
 }
 
-/* Tablets */
 @media (max-width: 900px) {
     .container {
         flex-direction: column;
@@ -336,20 +334,17 @@ button.ghost {
     }
 }
 
-/* Melhorias para dispositivos móveis */
 @supports (-webkit-touch-callout: none) {
-    /* CSS específico para Safari em iOS */
     body {
         height: 100%;
         overflow-x: hidden;
     }
     
     input, button, textarea, select {
-        font-size: 16px !important; /* Evita zoom em iOS ao focar em inputs */
+        font-size: 16px !important;
     }
 }
 
-/* Celulares */
 @media (max-width: 600px) {
     body {
         padding: 10px;
@@ -395,7 +390,6 @@ button.ghost {
     }
 }
 
-/* Form Validation */
 input:invalid {
     border: 1px solid #ff6b6b;
 }

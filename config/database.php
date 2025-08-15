@@ -1,27 +1,22 @@
 <?php
-// Verificar se há saída antes do cabeçalho
 if (headers_sent($filename, $linenum)) {
     die("Erro: Cabeçalhos já foram enviados em $filename na linha $linenum");
 }
 
-// Iniciar buffer de saída se ainda não estiver ativo
 if (ob_get_level() == 0) {
     ob_start();
 }
 
-// Configuração do banco de dados MySQL
 $db_host = 'localhost';
 $db_name = 'tcc';
 $db_user = 'root';
 $db_password = '';
 
 try {
-    // Conexão MySQL
     $conn = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch(PDOException $e) {
-    // Try to create database if it doesn't exist
     try {
         $conn = new PDO("mysql:host=$db_host;charset=utf8mb4", $db_user, $db_password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -32,10 +27,8 @@ try {
     }
 }
 
-// Função para criar as tabelas se não existirem
 function criarTabelas($conn) {
     try {
-        // Create Usuarios table
         $sql_usuarios = "
         CREATE TABLE IF NOT EXISTS Usuarios (
             ID_Usuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,7 +47,6 @@ function criarTabelas($conn) {
         
         $conn->exec($sql_usuarios);
         
-        // Create Logs_Autenticacao table
         $sql_logs = "
         CREATE TABLE IF NOT EXISTS Logs_Autenticacao (
             ID_Log INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,13 +60,12 @@ function criarTabelas($conn) {
         
         $conn->exec($sql_logs);
         
-        // Check if admin user exists, if not create it
         $stmt = $conn->prepare("SELECT COUNT(*) FROM Usuarios WHERE Nome_Usuario = 'admin'");
         $stmt->execute();
         $count = $stmt->fetchColumn();
         
         if ($count == 0) {
-            // Insert admin user with hashed password for 'admin123'
+            // Password = 'admin123'
             $admin_password = password_hash('admin123', PASSWORD_DEFAULT);
             $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario) VALUES (?, ?, ?, ?)");
             $stmt->execute(['admin', 'admin@exemplo.com', $admin_password, 'admin']);
@@ -86,6 +77,5 @@ function criarTabelas($conn) {
     }
 }
 
-// Chamar a função para criar as tabelas
 criarTabelas($conn);
 ?>

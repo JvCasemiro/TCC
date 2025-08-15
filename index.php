@@ -108,7 +108,6 @@
 </head>
 <body>
     <div class="container" id="container">
-        <!-- Login Form -->
         <div class="form-container sign-in-container">
             <form action="index.php" method="POST" id="loginForm">
                 <h1>Bem-vindo</h1>

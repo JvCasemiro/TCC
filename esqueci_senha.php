@@ -119,7 +119,6 @@
             const confirmarSenha = document.getElementById('confirmar_senha').value;
             const messageDiv = document.getElementById('message');
             
-            // Validação básica no cliente
             if (novaSenha !== confirmarSenha) {
                 showMessage('As senhas não coincidem', 'error');
                 return;
@@ -130,7 +129,6 @@
                 return;
             }
             
-            // Enviar dados para o servidor
             const formData = new FormData();
             formData.append('username', username);
             formData.append('nova_senha', novaSenha);

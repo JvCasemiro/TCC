@@ -2,7 +2,6 @@
 session_start();
 require_once 'config/database.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Acesso negado']);
@@ -18,13 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 try {
-    // Get all users from database
     $stmt = $conn->prepare("SELECT ID_Usuario as id, Nome_Usuario as username, Email as email, Tipo_Usuario as tipo_usuario, Data_Criacao as data_criacao FROM Usuarios ORDER BY Data_Criacao DESC");
     $stmt->execute();
     
     $users = $stmt->fetchAll();
     
-    // Format dates for better display
     foreach ($users as &$user) {
         if ($user['data_criacao']) {
             $date = new DateTime($user['data_criacao']);

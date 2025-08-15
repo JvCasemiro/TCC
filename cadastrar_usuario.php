@@ -2,7 +2,6 @@
 session_start();
 require_once 'config/database.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Acesso negado']);
@@ -17,14 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Get and sanitize input
 $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
 $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
 $password = $_POST['password'];
 $confirm_password = $_POST['confirm_password'];
 $tipo_usuario = filter_input(INPUT_POST, 'tipo_usuario', FILTER_SANITIZE_STRING);
 
-// Validate input
 if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($tipo_usuario)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Todos os campos são obrigatórios']);
@@ -49,7 +46,6 @@ if ($password !== $confirm_password) {
     exit;
 }
 
-// Validate user type
 $tipos_validos = ['admin', 'user'];
 if (!in_array($tipo_usuario, $tipos_validos)) {
     http_response_code(400);
@@ -58,7 +54,6 @@ if (!in_array($tipo_usuario, $tipos_validos)) {
 }
 
 try {
-    // Check if username already exists
     $stmt = $conn->prepare("SELECT ID_Usuario FROM Usuarios WHERE Nome_Usuario = :username");
     $stmt->bindParam(':username', $username);
     $stmt->execute();
@@ -69,7 +64,6 @@ try {
         exit;
     }
     
-    // Check if email already exists
     $stmt = $conn->prepare("SELECT ID_Usuario FROM Usuarios WHERE Email = :email");
     $stmt->bindParam(':email', $email);
     $stmt->execute();
@@ -80,10 +74,8 @@ try {
         exit;
     }
     
-    // Hash the password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-    // Insert new user
     $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario) VALUES (:username, :email, :password, :tipo_usuario)");
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':email', $email);

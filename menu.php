@@ -1,7 +1,5 @@
 <?php
 session_start();
-
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -328,7 +326,6 @@ $username = $_SESSION['username'];
             </div>
         </div>
 
-        <!-- Tab Container -->
         <div class="tab-container" id="tabContainer" style="display: none;">
             <div class="tab-header">
                 <button class="tab-btn active" onclick="showTabContent('cadastro-usuario')">
@@ -342,7 +339,6 @@ $username = $_SESSION['username'];
                 </button>
             </div>
 
-            <!-- Cadastro de Usuário Tab -->
             <div class="tab-content active" id="cadastro-usuario">
                 <h3><i class="fas fa-user-plus"></i> Cadastrar Novo Usuário</h3>
                 
@@ -385,7 +381,6 @@ $username = $_SESSION['username'];
                 </form>
             </div>
 
-            <!-- Listar Usuários Tab -->
             <div class="tab-content" id="listar-usuarios">
                 <h3><i class="fas fa-list"></i> Usuários Cadastrados</h3>
                 <div id="users-list">
@@ -401,7 +396,7 @@ $username = $_SESSION['username'];
             if (tabName === 'usuarios') {
                 tabContainer.style.display = 'block';
                 tabContainer.scrollIntoView({ behavior: 'smooth' });
-                loadUsers(); // Load users when opening the tab
+                loadUsers();
             }
         }
 
@@ -410,18 +405,13 @@ $username = $_SESSION['username'];
         }
 
         function showTabContent(tabId) {
-            // Hide all tab contents
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(content => content.classList.remove('active'));
             
-            // Remove active class from all tab buttons
             const tabBtns = document.querySelectorAll('.tab-btn');
             tabBtns.forEach(btn => btn.classList.remove('active'));
             
-            // Show selected tab content
             document.getElementById(tabId).classList.add('active');
-            
-            // Add active class to clicked button
             event.target.classList.add('active');
             
             if (tabId === 'listar-usuarios') {
@@ -434,7 +424,6 @@ $username = $_SESSION['username'];
             alertElement.textContent = message;
             alertElement.style.display = 'block';
             
-            // Hide alert after 5 seconds
             setTimeout(() => {
                 alertElement.style.display = 'none';
             }, 5000);
@@ -445,7 +434,6 @@ $username = $_SESSION['username'];
             document.getElementById('error-alert').style.display = 'none';
         }
 
-        // Handle user registration form
         document.getElementById('userForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             hideAlerts();
@@ -462,8 +450,8 @@ $username = $_SESSION['username'];
                 
                 if (data.success) {
                     showAlert(data.message, 'success');
-                    this.reset(); // Clear form
-                    loadUsers(); // Refresh user list
+                    this.reset();
+                    loadUsers();
                 } else {
                     showAlert(data.message, 'error');
                 }
