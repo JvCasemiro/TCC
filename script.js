@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form submission handling - let the form submit naturally to PHP
     loginForm.addEventListener('submit', function(e) {
-        // Don't prevent default - let the form submit to login.php
+        // Don't prevent default - let the form submit to index.php
         // The PHP will handle validation and redirect to menu.php
         console.log('Login form submitted');
     });

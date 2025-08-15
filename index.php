@@ -110,12 +110,12 @@
     <div class="container" id="container">
         <!-- Login Form -->
         <div class="form-container sign-in-container">
-            <form action="login.php" method="POST" id="loginForm">
+            <form action="index.php" method="POST" id="loginForm">
                 <h1>Bem-vindo</h1>
                 <p>Faça login para acessar o sistema de automação residencial</p>
                 <input type="text" name="username" placeholder="Usuário" required />
                 <input type="password" name="password" placeholder="Senha" required />
-                <a href="#">Esqueceu sua senha?</a>
+                <a href="esqueci_senha.php">Esqueceu sua senha?</a>
                 <button type="submit">Entrar</button>
             </form>
         </div>
