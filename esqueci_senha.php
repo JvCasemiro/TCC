@@ -47,23 +47,32 @@
         button {
             width: 100%;
             padding: 12px;
-            background-color: #4CAF50;
+            background-color: #084d9b;
             color: white;
-            border: none;
-            border-radius: 4px;
+            border: 1px solid #084d9b;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in;
+            margin-top: 10px;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #063d7a;
+        }
+        button:active {
+            transform: scale(0.95);
         }
         .login-link {
             text-align: center;
             margin-top: 15px;
         }
         .login-link a {
-            color: #4CAF50;
+            color: #084d9b;
             text-decoration: none;
+            font-weight: bold;
         }
         .login-link a:hover {
             text-decoration: underline;
