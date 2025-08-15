@@ -127,7 +127,7 @@
             <div class="logo-container">
                 <img src="img/logo.png" alt="Logo">
             </div>
-            <form action="index.php" method="POST" id="loginForm">
+            <form action="login.php" method="POST" id="loginForm">
                 <h1>Bem-vindo</h1>
                 <p>Faça login para acessar o sistema de automação residencial</p>
                 <input type="text" name="username" placeholder="Usuário" required />
