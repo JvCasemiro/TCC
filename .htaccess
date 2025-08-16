@@ -1,0 +1,13 @@
+ErrorDocument 400 /TCC/views/errors/404.php
+ErrorDocument 401 /TCC/views/errors/404.php
+ErrorDocument 403 /TCC/views/errors/404.php
+ErrorDocument 404 /TCC/views/errors/404.php
+ErrorDocument 500 /TCC/views/errors/404.php
+
+# Ativa o mod_rewrite
+RewriteEngine On
+
+# Se o arquivo não existir, redireciona para 404.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /TCC/views/errors/404.php [L]
