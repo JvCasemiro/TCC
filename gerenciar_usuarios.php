@@ -551,7 +551,6 @@ if (!isset($_SESSION['user_id'])) {
             document.getElementById('error-alert').style.display = 'none';
         }
 
-        // Form submission handler
         document.getElementById('userForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             hideAlerts();
@@ -569,7 +568,7 @@ if (!isset($_SESSION['user_id'])) {
                 if (data.success) {
                     showAlert(data.message, 'success');
                     this.reset();
-                    loadUsers(); // Refresh the users list
+                    loadUsers(); 
                 } else {
                     showAlert(data.message, 'error');
                 }
@@ -641,7 +640,6 @@ if (!isset($_SESSION['user_id'])) {
             dropdown.classList.toggle('show');
         }
         
-        // Close dropdown when clicking outside
         window.onclick = function(event) {
             if (!event.target.matches('.user-name') && !event.target.closest('.user-name')) {
                 const dropdown = document.getElementById('userDropdown');

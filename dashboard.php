@@ -397,7 +397,6 @@ if (!isset($_SESSION['user_id'])) {
             dropdown.classList.toggle('show');
         }
         
-        // Close dropdown when clicking outside
         window.onclick = function(event) {
             if (!event.target.matches('.user-name') && !event.target.closest('.user-name')) {
                 const dropdown = document.getElementById('userDropdown');
