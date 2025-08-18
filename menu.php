@@ -23,7 +23,7 @@ $username = $_SESSION['username'];
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0a0f2c 0%, #1a2a6c 100%);
             min-height: 100vh;
             color: #333;
         }
@@ -36,12 +36,13 @@ $username = $_SESSION['username'];
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
         
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #4a90e2;
+            color:rgb(13, 42, 75);
         }
         
         .user-info {
@@ -68,6 +69,17 @@ $username = $_SESSION['username'];
         
         .logout-btn:hover {
             background: #c0392b;
+        }
+        
+        .domx-logo {
+            position: absolute;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+        }
+        
+        .domx-logo img {
+            height: 100px;
         }
         
         .container {
@@ -284,6 +296,9 @@ $username = $_SESSION['username'];
                 </a>
             </div>
         </div>
+        <div class="domx-logo">
+            <img src="img/logo.png" alt="DOMX Logo">
+        </div>
     </header>
 
     <div class="container">
@@ -301,13 +316,13 @@ $username = $_SESSION['username'];
                 <p>Visualize e controle todos os dispositivos conectados em tempo real</p>
             </a>
 
-            <div class="menu-card" onclick="showTab('usuarios')">
+            <a href="gerenciar_usuarios.php" class="menu-card">
                 <div class="icon">
                     <i class="fas fa-users"></i>
                 </div>
                 <h3>Gerenciar Usuários</h3>
                 <p>Cadastre novos usuários e gerencie permissões do sistema</p>
-            </div>
+            </a>
 
             <div class="menu-card" onclick="showTab('dispositivos')">
                 <div class="icon">

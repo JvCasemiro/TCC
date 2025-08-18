@@ -96,8 +96,8 @@
         
         button {
             border-radius: 20px;
-            border: 1px solid #084d9b;
-            background-color: #084d9b;
+            border: 1px solidrgb(19, 48, 82);
+            background-color:rgb(10, 49, 94);
             color: #FFFFFF;
             font-size: 12px;
             font-weight: bold;
@@ -125,7 +125,7 @@
         }
         
         body {
-            background: #f6f5f7;
+            background:rgb(255, 255, 255);
             display: flex;
             justify-content: center;
             align-items: center;
