@@ -1,9 +1,46 @@
 <?php
 session_start();
+require_once 'config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
+}
+
+try {
+    // Fetch complete user information
+    $stmt = $conn->prepare("
+        SELECT 
+            Nome_Usuario as username,
+            Email as email,
+            Data_Cadastro as created_at,
+            Data_Atualizacao as updated_at,
+            Tipo_Usuario as user_type
+        FROM Usuarios 
+        WHERE ID_Usuario = :user_id
+    ");
+    $stmt->bindParam(':user_id', $_SESSION['user_id']);
+    $stmt->execute();
+    $user = $stmt->fetch();
+    
+    if (!$user) {
+        throw new Exception('User not found');
+    }
+    
+    // Format dates
+    $created_at = new DateTime($user['created_at']);
+    $updated_at = new DateTime($user['updated_at']);
+    
+} catch (Exception $e) {
+    error_log("Error fetching user data: " . $e->getMessage());
+    // Set default values in case of error
+    $user = [
+        'username' => $_SESSION['username'],
+        'email' => $_SESSION['email'],
+        'user_type' => 'Usuário'
+    ];
+    $created_at = new DateTime();
+    $updated_at = new DateTime();
 }
 ?>
 <!DOCTYPE html>
@@ -13,6 +50,7 @@ if (!isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Controle - Automação Residencial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
     <style>
         * {
             margin: 0;
@@ -68,7 +106,7 @@ if (!isset($_SESSION['user_id'])) {
         }
         
         .user-menu a {
-            color: black;
+            color: #000;
             text-decoration: none;
             font-size: 14px;
         }
@@ -112,36 +150,38 @@ if (!isset($_SESSION['user_id'])) {
         
         .user-info {
             padding: 15px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #2c3e50;
+            min-width: 250px;
         }
         
         .user-info h4 {
-            color: #333;
-            margin: 0 0 8px 0;
-            font-size: 16px;
+            margin: 0 0 10px 0;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .user-info p {
-            color: #666;
-            margin: 4px 0;
-            font-size: 14px;
+            margin: 8px 0;
+            font-size: 0.9em;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .dropdown-actions {
-            padding: 10px;
+        .user-info i {
+            width: 18px;
+            text-align: center;
+            color: #000;
         }
         
-        .dropdown-actions a {
-            display: block;
-            padding: 8px 12px;
-            color: #333;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        .dropdown-actions a:hover {
-            background-color: #f5f5f5;
+        .user-info p:last-child {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #2c3e50;
+            color: #95a5a6;
         }
         
         .welcome {
@@ -308,10 +348,12 @@ if (!isset($_SESSION['user_id'])) {
                         <i class="fas fa-chevron-down" style="margin-left: 5px; font-size: 12px;"></i>
                     </span>
                     <div class="dropdown-content" id="userDropdown">
-                        <div class="user-info">
-                            <h4><i class="fas fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?></h4>
-                            <p><i class="fas fa-envelope"></i> <?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : htmlspecialchars($_SESSION['username']) . '@sistema.com'; ?></p>
-                            <p><i class="fas fa-clock"></i> Último acesso: <?php echo date('d/m/Y H:i'); ?></p>
+                    <div class="user-info">
+                            <h4><i class="fas fa-user"></i> <?php echo htmlspecialchars($user['username']); ?></h4>
+                            <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?></p>
+                            <p><i class="fas fa-user-tag"></i> <?php echo htmlspecialchars($user['user_type']); ?></p>
+                            <p><i class="far fa-calendar-plus"></i> Criado em: <?php echo $created_at->format('d/m/Y'); ?></p>
+                            <p><i class="fas fa-sync-alt"></i> Atualizado: <?php echo $updated_at->format('d/m/Y H:i'); ?></p>
                         </div>
                     </div>
                 </div>
