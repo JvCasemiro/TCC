@@ -408,7 +408,7 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="dropdown-content" id="userDropdown">
                         <div class="user-info">
                             <h4><i class="fas fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?></h4>
-                            <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>@sistema.com</p>
+                            <p><i class="fas fa-envelope"></i> <?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : htmlspecialchars($_SESSION['username']) . '@sistema.com'; ?></p>
                             <p><i class="fas fa-clock"></i> Último acesso: <?php echo date('d/m/Y H:i'); ?></p>
                         </div>
                     </div>
