@@ -143,8 +143,8 @@
                 <img src="img/logo.png" alt="Logo">
             </div>
             <form action="login.php" method="POST" id="loginForm">
-                <h1>Bem-vindo</h1>
-                <p>Faça login para acessar o sistema de automação residencial</p>
+                <h1>Acesse sua conta</h1>
+                <p>Entre para gerenciar seu sistema de automação residencial.</p>
                 <div class="input-group">
                     <input type="text" name="username" placeholder="Usuário" required />
                 </div>
