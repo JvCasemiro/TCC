@@ -363,7 +363,7 @@ $username = $_SESSION['username'];
                 
                 <form id="userForm">
                     <div class="form-group">
-                        <label for="username">Nome de Usuário:</label>
+                        <label for="username">Nome de Usuário: </label>
                         <input type="text" id="username" name="username" required>
                     </div>
                     
