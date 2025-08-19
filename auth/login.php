@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config/database.php';
+require_once '../config/database.php';
 
 header('Content-Type: application/json');
 
@@ -20,7 +20,7 @@ if (empty($username) || empty($password)) {
 }
 
 try {
-    $stmt = $conn->prepare("SELECT ID_Usuario as id, Nome_Usuario as username, Email as email, Senha as password FROM Usuarios WHERE Nome_Usuario = :username");
+    $stmt = $conn->prepare("SELECT ID_Usuario as id, Nome_Usuario as username, Email as email, Senha as password FROM Usuarios WHERE Nome_Usuario = :username AND Ativo = TRUE");
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     
@@ -37,19 +37,25 @@ try {
             $update_stmt->bindParam(':id', $user['id']);
             $update_stmt->execute();
             
-            header('Location: menu.php');
+            // Redirect to menu
+            header('Location: ../pages/menu.php');
             exit;
         } else {
-            http_response_code(401);
-            echo json_encode(['success' => false, 'message' => 'Credenciais inválidas']);
+            // Invalid credentials
+            $_SESSION['login_error'] = 'Credenciais inválidas';
+            header('Location: ../../index.php');
+            exit;
         }
     } else {
-        http_response_code(401);
-        echo json_encode(['success' => false, 'message' => 'Credenciais inválidas']);
+        // Invalid credentials
+        $_SESSION['login_error'] = 'Credenciais inválidas';
+        header('Location: ../../index.php');
+        exit;
     }
 } catch(PDOException $e) {
     error_log("Database error: " . $e->getMessage());
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Erro no servidor: ' . $e->getMessage()]);
+    $_SESSION['login_error'] = 'Erro no servidor. Tente novamente mais tarde.';
+    header('Location: ../../index.php');
+    exit;
 }
 ?>

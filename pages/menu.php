@@ -14,7 +14,7 @@ $username = $_SESSION['username'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Controle</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/img/logo.png" type="image/x-icon">
     <style>
         * {
             margin: 0;
@@ -286,19 +286,19 @@ $username = $_SESSION['username'];
     <header class="header">
         <div class="header-content">
             <div class="logo">
-                <i class="fas fa-home"></i> Sistema de Automação
+                <i class="fas fa-home"></i> DOMX
             </div>
             <div class="user-info">
                 <span class="user-name">
                     <i class="fas fa-user"></i> Bem-vindo, <?php echo htmlspecialchars($username); ?>
                 </span>
-                <a href="logout.php" class="logout-btn">
+                <a href="../auth/logout.php" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i> Sair
                 </a>
             </div>
         </div>
         <div class="domx-logo">
-            <img src="img/logo.png" alt="DOMX Logo">
+            <img src="../assets/img/logo.png" alt="DOMX Logo">
         </div>
     </header>
 
@@ -457,7 +457,7 @@ $username = $_SESSION['username'];
             const formData = new FormData(this);
             
             try {
-                const response = await fetch('cadastrar_usuario.php', {
+                const response = await fetch('../includes/cadastrar_usuario.php', {
                     method: 'POST',
                     body: formData
                 });

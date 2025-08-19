@@ -10,6 +10,8 @@ if (!isset($_SESSION['user_id'])) {
 
 header('Content-Type: application/json');
 
+// DATABASE USER LISTING COMMENTED OUT FOR TESTING WITHOUT DATABASE
+/*
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Método não permitido']);
@@ -40,4 +42,35 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro ao carregar usuários']);
 }
+*/
+
+// MOCK USER LISTING FOR TESTING WITHOUT DATABASE
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $mock_users = [
+        [
+            'id' => 1,
+            'username' => $_SESSION['username'],
+            'email' => $_SESSION['email'],
+            'tipo_usuario' => 'admin',
+            'data_criacao' => date('d/m/Y H:i')
+        ],
+        [
+            'id' => 2,
+            'username' => 'usuario_teste',
+            'email' => 'teste@exemplo.com',
+            'tipo_usuario' => 'user',
+            'data_criacao' => date('d/m/Y H:i', strtotime('-1 day'))
+        ]
+    ];
+    
+    echo json_encode([
+        'success' => true,
+        'users' => $mock_users,
+        'total' => count($mock_users)
+    ]);
+    exit;
+}
+
+http_response_code(405);
+echo json_encode(['success' => false, 'message' => 'Método não permitido']);
 ?>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config/database.php';
+require_once '../config/database.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -65,7 +65,7 @@ try {
     echo json_encode([
         'success' => true, 
         'message' => 'Senha redefinida com sucesso!',
-        'redirect' => 'index.php'
+        'redirect' => '../pages/index.php'
     ]);
     
 } catch (PDOException $e) {

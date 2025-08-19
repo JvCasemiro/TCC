@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automação Residencial - Login</title>
+    <title>Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="shortcut icon" href="../assets/img/logo.png" type="image/x-icon">
     <style>
         .container {
             background-color: #fff;
@@ -140,9 +140,9 @@
     <div class="container" id="container">
         <div class="form-container sign-in-container">
             <div class="logo-container">
-                <img src="img/logo.png" alt="Logo">
+                <img src="../assets/img/logo.png" alt="Logo">
             </div>
-            <form action="login.php" method="POST" id="loginForm">
+            <form action="../auth/login.php" method="POST" id="loginForm">
                 <h1>Acesse sua conta</h1>
                 <p>Entre para gerenciar seu sistema de automação residencial.</p>
                 <div class="input-group">
@@ -152,7 +152,7 @@
                     <input type="password" name="password" id="password" placeholder="Senha" required />
                     <i class="fas fa-eye toggle-password" onclick="togglePassword('password')"></i>
                 </div>
-                <a href="esqueci_senha.php">Esqueceu sua senha?</a>
+                <a href="../auth/esqueci_senha.php">Esqueceu sua senha?</a>
                 <button type="submit">Entrar</button>
             </form>
         </div>

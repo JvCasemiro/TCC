@@ -1,12 +1,14 @@
 <?php
 session_start();
-require_once 'config/database.php';
+require_once '../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
 
+// DATABASE USER FETCH COMMENTED OUT FOR TESTING WITHOUT DATABASE
+/*
 try {
     // Fetch complete user information
     $stmt = $conn->prepare("
@@ -42,6 +44,16 @@ try {
     $created_at = new DateTime();
     $updated_at = new DateTime();
 }
+*/
+
+// MOCK USER DATA FOR TESTING WITHOUT DATABASE
+$user = [
+    'username' => $_SESSION['username'],
+    'email' => $_SESSION['email'],
+    'user_type' => 'Administrador'
+];
+$created_at = new DateTime();
+$updated_at = new DateTime();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -50,7 +62,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Usuários - Automação Residencial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/img/logo.png" type="image/x-icon">
     <style>
         * {
             margin: 0;
@@ -453,7 +465,7 @@ try {
     <header>
         <div class="header-content">
             <div class="logo">
-                <img src="img/logo.png" alt="Logo">
+                <img src="../assets/img/logo.png" alt="Logo">
                 Automação Residencial
             </div>
             <div class="user-menu">
@@ -475,7 +487,7 @@ try {
                 <a href="menu.php" class="back-btn" style="text-decoration: none; display: inline-block; color: white;">
                     <i class="fas fa-arrow-left"></i> Voltar ao Menu
                 </a>
-                <form action="logout.php" method="post" style="display: inline;">
+                <form action="../auth/logout.php" method="post" style="display: inline;">
                     <button type="submit" class="logout-btn">Sair</button>
                 </form>
             </div>
@@ -617,7 +629,7 @@ try {
             const formData = new FormData(this);
             
             try {
-                const response = await fetch('cadastrar_usuario.php', {
+                const response = await fetch('../includes/cadastrar_usuario.php', {
                     method: 'POST',
                     body: formData
                 });

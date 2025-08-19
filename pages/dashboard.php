@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once 'config/database.php';
+require_once '../config/database.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
 
@@ -24,7 +24,10 @@ try {
     $user = $stmt->fetch();
     
     if (!$user) {
-        throw new Exception('User not found');
+        // If user not found, destroy session and redirect to login
+        session_destroy();
+        header('Location: ../index.php');
+        exit;
     }
     
     // Format dates
@@ -33,14 +36,10 @@ try {
     
 } catch (Exception $e) {
     error_log("Error fetching user data: " . $e->getMessage());
-    // Set default values in case of error
-    $user = [
-        'username' => $_SESSION['username'],
-        'email' => $_SESSION['email'],
-        'user_type' => 'Usuário'
-    ];
-    $created_at = new DateTime();
-    $updated_at = new DateTime();
+    // On error, destroy session and redirect to login
+    session_destroy();
+    header('Location: ../index.php?error=data_fetch_failed');
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -50,7 +49,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Controle - Automação Residencial</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/img/logo.png" type="image/x-icon">
     <style>
         * {
             margin: 0;
@@ -338,7 +337,7 @@ try {
     <header>
         <div class="header-content">
             <div class="logo">
-                <img src="img/logo.png" alt="Logo">
+                <img src="../assets/img/logo.png" alt="Logo">
                 Automação Residencial
             </div>
             <div class="user-menu">
@@ -360,7 +359,7 @@ try {
                 <a href="menu.php" class="back-btn" style="text-decoration: none; display: inline-block; color: white;">
                     <i class="fas fa-arrow-left"></i> Voltar ao Menu
                 </a>
-                <form action="logout.php" method="post" style="display: inline;">
+                <form action="../auth/logout.php" method="post" style="display: inline;">
                     <button type="submit" class="logout-btn">Sair</button>
                 </form>
             </div>
@@ -380,7 +379,7 @@ try {
                 </div>
                 <h3>Luzes</h3>
                 <p>Controle todas as luzes da sua casa de forma remota.</p>
-                <button class="control-btn">
+                <button class="control-btn" onclick="window.location.href='gerenciar_luzes.php'">
                     <i class="fas fa-cog"></i>
                     Gerenciar
                 </button>
@@ -392,7 +391,7 @@ try {
                 </div>
                 <h3>Temperatura</h3>
                 <p>Ajuste a temperatura dos ambientes e programe horários.</p>
-                <button class="control-btn">
+                <button class="control-btn" onclick="window.location.href='ajustar_temperatura.php'">
                     <i class="fas fa-sliders-h"></i>
                     Ajustar
                 </button>
@@ -404,9 +403,21 @@ try {
                 </div>
                 <h3>Segurança</h3>
                 <p>Monitore câmeras e sensores de segurança em tempo real.</p>
-                <button class="control-btn">
+                <button class="control-btn" onclick="window.location.href='monitorar_seguranca.php'">
                     <i class="fas fa-eye"></i>
                     Verificar
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h3>Leitura de Placas</h3>
+                <p>Gerencie o acesso de veículos com reconhecimento automático.</p>
+                <button class="control-btn" onclick="window.location.href='leitura_placas.php'">
+                    <i class="fas fa-search"></i>
+                    Monitorar
                 </button>
             </div>
             
@@ -425,15 +436,21 @@ try {
     </div>
     
     <script>
+        function showMessage(message, type = 'info') {
+            alert(message);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const buttons = document.querySelectorAll('.control-btn');
             buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    showMessage('Funcionalidade em desenvolvimento. Em breve disponível!', 'warning');
-                });
+                if (!button.hasAttribute('onclick')) {
+                    button.addEventListener('click', function() {
+                        showMessage('Funcionalidade em desenvolvimento. Em breve disponível!', 'warning');
+                    });
+                }
             });
         });
-        
+
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
