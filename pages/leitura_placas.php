@@ -7,27 +7,88 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../config/database.php';
 
-// Mock user data since database is disabled
+// Get user data from session
 $user = [
+    'id' => $_SESSION['user_id'],
     'nome' => $_SESSION['username'] ?? 'Usuário',
     'email' => $_SESSION['email'] ?? 'usuario@exemplo.com'
 ];
 
-// Mock data for license plate readings
-$recent_plates = [
-    ['plate' => 'ABC-1234', 'time' => '10:45:12', 'confidence' => '98%', 'status' => 'authorized'],
-    ['plate' => 'XYZ-5678', 'time' => '10:42:33', 'confidence' => '95%', 'status' => 'unknown'],
-    ['plate' => 'DEF-9012', 'time' => '10:38:45', 'confidence' => '92%', 'status' => 'blocked'],
-    ['plate' => 'GHI-3456', 'time' => '10:35:21', 'confidence' => '97%', 'status' => 'authorized'],
-    ['plate' => 'JKL-7890', 'time' => '10:32:18', 'confidence' => '89%', 'status' => 'unknown']
-];
+// Handle form submission to add a new license plate
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_plate'])) {
+    // Get and sanitize input
+    $placa = trim(strtoupper(str_replace(['-', ' '], '', $_POST['placa'])));
+    $proprietario = trim($_POST['proprietario']);
+    
+    // Debug: Log the received data
+    error_log("Tentando cadastrar placa: " . $placa . " - Proprietário: " . $proprietario);
+    
+    // Validate plate format (3 letters followed by 4 alphanumeric characters)
+    if (!preg_match('/^[A-Z]{3}[0-9A-Z]{4}$/', $placa)) {
+        $_SESSION['message'] = ['type' => 'error', 'text' => 'Formato de placa inválido. Use o formato AAA0000.'];
+    } else {
+        try {
+            // Format plate with dash for display
+            $placa_formatada = substr($placa, 0, 3) . '-' . substr($placa, 3);
+            
+            // Check if plate already exists
+            $check = $conn->prepare("SELECT ID_Placa FROM Placas WHERE Numeracao = ?");
+            $check->execute([$placa_formatada]);
+            
+            if ($check->rowCount() > 0) {
+                $_SESSION['message'] = ['type' => 'error', 'text' => 'Esta placa já está cadastrada.'];
+            } else {
+                // Insert new plate with current timestamp
+                $stmt = $conn->prepare("INSERT INTO Placas (Numeracao, Proprietario, Ultimo_Acesso) VALUES (?, ?, NOW())");
+                $result = $stmt->execute([$placa_formatada, $proprietario]);
+                
+                if ($result) {
+                    $_SESSION['message'] = ['type' => 'success', 'text' => 'Placa cadastrada com sucesso!'];
+                    
+                    // Clear the form by redirecting to the same page without the hash
+                    $redirect_url = strtok($_SERVER['PHP_SELF'], '?');
+                    header('Location: ' . $redirect_url);
+                    exit;
+                } else {
+                    $error = $stmt->errorInfo();
+                    error_log("Erro ao inserir placa: " . print_r($error, true));
+                    $_SESSION['message'] = ['type' => 'error', 'text' => 'Erro ao cadastrar placa. Por favor, tente novamente.'];
+                }
+            }
+        } catch (PDOException $e) {
+            $_SESSION['message'] = ['type' => 'error', 'text' => 'Erro ao cadastrar placa: ' . $e->getMessage()];
+        }
+    }
+    
+    // Redirect to avoid form resubmission
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
 
-$authorized_plates = [
-    'ABC-1234' => 'João Silva',
-    'GHI-3456' => 'Maria Santos',
-    'MNO-1111' => 'Pedro Costa',
-    'PQR-2222' => 'Ana Lima'
-];
+// Get authorized plates from database
+try {
+    $stmt = $conn->query("SELECT Numeracao, Proprietario FROM Placas ORDER BY Data_Cadastro DESC");
+    $authorized_plates = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+} catch (PDOException $e) {
+    $authorized_plates = [];
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Erro ao carregar placas autorizadas.'];
+}
+
+// Get recent detections from database
+$recent_plates = [];
+try {
+    $stmt = $conn->query("SELECT Numeracao as plate, 
+                         DATE_FORMAT(Ultimo_Acesso, '%H:%i:%s') as time, 
+                         '100%' as confidence,
+                         'authorized' as status
+                         FROM Placas 
+                         WHERE Ultimo_Acesso IS NOT NULL 
+                         ORDER BY Ultimo_Acesso DESC 
+                         LIMIT 5");
+    $recent_plates = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Erro ao carregar detecções recentes.'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -450,9 +511,19 @@ $authorized_plates = [
         }
 
         .add-plate-form {
-            display: flex;
-            gap: 10px;
             margin-top: 15px;
+        }
+        
+        .message-success {
+            background-color: #4CAF50;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .message-error {
+            background-color: #f44336;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
         }
 
         .add-plate-form input {
@@ -611,11 +682,36 @@ $authorized_plates = [
                     <?php endforeach; ?>
                 </div>
                 <div class="add-plate-form">
-                    <input type="text" placeholder="Nova placa (ABC-1234)" maxlength="8">
-                    <input type="text" placeholder="Proprietário">
-                    <button class="control-btn btn-success">
-                        <i class="fas fa-plus"></i> Adicionar
-                    </button>
+                    <form method="POST" id="plateForm" style="display: flex; gap: 10px; width: 100%;">
+                        <input type="text" name="placa" id="placa" placeholder="Nova placa (ABC-1234)" maxlength="8" required 
+                               pattern="[A-Z]{3}[-]?[0-9A-Z]{4}" title="Formato: AAA-0000 ou AAA0000" 
+                               style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; text-transform: uppercase;"
+                               oninput="formatPlate(this)" autocomplete="off">
+                        <input type="text" name="proprietario" placeholder="Proprietário" required 
+                               style="flex: 2; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button type="submit" name="add_plate" class="control-btn btn-success">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </form>
+                    <?php if (isset($_SESSION['message'])): ?>
+                        <div id="message-container" class="message-<?php echo $_SESSION['message']['type']; ?>" style="margin-top: 10px; padding: 10px; border-radius: 4px; color: white; text-align: center; transition: opacity 0.5s ease-in-out;">
+                            <?php 
+                                echo $_SESSION['message']['text']; 
+                                $messageType = $_SESSION['message']['type'];
+                                unset($_SESSION['message']);
+                            ?>
+                        </div>
+                        <script>
+                            // Auto-dismiss message after 3 seconds
+                            setTimeout(function() {
+                                const message = document.getElementById('message-container');
+                                if (message) {
+                                    message.style.opacity = '0';
+                                    setTimeout(() => message.remove(), 500);
+                                }
+                            }, 3000);
+                        </script>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -636,21 +732,30 @@ $authorized_plates = [
             }
         }
 
-        // Simulate real-time plate detection
-        function simulateDetection() {
-            const plates = ['ABC-1234', 'XYZ-5678', 'DEF-9012', 'GHI-3456', 'JKL-7890', 'MNO-1111'];
-            const statuses = ['authorized', 'unknown', 'blocked'];
-            
-            setInterval(() => {
-                if (Math.random() > 0.7) { // 30% chance of detection
-                    const randomPlate = plates[Math.floor(Math.random() * plates.length)];
-                    const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
-                    const confidence = (85 + Math.random() * 15).toFixed(0) + '%';
-                    const time = new Date().toLocaleTimeString();
+        // Function to update recent detections from the server
+        function updateRecentDetections() {
+            fetch('get_recent_detections.php')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('recent-detections');
+                    container.innerHTML = ''; // Clear current detections
                     
-                    addNewDetection(randomPlate, time, confidence, randomStatus);
-                }
-            }, 5000);
+                    data.forEach(detection => {
+                        const newEntry = document.createElement('div');
+                        newEntry.className = `plate-entry ${detection.status}`;
+                        newEntry.innerHTML = `
+                            <div class="plate-info">
+                                <div class="plate-number">${detection.plate}</div>
+                                <div class="plate-details">${detection.time}</div>
+                            </div>
+                            <div class="confidence-badge confidence-high">
+                                ${detection.confidence}
+                            </div>
+                        `;
+                        container.appendChild(newEntry);
+                    });
+                })
+                .catch(error => console.error('Error fetching recent detections:', error));
         }
 
         function addNewDetection(plate, time, confidence, status) {
@@ -734,9 +839,114 @@ $authorized_plates = [
             });
         });
 
-        // Start simulation on page load
-        window.addEventListener('load', () => {
-            setTimeout(simulateDetection, 2000);
+        // Format plate input (AAA-0000)
+        function formatPlate(input) {
+            // Get cursor position
+            const cursorPos = input.selectionStart;
+            let value = input.value.toUpperCase();
+            
+            // Store the original length before any modifications
+            const originalLength = value.length;
+            
+            // Remove any non-alphanumeric characters
+            value = value.replace(/[^A-Z0-9]/g, '');
+            
+            // Add separator after 3 characters
+            if (value.length > 3) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 7);
+            }
+            
+            // Update the input value
+            input.value = value;
+            
+            // Adjust cursor position if needed
+            if (originalLength > cursorPos) {
+                input.setSelectionRange(cursorPos, cursorPos);
+            }
+            
+            // Validate the input
+            input.setCustomValidity('');
+            if (value.length > 0 && !/^[A-Z]{3}-?[0-9A-Z]{0,4}$/.test(value)) {
+                input.setCustomValidity('Formato inválido. Use AAA-0000 ou AAA0000');
+            }
+        }
+        
+        // Form submission handler
+        document.getElementById('plateForm')?.addEventListener('submit', function(e) {
+            // Client-side validation
+            const placaInput = this.querySelector('input[name="placa"]');
+            const proprietarioInput = this.querySelector('input[name="proprietario"]');
+            
+            // Format the plate before submission
+            formatPlate(placaInput);
+            
+            // Clear previous custom validity
+            placaInput.setCustomValidity('');
+            proprietarioInput.setCustomValidity('');
+            
+            // Validate plate format
+            const placaValue = placaInput.value.replace(/[^A-Z0-9]/g, '');
+            if (!/^[A-Z]{3}[0-9A-Z]{4}$/.test(placaValue)) {
+                placaInput.setCustomValidity('Formato inválido. Use AAA-0000 ou AAA0000');
+                placaInput.reportValidity();
+                e.preventDefault();
+                return false;
+            }
+            
+            // Validate owner field
+            if (!proprietarioInput.value.trim()) {
+                proprietarioInput.setCustomValidity('Por favor, informe o proprietário');
+                proprietarioInput.reportValidity();
+                e.preventDefault();
+                return false;
+            }
+            
+            // If we got here, form is valid and will be submitted normally
+            return true;
+        });
+        
+        // Format plate input (AAA-0000)
+        function formatPlate(input) {
+            // Get cursor position
+            const cursorPos = input.selectionStart;
+            let value = input.value.toUpperCase();
+            
+            // Store the original length before any modifications
+            const originalLength = value.length;
+            
+            // Remove any non-alphanumeric characters
+            value = value.replace(/[^A-Z0-9]/g, '');
+            
+            // Add separator after 3 characters
+            if (value.length > 3) {
+                value = value.substring(0, 3) + '-' + value.substring(3, 7);
+            }
+            
+            // Update the input value
+            input.value = value;
+            
+            // Adjust cursor position if needed
+            if (originalLength > cursorPos) {
+                setTimeout(() => {
+                    input.setSelectionRange(cursorPos, cursorPos);
+                }, 0);
+            }
+            
+            // Validate the input
+            input.setCustomValidity('');
+            if (value.length > 0 && !/^[A-Z]{3}-?[0-9A-Z]{0,4}$/.test(value)) {
+                input.setCustomValidity('Formato inválido. Use AAA-0000 ou AAA0000');
+            }
+        }
+        
+        // Initialize plate input formatting
+        document.addEventListener('DOMContentLoaded', function() {
+            const plateInput = document.querySelector('input[name="placa"]');
+            if (plateInput) {
+                plateInput.addEventListener('input', function() {
+                    formatPlate(this);
+                });
+            }
         });
     </script>
 </body>
