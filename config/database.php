@@ -64,11 +64,9 @@ function criarTabelas($conn) {
         CREATE TABLE IF NOT EXISTS Placas (
             ID_Placa INT AUTO_INCREMENT PRIMARY KEY,
             Numeracao VARCHAR(10) NOT NULL UNIQUE,
-            Descricao VARCHAR(255) NULL,
             Proprietario VARCHAR(100) NULL,
             Data_Cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            Ultimo_Acesso TIMESTAMP NULL,
-            Ativo BOOLEAN DEFAULT TRUE
+            Ultimo_Acesso TIMESTAMP NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $conn->exec($sql_placas);
