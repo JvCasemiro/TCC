@@ -12,9 +12,9 @@ $username = $_SESSION['username'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle</title>
+    <title>Central de Comando</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="../assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/img/logo_domx_sem_nome.png" type="image/x-icon">
     <style>
         * {
             margin: 0;
@@ -304,7 +304,7 @@ $username = $_SESSION['username'];
 
     <div class="container">
         <div class="welcome-section">
-            <h1>Painel de Controle</h1>
+            <h1>Central de Comando</h1>
             <p>Gerencie seu sistema de automação residencial</p>
         </div>
 
@@ -325,21 +325,21 @@ $username = $_SESSION['username'];
                 <p>Cadastre novos usuários e gerencie permissões do sistema</p>
             </a>
 
-            <div class="menu-card" onclick="showTab('dispositivos')">
+            <a href="dispositivos_iot.php" class="menu-card">
                 <div class="icon">
                     <i class="fas fa-microchip"></i>
                 </div>
-                <h3>Dispositivos</h3>
+                <h3>Dispositivos IoT</h3>
                 <p>Configure e monitore dispositivos IoT conectados</p>
-            </div>
+            </a>
 
-            <div class="menu-card" onclick="showTab('configuracoes')">
+            <a href="sobre_nos.php" class="menu-card">
                 <div class="icon">
-                    <i class="fas fa-cog"></i>
+                    <i class="fas fa-info-circle"></i>
                 </div>
-                <h3>Configurações</h3>
-                <p>Ajuste preferências e configurações do sistema</p>
-            </div>
+                <h3>Sobre Nós</h3>
+                <p>Conheça mais sobre nossa empresa e nossa missão</p>
+            </a>
         </div>
 
         <div class="tab-container" id="tabContainer" style="display: none;">

@@ -65,7 +65,6 @@ function criarTabelas($conn) {
         $count = $stmt->fetchColumn();
         
         if ($count == 0) {
-            // Password = 'admin123'
             $admin_password = password_hash('admin123', PASSWORD_DEFAULT);
             $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario) VALUES (?, ?, ?, ?)");
             $stmt->execute(['admin', 'admin@exemplo.com', $admin_password, 'admin']);

@@ -6,7 +6,7 @@
     <title>Redefinir Senha</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <link rel="shortcut icon" href="../assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/img/logo_domx_sem_nome.png" type="image/x-icon">
     <style>
         .toastify {
             padding: 16px 24px;
@@ -84,50 +84,68 @@
         .toastify.toastify-info::before {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='12' y1='16' x2='12' y2='12'%3E%3C/line%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'%3E%3C/line%3E%3C/svg%3E");
         }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            background: rgb(255, 255, 255);
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
             height: 100vh;
+            margin: -20px 0 50px;
         }
+
         .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            position: relative;
+            overflow: hidden;
+            width: 400px;
+            max-width: 100%;
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 50px;
+        }
+
+        .form-container {
             width: 100%;
-            max-width: 400px;
-        }
-        h2 {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            position: relative;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
+
+
+        h1 {
             font-weight: bold;
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 28px;
         }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
         .input-group {
             position: relative;
-            margin-bottom: 15px;
             width: 100%;
+            margin: 15px 0;
         }
         
         .input-group input[type="text"],
         .input-group input[type="password"] {
+            background-color: #eee;
+            border: none;
+            padding: 12px 40px 12px 15px;
             width: 100%;
-            padding: 10px 35px 10px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 5px;
             box-sizing: border-box;
+            font-size: 14px;
         }
         
         .toggle-password {
@@ -140,70 +158,93 @@
             z-index: 10;
             padding: 5px;
         }
+
         button {
-            width: 100%;
-            padding: 12px;
-            background-color: #084d9b;
-            color: white;
-            border: 1px solid #084d9b;
             border-radius: 20px;
-            cursor: pointer;
+            border: 1px solid rgb(19, 48, 82);
+            background-color: rgb(10, 49, 94);
+            color: #FFFFFF;
             font-size: 12px;
             font-weight: bold;
+            padding: 12px 45px;
             letter-spacing: 1px;
             text-transform: uppercase;
             transition: transform 80ms ease-in;
-            margin-top: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: auto;
+            min-width: 200px;
         }
-        button:hover {
-            background-color: #063d7a;
-        }
+
         button:active {
             transform: scale(0.95);
         }
+
+        button:focus {
+            outline: none;
+        }
+
+        button:hover {
+            background-color: rgb(8, 39, 75);
+        }
+
         .login-link {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
         }
+
         .login-link a {
-            color: #084d9b;
+            color: #333;
+            font-size: 14px;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: normal;
         }
+
         .login-link a:hover {
             text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Redefinir Senha</h2>
-        <div id="toast-container"></div>
-        <form id="resetForm">
-            <div class="form-group">
-                <label for="username">Nome de Usuário:</label>
-                <div class="input-group">
-                    <input type="text" id="username" name="username" required>
+        <div class="form-container">
+            <div id="toast-container"></div>
+            <form id="resetForm">
+                <h1>Redefinir Senha</h1>
+                <p>Digite suas novas credenciais para redefinir sua senha de acesso.</p>
+                <div class="form-group">
+                    <label for="username">Nome de Usuário:</label>
+                    <div class="input-group">
+                        <input type="text" id="username" name="username" placeholder="Nome de Usuário" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="nova_senha">Nova Senha (mínimo 8 caracteres):</label>
-                <div class="input-group">
-                    <input type="password" id="nova_senha" name="nova_senha" minlength="8" required>
-                    <i class="fas fa-eye toggle-password" onclick="togglePassword('nova_senha', event)"></i>
+                <div class="form-group">
+                    <label for="nova_senha">Nova Senha (mínimo 8 caracteres):</label>
+                    <div class="input-group">
+                        <input type="password" id="nova_senha" name="nova_senha" placeholder="Nova Senha (mín. 8 caracteres)" minlength="8" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('nova_senha', event)"></i>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="confirmar_senha">Confirmar Nova Senha:</label>
-                <div class="input-group">
-                    <input type="password" id="confirmar_senha" name="confirmar_senha" minlength="8" required>
-                    <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmar_senha', event)"></i>
+                <div class="form-group">
+                    <label for="confirmar_senha">Confirmar Nova Senha:</label>
+                    <div class="input-group">
+                        <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirmar Nova Senha" minlength="8" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmar_senha', event)"></i>
+                    </div>
                 </div>
-            </div>
-            <button type="submit">Redefinir Senha</button>
-        </form>
-        <div class="login-link">
-            Lembrou sua senha? <a href="../pages/index.php">Faça login</a>
+                <button type="submit">Redefinir Senha</button>
+                <div class="login-link">
+                    Lembrou sua senha? <a href="../index.php">Faça login</a>
+                </div>
+            </form>
         </div>
     </div>
 

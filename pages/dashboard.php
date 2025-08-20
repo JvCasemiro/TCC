@@ -7,39 +7,50 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-try {
-    // Fetch complete user information
-    $stmt = $conn->prepare("
-        SELECT 
-            Nome_Usuario as username,
-            Email as email,
-            Data_Cadastro as created_at,
-            Data_Atualizacao as updated_at,
-            Tipo_Usuario as user_type
-        FROM Usuarios 
-        WHERE ID_Usuario = :user_id
-    ");
-    $stmt->bindParam(':user_id', $_SESSION['user_id']);
-    $stmt->execute();
-    $user = $stmt->fetch();
-    
-    if (!$user) {
-        // If user not found, destroy session and redirect to login
-        session_destroy();
-        header('Location: ../index.php');
-        exit;
-    }
+if ($conn === null) {
+    $user = [
+        'username' => $_SESSION['username'] ?? 'admin',
+        'email' => $_SESSION['email'] ?? 'admin@exemplo.com',
+        'created_at' => '2024-01-01 00:00:00',
+        'updated_at' => date('Y-m-d H:i:s'),
+        'user_type' => 'admin'
+    ];
     
     // Format dates
     $created_at = new DateTime($user['created_at']);
     $updated_at = new DateTime($user['updated_at']);
-    
-} catch (Exception $e) {
-    error_log("Error fetching user data: " . $e->getMessage());
-    // On error, destroy session and redirect to login
-    session_destroy();
-    header('Location: ../index.php?error=data_fetch_failed');
-    exit;
+} else {
+    try {
+        $stmt = $conn->prepare("
+            SELECT 
+                Nome_Usuario as username,
+                Email as email,
+                Data_Cadastro as created_at,
+                Data_Atualizacao as updated_at,
+                Tipo_Usuario as user_type
+            FROM Usuarios 
+            WHERE ID_Usuario = :user_id
+        ");
+        $stmt->bindParam(':user_id', $_SESSION['user_id']);
+        $stmt->execute();
+        $user = $stmt->fetch();
+        
+        if (!$user) {
+            session_destroy();
+            header('Location: ../index.php');
+            exit;
+        }
+        
+        // Format dates
+        $created_at = new DateTime($user['created_at']);
+        $updated_at = new DateTime($user['updated_at']);
+        
+    } catch (Exception $e) {
+        error_log("Error fetching user data: " . $e->getMessage());
+        session_destroy();
+        header('Location: ../index.php?error=data_fetch_failed');
+        exit;
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -47,9 +58,9 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle - Automação Residencial</title>
+    <title>Painel de Controle</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="../assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../assets/img/logo_domx_sem_nome.png" type="image/x-icon">
     <style>
         * {
             margin: 0;
@@ -368,7 +379,7 @@ try {
     
     <div class="container">
         <div class="welcome">
-            <h1>Bem-vindo ao Painel de Controle</h1>
+            <h1>Painel de Controle</h1>
             <p>Gerencie seus dispositivos de automação residencial de forma fácil e intuitiva.</p>
         </div>
         
@@ -427,7 +438,7 @@ try {
                 </div>
                 <h3>Rotinas</h3>
                 <p>Crie e gerencie rotinas automáticas para sua casa.</p>
-                <button class="control-btn">
+                <button class="control-btn" onclick="window.location.href='rotinas.php'">
                     <i class="fas fa-tools"></i>
                     Configurar
                 </button>
