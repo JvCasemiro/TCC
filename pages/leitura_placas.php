@@ -534,18 +534,88 @@ try {
         }
 
         .btn-danger {
-            background: #f44336;
+            background: #dc3545;
             color: white;
             border: none;
+            border-radius: 4px;
             padding: 5px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .modal-btn {
+            padding: 8px 20px;
+            border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-confirm:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #5a6268;
         }
 
         .btn-success {
             background: #4CAF50;
             color: white;
+        }
+
+        #deleteModal{
+            color: #000;
         }
 
         @media (max-width: 768px) {
@@ -669,15 +739,43 @@ try {
             <div class="card">
                 <h3><i class="fas fa-check-circle"></i> Placas Autorizadas</h3>
                 <div class="authorized-list">
-                    <?php foreach ($authorized_plates as $plate => $owner): ?>
+                    <?php 
+                    // Handle plate deletion
+                    if (isset($_GET['delete_plate']) && !empty($_GET['delete_plate'])) {
+                        try {
+                            $plate_to_delete = $_GET['delete_plate'];
+                            $stmt = $conn->prepare("DELETE FROM Placas WHERE Numeracao = ?");
+                            $stmt->execute([$plate_to_delete]);
+                            
+                            if ($stmt->rowCount() > 0) {
+                                $_SESSION['message'] = ['type' => 'success', 'text' => 'Placa removida com sucesso!'];
+                            } else {
+                                $_SESSION['message'] = ['type' => 'error', 'text' => 'Placa não encontrada.'];
+                            }
+                            
+                            // Redirect to prevent form resubmission
+                            header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+                            exit;
+                            
+                        } catch (PDOException $e) {
+                            $_SESSION['message'] = ['type' => 'error', 'text' => 'Erro ao remover placa.'];
+                        }
+                    }
+                    
+                    // Fetch authorized plates
+                    $stmt = $conn->query("SELECT * FROM Placas ORDER BY Data_Cadastro DESC");
+                    $authorized_plates = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    
+                    foreach ($authorized_plates as $plate): 
+                    ?>
                     <div class="authorized-entry">
-                        <div>
-                            <div class="plate-number"><?php echo $plate; ?></div>
-                            <div class="plate-details"><?php echo $owner; ?></div>
+                        <div class="plate-info">
+                            <div class="plate-number"><?php echo htmlspecialchars($plate['Numeracao']); ?></div>
+                            <div class="plate-details"><?php echo htmlspecialchars($plate['Proprietario']); ?></div>
                         </div>
-                        <button class="btn-danger">
+                        <a href="#" class="btn-danger delete-btn" data-plate="<?php echo htmlspecialchars($plate['Numeracao'], ENT_QUOTES); ?>">
                             <i class="fas fa-trash"></i>
-                        </button>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -716,8 +814,61 @@ try {
             </div>
         </div>
     </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar exclusão da placa</h3>
+            <p><strong id="plateToDelete"></strong></p>
+            <div class="modal-buttons">
+                <button class="modal-btn btn-cancel" id="cancelDelete">Cancelar</button>
+                <button class="modal-btn btn-confirm" id="confirmDelete">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // Delete confirmation modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('deleteModal');
+            const plateToDelete = document.getElementById('plateToDelete');
+            const confirmDelete = document.getElementById('confirmDelete');
+            const cancelDelete = document.getElementById('cancelDelete');
+            let currentDeleteLink = null;
+            
+            // Set up delete button click handlers
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const plate = this.getAttribute('data-plate');
+                    plateToDelete.textContent = plate;
+                    currentDeleteLink = `?delete_plate=${encodeURIComponent(plate)}`;
+                    modal.style.display = 'flex';
+                });
+            });
+            
+            // Confirm delete
+            confirmDelete.addEventListener('click', function() {
+                if (currentDeleteLink) {
+                    window.location.href = currentDeleteLink;
+                }
+            });
+            
+            // Cancel delete
+            cancelDelete.addEventListener('click', function() {
+                modal.style.display = 'none';
+                currentDeleteLink = null;
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    currentDeleteLink = null;
+                }
+            });
+        });
+
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
