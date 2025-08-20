@@ -60,6 +60,19 @@ function criarTabelas($conn) {
         
         $conn->exec($sql_logs);
         
+        $sql_placas = "
+        CREATE TABLE IF NOT EXISTS Placas (
+            ID_Placa INT AUTO_INCREMENT PRIMARY KEY,
+            Numeracao VARCHAR(10) NOT NULL UNIQUE,
+            Descricao VARCHAR(255) NULL,
+            Proprietario VARCHAR(100) NULL,
+            Data_Cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            Ultimo_Acesso TIMESTAMP NULL,
+            Ativo BOOLEAN DEFAULT TRUE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        
+        $conn->exec($sql_placas);
+        
         $stmt = $conn->prepare("SELECT COUNT(*) FROM Usuarios WHERE Nome_Usuario = 'admin'");
         $stmt->execute();
         $count = $stmt->fetchColumn();
