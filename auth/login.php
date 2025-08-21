@@ -19,15 +19,13 @@ if (empty($username) || empty($password)) {
     exit;
 }
 
-// Check if database connection is available
 if ($conn === null) {
-    // For testing without database - simulate successful login
     if ($username === 'admin' && $password === 'admin123') {
         $_SESSION['user_id'] = 1;
         $_SESSION['username'] = $username;
         $_SESSION['email'] = 'admin@exemplo.com';
+        $_SESSION['Tipo_Usuario'] = 'admin';
         
-        // Redirect to menu
         header('Location: ../pages/menu.php');
         exit;
     } else {
@@ -38,7 +36,7 @@ if ($conn === null) {
 }
 
 try {
-    $stmt = $conn->prepare("SELECT ID_Usuario as id, Nome_Usuario as username, Email as email, Senha as password FROM Usuarios WHERE Nome_Usuario = :username AND Ativo = TRUE");
+    $stmt = $conn->prepare("SELECT ID_Usuario as id, Nome_Usuario as username, Email as email, Senha as password, Tipo_Usuario as user_type FROM Usuarios WHERE Nome_Usuario = :username AND Ativo = TRUE");
     $stmt->bindParam(':username', $username);
     $stmt->execute();
     
@@ -48,24 +46,21 @@ try {
         if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
+            $_SESSION['Tipo_Usuario'] = $user['user_type'];
             $_SESSION['email'] = $user['email'];
             
-            // Update last access time
             $update_stmt = $conn->prepare("UPDATE Usuarios SET Ultimo_Acesso = NOW() WHERE ID_Usuario = :id");
             $update_stmt->bindParam(':id', $user['id']);
             $update_stmt->execute();
             
-            // Redirect to menu
             header('Location: ../pages/menu.php');
             exit;
         } else {
-            // Invalid credentials
             $_SESSION['login_error'] = 'Credenciais inválidas';
             header('Location: ../../index.php');
             exit;
         }
     } else {
-        // Invalid credentials
         $_SESSION['login_error'] = 'Credenciais inválidas';
         header('Location: ../../index.php');
         exit;

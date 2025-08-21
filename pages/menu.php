@@ -308,6 +308,11 @@ $username = $_SESSION['username'];
             <p>Gerencie seu sistema de automação residencial</p>
         </div>
 
+        <?php
+        $userType = isset($_SESSION['Tipo_Usuario']) ? $_SESSION['Tipo_Usuario'] : 'user';
+        $isAdmin = ($userType === 'admin' || $userType === 'master');
+        ?>
+        
         <div class="menu-grid">
             <a href="dashboard.php" class="menu-card">
                 <div class="icon">
@@ -317,6 +322,7 @@ $username = $_SESSION['username'];
                 <p>Visualize e controle todos os dispositivos conectados em tempo real</p>
             </a>
 
+            <?php if ($isAdmin): ?>
             <a href="gerenciar_usuarios.php" class="menu-card">
                 <div class="icon">
                     <i class="fas fa-users"></i>
@@ -332,6 +338,7 @@ $username = $_SESSION['username'];
                 <h3>Dispositivos IoT</h3>
                 <p>Configure e monitore dispositivos IoT conectados</p>
             </a>
+            <?php endif; ?>
 
             <a href="sobre_nos.php" class="menu-card">
                 <div class="icon">
