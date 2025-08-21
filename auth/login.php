@@ -30,7 +30,7 @@ if ($conn === null) {
         exit;
     } else {
         $_SESSION['login_error'] = 'Credenciais inválidas (modo teste)';
-        header('Location: ../../index.php');
+        header('Location: login_error.php');
         exit;
     }
 }
@@ -56,13 +56,11 @@ try {
             header('Location: ../pages/menu.php');
             exit;
         } else {
-            $_SESSION['login_error'] = 'Credenciais inválidas';
-            header('Location: ../../index.php');
+            header('Location: login_error.php');
             exit;
         }
     } else {
-        $_SESSION['login_error'] = 'Credenciais inválidas';
-        header('Location: ../../index.php');
+        header('Location: login_error.php');
         exit;
     }
 } catch(PDOException $e) {
