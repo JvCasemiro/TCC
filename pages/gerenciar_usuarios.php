@@ -7,46 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// DATABASE USER FETCH COMMENTED OUT FOR TESTING WITHOUT DATABASE
-/*
-try {
-    // Fetch complete user information
-    $stmt = $conn->prepare("
-        SELECT 
-            Nome_Usuario as username,
-            Email as email,
-            Data_Cadastro as created_at,
-            Data_Atualizacao as updated_at,
-            Tipo_Usuario as user_type
-        FROM Usuarios 
-        WHERE ID_Usuario = :user_id
-    ");
-    $stmt->bindParam(':user_id', $_SESSION['user_id']);
-    $stmt->execute();
-    $user = $stmt->fetch();
-    
-    if (!$user) {
-        throw new Exception('User not found');
-    }
-    
-    // Format dates
-    $created_at = new DateTime($user['created_at']);
-    $updated_at = new DateTime($user['updated_at']);
-    
-} catch (Exception $e) {
-    error_log("Error fetching user data: " . $e->getMessage());
-    // Set default values in case of error
-    $user = [
-        'username' => $_SESSION['username'],
-        'email' => $_SESSION['email'],
-        'user_type' => 'Usuário'
-    ];
-    $created_at = new DateTime();
-    $updated_at = new DateTime();
-}
-*/
-
-// MOCK USER DATA FOR TESTING WITHOUT DATABASE
 $user = [
     'username' => $_SESSION['username'],
     'email' => $_SESSION['email'],
