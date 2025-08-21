@@ -698,12 +698,6 @@ try {
                     <i class="fas fa-play"></i> Iniciar Detecção
                 </button>
                 <button class="control-btn">
-                    <i class="fas fa-pause"></i> Pausar
-                </button>
-                <button class="control-btn">
-                    <i class="fas fa-camera"></i> Capturar
-                </button>
-                <button class="control-btn">
                     <i class="fas fa-stop"></i> Parar
                 </button>
             </div>
