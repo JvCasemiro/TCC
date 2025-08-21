@@ -419,6 +419,127 @@ $updated_at = new DateTime();
                 padding: 8px;
             }
         }
+
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #FFF;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: #000;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            color: #000;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            color: #000;
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #95a5a6;
+        }
+
+        /* Estilos para os botões de ação na tabela */
+        .actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #2980b9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Estilos para mensagens de carregamento e vazio */
+        .loading, .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #bdc3c7;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -609,56 +730,48 @@ $updated_at = new DateTime();
         });
         
         function loadUsers() {
+            const tableBody = document.getElementById('usersTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando usuários...</td></tr>';
+            
             fetch('listar_usuarios.php')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        displayUsers(data.users);
+                    if (data.success && data.users && data.users.length > 0) {
+                        tableBody.innerHTML = '';
+                        data.users.forEach(user => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${user.id}</td>
+                                <td>${user.username}</td>
+                                <td>${user.email}</td>
+                                <td>${user.tipo_usuario === 'admin' ? 'Administrador' : 'Usuário'}</td>
+                                <td>${user.data_criacao || 'N/A'}</td>
+                                <td class="actions">
+                                    <button class="btn-edit" onclick="editarUsuario(${user.id})">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="btn-delete" onclick="confirmDelete(${user.id})">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
                     } else {
-                        showError('Erro ao carregar usuários: ' + data.message);
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">' + 
+                            (data.message || 'Nenhum usuário encontrado') + '</td></tr>';
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showError('Erro ao conectar com o servidor');
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #e74c3c;">' +
+                        'Erro ao carregar usuários. Tente novamente mais tarde.</td></tr>';
                 });
         }
         
-        function displayUsers(users) {
-            const tbody = document.getElementById('usersTableBody');
-            
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum usuário encontrado</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = users.map(user => `
-                <tr>
-                    <td>${user.id}</td>
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
-                    <td>${user.tipo_usuario}</td>
-                    <td>${user.data_criacao || 'N/A'}</td>
-                    <td>
-                        <button class="btn btn-edit" onclick="editUser(${user.id})">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-delete" onclick="deleteUser(${user.id})">
-                            <i class="fas fa-trash"></i> Excluir
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        function editUser(userId) {
-            alert('Funcionalidade de edição em desenvolvimento. ID do usuário: ' + userId);
-        }
-        
-        function deleteUser(userId) {
-            if (confirm('Tem certeza que deseja excluir este usuário?')) {
-                alert('Funcionalidade de exclusão em desenvolvimento. ID do usuário: ' + userId);
-            }
+        function editarUsuario(userId) {
+            // Implementar lógica de edição aqui
+            console.log('Editar usuário:', userId);
         }
         
         function showError(message) {
@@ -679,6 +792,73 @@ $updated_at = new DateTime();
                 }
             }
         }
+    </script>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir este usuário?</p>
+            <div class="modal-buttons">
+                <button id="confirmDelete" class="btn-delete">Sim</button>
+                <button id="cancelDelete" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userIdToDelete = null;
+        const modal = document.getElementById('deleteModal');
+        const confirmBtn = document.getElementById('confirmDelete');
+        const cancelBtn = document.getElementById('cancelDelete');
+        const closeBtn = document.querySelector('.close');
+
+        function confirmDelete(userId) {
+            userIdToDelete = userId;
+            modal.style.display = 'flex';
+        }
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        cancelBtn.onclick = function() {
+            modal.style.display = 'none';
+            userIdToDelete = null;
+        }
+
+        confirmBtn.onclick = async function() {
+            if (!userIdToDelete) return;
+            
+            try {
+                const response = await fetch(`excluir_usuario.php?id=${userIdToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Usuário excluído com sucesso!', 'success');
+                    loadUsers();
+                } else {
+                    showAlert(result.message || 'Erro ao excluir usuário', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir usuário:', error);
+                showAlert('Erro ao conectar ao servidor', 'error');
+            }
+            
+            modal.style.display = 'none';
+            userIdToDelete = null;
+        };
     </script>
 </body>
 </html>
