@@ -540,6 +540,77 @@ $updated_at = new DateTime();
             margin-top: 10px;
             text-align: center;
         }
+
+        /* Estilos específicos para o modal de edição */
+        #editUserModal .modal-content {
+            background-color: #fff;
+            color: #000;
+        }
+
+        #editUserModal .modal-content h3 {
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        #editUserModal .form-group {
+            margin-bottom: 15px;
+        }
+
+        #editUserModal label {
+            display: block;
+            margin-bottom: 5px;
+            color: #000;
+        }
+
+        #editUserModal input[type="text"],
+        #editUserModal input[type="email"],
+        #editUserModal input[type="password"],
+        #editUserModal select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #34495e;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #ecf0f1;
+            font-size: 14px;
+        }
+
+        #editUserModal input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        #editUserModal .close-edit {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #editUserModal .close-edit:hover {
+            color: #ecf0f1;
+        }
+
+        #editUserModal .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        #editUserModal .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #editUserModal .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -769,10 +840,173 @@ $updated_at = new DateTime();
                 });
         }
         
-        function editarUsuario(userId) {
-            // Implementar lógica de edição aqui
-            console.log('Editar usuário:', userId);
+        // Modal de edição de usuário
+        const editModal = document.createElement('div');
+        editModal.id = 'editUserModal';
+        editModal.className = 'modal';
+        editModal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-edit">&times;</span>
+                <h3>Editar Usuário</h3>
+                <div class="alert" id="edit-success-alert" style="display: none;"></div>
+                <div class="alert alert-error" id="edit-error-alert" style="display: none;"></div>
+                <form id="editUserForm">
+                    <input type="hidden" id="edit-user-id">
+                    <div class="form-group">
+                        <label for="edit-username">Nome de Usuário:</label>
+                        <input type="text" id="edit-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">E-mail:</label>
+                        <input type="email" id="edit-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tipo-usuario">Tipo de Usuário:</label>
+                        <select id="edit-tipo-usuario" name="tipo_usuario" required>
+                            <option value="user">Usuário</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="change-password-toggle"> Alterar senha
+                        </label>
+                    </div>
+                    <div id="password-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="edit-password">Nova Senha:</label>
+                            <input type="password" id="edit-password" name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-confirm-password">Confirmar Nova Senha:</label>
+                            <input type="password" id="edit-confirm-password" name="confirm_password">
+                        </div>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="btn-cancel" id="cancelEdit">Cancelar</button>
+                        <button type="submit" class="btn-edit">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(editModal);
+
+        // Elementos do modal de edição
+        const editModalElement = document.getElementById('editUserModal');
+        const closeEditBtn = document.querySelector('.close-edit');
+        const cancelEditBtn = document.getElementById('cancelEdit');
+        const changePasswordToggle = document.getElementById('change-password-toggle');
+        const passwordFields = document.getElementById('password-fields');
+        const editForm = document.getElementById('editUserForm');
+
+        // Toggle campos de senha
+        changePasswordToggle.addEventListener('change', function() {
+            passwordFields.style.display = this.checked ? 'block' : 'none';
+            if (!this.checked) {
+                document.getElementById('edit-password').value = '';
+                document.getElementById('edit-confirm-password').value = '';
+            }
+        });
+
+        // Fechar modal de edição
+        function closeEditModal() {
+            editModal.style.display = 'none';
+            document.getElementById('edit-success-alert').style.display = 'none';
+            document.getElementById('edit-error-alert').style.display = 'none';
+            editForm.reset();
+            passwordFields.style.display = 'none';
+            changePasswordToggle.checked = false;
         }
+
+        // Event listeners para fechar o modal
+        closeEditBtn.onclick = closeEditModal;
+        cancelEditBtn.onclick = closeEditModal;
+        window.addEventListener('click', function(event) {
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+        });
+
+        // Função para carregar dados do usuário para edição
+        async function editarUsuario(userId) {
+            try {
+                const response = await fetch(`buscar_usuario.php?id=${userId}`);
+                const data = await response.json();
+                
+                if (data.success && data.user) {
+                    const user = data.user;
+                    document.getElementById('edit-user-id').value = user.id;
+                    document.getElementById('edit-username').value = user.username;
+                    document.getElementById('edit-email').value = user.email;
+                    document.getElementById('edit-tipo-usuario').value = user.tipo_usuario;
+                    
+                    // Exibir o modal
+                    editModal.style.display = 'flex';
+                } else {
+                    showAlert(data.message || 'Erro ao carregar dados do usuário', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar usuário:', error);
+                showAlert('Erro ao carregar dados do usuário', 'error');
+            }
+        }
+
+        // Enviar formulário de edição
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Esconder alertas
+            document.getElementById('edit-success-alert').style.display = 'none';
+            document.getElementById('edit-error-alert').style.display = 'none';
+            
+            const userId = document.getElementById('edit-user-id').value;
+            const formData = {
+                id: userId,
+                username: document.getElementById('edit-username').value.trim(),
+                email: document.getElementById('edit-email').value.trim(),
+                tipo_usuario: document.getElementById('edit-tipo-usuario').value,
+                password: document.getElementById('edit-password').value,
+                confirm_password: document.getElementById('edit-confirm-password').value
+            };
+            
+            try {
+                const response = await fetch('atualizar_usuario.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Mostrar mensagem de sucesso
+                    const successAlert = document.getElementById('edit-success-alert');
+                    successAlert.textContent = result.message || 'Usuário atualizado com sucesso!';
+                    successAlert.className = 'alert alert-success';
+                    successAlert.style.display = 'block';
+                    
+                    // Atualizar a lista de usuários
+                    loadUsers();
+                    
+                    // Fechar o modal após 2 segundos
+                    setTimeout(() => {
+                        closeEditModal();
+                    }, 2000);
+                } else {
+                    // Mostrar mensagem de erro
+                    const errorAlert = document.getElementById('edit-error-alert');
+                    errorAlert.textContent = result.message || 'Erro ao atualizar usuário';
+                    errorAlert.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar usuário:', error);
+                const errorAlert = document.getElementById('edit-error-alert');
+                errorAlert.textContent = 'Erro ao conectar ao servidor';
+                errorAlert.style.display = 'block';
+            }
+        });
         
         function showError(message) {
             const tbody = document.getElementById('usersTableBody');
