@@ -851,6 +851,7 @@ try {
             confirmDelete.addEventListener('click', function() {
                 if (currentDeleteLink) {
                     window.location.href = currentDeleteLink;
+                    window.location.href = 'leitura_placas.php';
                 }
             });
             
