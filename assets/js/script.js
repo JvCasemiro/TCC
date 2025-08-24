@@ -27,14 +27,6 @@ function iniciarDetecao() {
         // Envia um sinal para parar o script Python
         fetch('../python/parar_detecao.php')
             .catch(error => console.error('Erro ao parar a detecção:', error));
-            
-        // Atualiza o status da câmera
-        const statusIndicator = document.querySelector('.status-indicator');
-        if (statusIndicator) {
-            statusIndicator.classList.remove('status-online', 'status-processing');
-            statusIndicator.classList.add('status-offline');
-            statusIndicator.nextSibling.textContent = 'Detecção Parada';
-        }
     };
 
     // Remove mensagens anteriores
@@ -46,13 +38,6 @@ function iniciarDetecao() {
     loadingMessage.className = 'loading-message';
     loadingMessage.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Iniciando detecção de placas...';
     cameraFeed.appendChild(loadingMessage);
-
-    // Atualiza o status da câmera
-    const statusIndicator = cameraFeed.querySelector('.status-indicator');
-    if (statusIndicator) {
-        statusIndicator.classList.add('status-processing');
-        statusIndicator.classList.remove('status-online', 'status-offline');
-    }
 
     // Faz a requisição para executar o script Python
     fetch('../python/executar_detecao.php')
@@ -82,13 +67,6 @@ function iniciarDetecao() {
                 loadingMessage.remove();
             }
 
-            // Atualiza o status da câmera
-            const statusIndicator = cameraFeed.querySelector('.status-indicator');
-            if (statusIndicator) {
-                statusIndicator.classList.remove('status-processing');
-                statusIndicator.classList.add('status-online');
-            }
-
             if (data.success) {
                 // Mostra mensagem de sucesso
                 const successMessage = document.createElement('div');
@@ -112,13 +90,6 @@ function iniciarDetecao() {
                 errorMessage.className = 'alert alert-danger mt-3';
                 errorMessage.textContent = data.output ? data.output.join('\n') : 'Erro desconhecido ao executar a detecção';
                 cameraFeed.appendChild(errorMessage);
-
-                // Atualiza o status da câmera para erro
-                const statusIndicator = cameraFeed.querySelector('.status-indicator');
-                if (statusIndicator) {
-                    statusIndicator.classList.remove('status-processing', 'status-online');
-                    statusIndicator.classList.add('status-offline');
-                }
             }
         })
         .catch(error => {
@@ -153,25 +124,11 @@ function iniciarDetecao() {
             } else {
                 console.error('Elemento .camera-feed não encontrado');
             }
-
-            // Atualiza o status da câmera para offline
-            const statusIndicator = document.querySelector('.status-indicator');
-            if (statusIndicator) {
-                statusIndicator.classList.remove('status-processing');
-                statusIndicator.classList.add('status-offline');
-            }
         })
         .finally(() => {
             // Reabilita o botão de iniciar e desabilita o de parar
             if (botaoIniciar) botaoIniciar.disabled = false;
             if (botaoParar) botaoParar.disabled = true;
-
-            // Remove a classe de processamento do status
-            const statusIndicator = document.querySelector('.status-indicator');
-            if (statusIndicator && !statusIndicator.classList.contains('status-offline')) {
-                statusIndicator.classList.remove('status-processing');
-                statusIndicator.classList.add('status-online');
-            }
         });
 }
 

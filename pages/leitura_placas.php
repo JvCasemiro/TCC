@@ -337,25 +337,6 @@ try {
             font-size: 18px;
         }
 
-        .detection-overlay {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-
         .status-online { background: #4CAF50; }
         .status-offline { background: #f44336; }
 
@@ -687,10 +668,6 @@ try {
                 <div class="camera-placeholder">
                     <i class="fas fa-video" style="font-size: 48px; margin-right: 15px;"></i>
                     Feed da Câmera - Portão Principal
-                </div>
-                <div class="detection-overlay">
-                    <span class="status-indicator status-online"></span>
-                    Detecção Ativa
                 </div>
             </div>
             <div class="camera-controls">
