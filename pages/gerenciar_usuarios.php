@@ -7,46 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// DATABASE USER FETCH COMMENTED OUT FOR TESTING WITHOUT DATABASE
-/*
-try {
-    // Fetch complete user information
-    $stmt = $conn->prepare("
-        SELECT 
-            Nome_Usuario as username,
-            Email as email,
-            Data_Cadastro as created_at,
-            Data_Atualizacao as updated_at,
-            Tipo_Usuario as user_type
-        FROM Usuarios 
-        WHERE ID_Usuario = :user_id
-    ");
-    $stmt->bindParam(':user_id', $_SESSION['user_id']);
-    $stmt->execute();
-    $user = $stmt->fetch();
-    
-    if (!$user) {
-        throw new Exception('User not found');
-    }
-    
-    // Format dates
-    $created_at = new DateTime($user['created_at']);
-    $updated_at = new DateTime($user['updated_at']);
-    
-} catch (Exception $e) {
-    error_log("Error fetching user data: " . $e->getMessage());
-    // Set default values in case of error
-    $user = [
-        'username' => $_SESSION['username'],
-        'email' => $_SESSION['email'],
-        'user_type' => 'Usuário'
-    ];
-    $created_at = new DateTime();
-    $updated_at = new DateTime();
-}
-*/
-
-// MOCK USER DATA FOR TESTING WITHOUT DATABASE
 $user = [
     'username' => $_SESSION['username'],
     'email' => $_SESSION['email'],
@@ -459,6 +419,198 @@ $updated_at = new DateTime();
                 padding: 8px;
             }
         }
+
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #FFF;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: #000;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            color: #000;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            color: #000;
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background-color: #95a5a6;
+        }
+
+        /* Estilos para os botões de ação na tabela */
+        .actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-edit, .btn-delete {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #2980b9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c0392b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Estilos para mensagens de carregamento e vazio */
+        .loading, .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #bdc3c7;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Estilos específicos para o modal de edição */
+        #editUserModal .modal-content {
+            background-color: #fff;
+            color: #000;
+        }
+
+        #editUserModal .modal-content h3 {
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        #editUserModal .form-group {
+            margin-bottom: 15px;
+        }
+
+        #editUserModal label {
+            display: block;
+            margin-bottom: 5px;
+            color: #000;
+        }
+
+        #editUserModal input[type="text"],
+        #editUserModal input[type="email"],
+        #editUserModal input[type="password"],
+        #editUserModal select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #34495e;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #ecf0f1;
+            font-size: 14px;
+        }
+
+        #editUserModal input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        #editUserModal .close-edit {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #editUserModal .close-edit:hover {
+            color: #ecf0f1;
+        }
+
+        #editUserModal .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        #editUserModal .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #editUserModal .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -649,57 +801,212 @@ $updated_at = new DateTime();
         });
         
         function loadUsers() {
+            const tableBody = document.getElementById('usersTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando usuários...</td></tr>';
+            
             fetch('listar_usuarios.php')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        displayUsers(data.users);
+                    if (data.success && data.users && data.users.length > 0) {
+                        tableBody.innerHTML = '';
+                        data.users.forEach(user => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${user.id}</td>
+                                <td>${user.username}</td>
+                                <td>${user.email}</td>
+                                <td>${user.tipo_usuario === 'admin' ? 'Administrador' : 'Usuário'}</td>
+                                <td>${user.data_criacao || 'N/A'}</td>
+                                <td class="actions">
+                                    <button class="btn-edit" onclick="editarUsuario(${user.id})">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="btn-delete" onclick="confirmDelete(${user.id})">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
                     } else {
-                        showError('Erro ao carregar usuários: ' + data.message);
+                        tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">' + 
+                            (data.message || 'Nenhum usuário encontrado') + '</td></tr>';
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showError('Erro ao conectar com o servidor');
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #e74c3c;">' +
+                        'Erro ao carregar usuários. Tente novamente mais tarde.</td></tr>';
                 });
         }
         
-        function displayUsers(users) {
-            const tbody = document.getElementById('usersTableBody');
-            
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum usuário encontrado</td></tr>';
-                return;
+        // Modal de edição de usuário
+        const editModal = document.createElement('div');
+        editModal.id = 'editUserModal';
+        editModal.className = 'modal';
+        editModal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-edit">&times;</span>
+                <h3>Editar Usuário</h3>
+                <div class="alert" id="edit-success-alert" style="display: none;"></div>
+                <div class="alert alert-error" id="edit-error-alert" style="display: none;"></div>
+                <form id="editUserForm">
+                    <input type="hidden" id="edit-user-id">
+                    <div class="form-group">
+                        <label for="edit-username">Nome de Usuário:</label>
+                        <input type="text" id="edit-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">E-mail:</label>
+                        <input type="email" id="edit-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tipo-usuario">Tipo de Usuário:</label>
+                        <select id="edit-tipo-usuario" name="tipo_usuario" required>
+                            <option value="user">Usuário</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="change-password-toggle"> Alterar senha
+                        </label>
+                    </div>
+                    <div id="password-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="edit-password">Nova Senha:</label>
+                            <input type="password" id="edit-password" name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-confirm-password">Confirmar Nova Senha:</label>
+                            <input type="password" id="edit-confirm-password" name="confirm_password">
+                        </div>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="btn-cancel" id="cancelEdit">Cancelar</button>
+                        <button type="submit" class="btn-edit">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(editModal);
+
+        // Elementos do modal de edição
+        const editModalElement = document.getElementById('editUserModal');
+        const closeEditBtn = document.querySelector('.close-edit');
+        const cancelEditBtn = document.getElementById('cancelEdit');
+        const changePasswordToggle = document.getElementById('change-password-toggle');
+        const passwordFields = document.getElementById('password-fields');
+        const editForm = document.getElementById('editUserForm');
+
+        // Toggle campos de senha
+        changePasswordToggle.addEventListener('change', function() {
+            passwordFields.style.display = this.checked ? 'block' : 'none';
+            if (!this.checked) {
+                document.getElementById('edit-password').value = '';
+                document.getElementById('edit-confirm-password').value = '';
             }
-            
-            tbody.innerHTML = users.map(user => `
-                <tr>
-                    <td>${user.id}</td>
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
-                    <td>${user.tipo_usuario}</td>
-                    <td>${user.data_criacao || 'N/A'}</td>
-                    <td>
-                        <button class="btn btn-edit" onclick="editUser(${user.id})">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-delete" onclick="deleteUser(${user.id})">
-                            <i class="fas fa-trash"></i> Excluir
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+        });
+
+        // Fechar modal de edição
+        function closeEditModal() {
+            editModal.style.display = 'none';
+            document.getElementById('edit-success-alert').style.display = 'none';
+            document.getElementById('edit-error-alert').style.display = 'none';
+            editForm.reset();
+            passwordFields.style.display = 'none';
+            changePasswordToggle.checked = false;
         }
-        
-        function editUser(userId) {
-            alert('Funcionalidade de edição em desenvolvimento. ID do usuário: ' + userId);
-        }
-        
-        function deleteUser(userId) {
-            if (confirm('Tem certeza que deseja excluir este usuário?')) {
-                alert('Funcionalidade de exclusão em desenvolvimento. ID do usuário: ' + userId);
+
+        // Event listeners para fechar o modal
+        closeEditBtn.onclick = closeEditModal;
+        cancelEditBtn.onclick = closeEditModal;
+        window.addEventListener('click', function(event) {
+            if (event.target === editModal) {
+                closeEditModal();
+            }
+        });
+
+        // Função para carregar dados do usuário para edição
+        async function editarUsuario(userId) {
+            try {
+                const response = await fetch(`buscar_usuario.php?id=${userId}`);
+                const data = await response.json();
+                
+                if (data.success && data.user) {
+                    const user = data.user;
+                    document.getElementById('edit-user-id').value = user.id;
+                    document.getElementById('edit-username').value = user.username;
+                    document.getElementById('edit-email').value = user.email;
+                    document.getElementById('edit-tipo-usuario').value = user.tipo_usuario;
+                    
+                    // Exibir o modal
+                    editModal.style.display = 'flex';
+                } else {
+                    showAlert(data.message || 'Erro ao carregar dados do usuário', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar usuário:', error);
+                showAlert('Erro ao carregar dados do usuário', 'error');
             }
         }
+
+        // Enviar formulário de edição
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Esconder alertas
+            document.getElementById('edit-success-alert').style.display = 'none';
+            document.getElementById('edit-error-alert').style.display = 'none';
+            
+            const userId = document.getElementById('edit-user-id').value;
+            const formData = {
+                id: userId,
+                username: document.getElementById('edit-username').value.trim(),
+                email: document.getElementById('edit-email').value.trim(),
+                tipo_usuario: document.getElementById('edit-tipo-usuario').value,
+                password: document.getElementById('edit-password').value,
+                confirm_password: document.getElementById('edit-confirm-password').value
+            };
+            
+            try {
+                const response = await fetch('atualizar_usuario.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Mostrar mensagem de sucesso
+                    const successAlert = document.getElementById('edit-success-alert');
+                    successAlert.textContent = result.message || 'Usuário atualizado com sucesso!';
+                    successAlert.className = 'alert alert-success';
+                    successAlert.style.display = 'block';
+                    
+                    // Atualizar a lista de usuários
+                    loadUsers();
+                    
+                    // Fechar o modal após 2 segundos
+                    setTimeout(() => {
+                        closeEditModal();
+                    }, 2000);
+                } else {
+                    // Mostrar mensagem de erro
+                    const errorAlert = document.getElementById('edit-error-alert');
+                    errorAlert.textContent = result.message || 'Erro ao atualizar usuário';
+                    errorAlert.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar usuário:', error);
+                const errorAlert = document.getElementById('edit-error-alert');
+                errorAlert.textContent = 'Erro ao conectar ao servidor';
+                errorAlert.style.display = 'block';
+            }
+        });
         
         function showError(message) {
             const tbody = document.getElementById('usersTableBody');
@@ -719,6 +1026,73 @@ $updated_at = new DateTime();
                 }
             }
         }
+    </script>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Confirmar Exclusão</h3>
+            <p>Tem certeza que deseja excluir este usuário?</p>
+            <div class="modal-buttons">
+                <button id="confirmDelete" class="btn-delete">Sim</button>
+                <button id="cancelDelete" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userIdToDelete = null;
+        const modal = document.getElementById('deleteModal');
+        const confirmBtn = document.getElementById('confirmDelete');
+        const cancelBtn = document.getElementById('cancelDelete');
+        const closeBtn = document.querySelector('.close');
+
+        function confirmDelete(userId) {
+            userIdToDelete = userId;
+            modal.style.display = 'flex';
+        }
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        cancelBtn.onclick = function() {
+            modal.style.display = 'none';
+            userIdToDelete = null;
+        }
+
+        confirmBtn.onclick = async function() {
+            if (!userIdToDelete) return;
+            
+            try {
+                const response = await fetch(`excluir_usuario.php?id=${userIdToDelete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Usuário excluído com sucesso!', 'success');
+                    loadUsers();
+                } else {
+                    showAlert(result.message || 'Erro ao excluir usuário', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir usuário:', error);
+                showAlert('Erro ao conectar ao servidor', 'error');
+            }
+            
+            modal.style.display = 'none';
+            userIdToDelete = null;
+        };
     </script>
 </body>
 </html>

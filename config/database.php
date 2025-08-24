@@ -40,9 +40,7 @@ function criarTabelas($conn) {
             Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             Ultimo_Acesso TIMESTAMP NULL,
-            Ativo BOOLEAN DEFAULT TRUE,
-            Token_Redefinicao VARCHAR(255) NULL,
-            Token_Expiracao TIMESTAMP NULL
+            Ativo BOOLEAN DEFAULT TRUE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $conn->exec($sql_usuarios);
