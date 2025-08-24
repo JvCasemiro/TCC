@@ -90,7 +90,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leitura de Placas </title>
+    <title>Leitura de Placas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="../assets/img/logo_domx_sem_nome.png" type="image/x-icon">
     <style>
@@ -694,10 +694,10 @@ try {
                 </div>
             </div>
             <div class="camera-controls">
-                <button class="control-btn">
+                <button class="control-btn" id="btnIniciar">
                     <i class="fas fa-play"></i> Iniciar Detecção
                 </button>
-                <button class="control-btn">
+                <button class="control-btn stop" id="btnParar" disabled>
                     <i class="fas fa-stop"></i> Parar
                 </button>
             </div>
@@ -960,24 +960,6 @@ try {
             }, 3000);
         }
 
-        // Control button handlers
-        document.querySelectorAll('.control-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const text = this.textContent.trim();
-                if (text.includes('Iniciar')) {
-                    showToast('Detecção de placas iniciada', 'success');
-                    simulateDetection();
-                } else if (text.includes('Pausar')) {
-                    showToast('Detecção pausada', 'warning');
-                } else if (text.includes('Capturar')) {
-                    showToast('Imagem capturada', 'info');
-                } else if (text.includes('Parar')) {
-                    showToast('Detecção interrompida', 'error');
-                } else if (text.includes('Adicionar')) {
-                    showToast('Placa adicionada à lista autorizada', 'success');
-                }
-            });
-        });
 
         function formatPlate(input) {
             const cursorPos = input.selectionStart;
@@ -1068,5 +1050,9 @@ try {
             }
         });
     </script>
+    <!-- Inclui o jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Inclui o arquivo JavaScript principal -->
+    <script src="../assets/js/script.js"></script>
 </body>
 </html>
