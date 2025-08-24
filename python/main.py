@@ -105,11 +105,6 @@ def processar_placa(img_roi, frame):
     kernel = np.ones((3, 3), np.uint8)
     img_morph = cv2.morphologyEx(img_median, cv2.MORPH_CLOSE, kernel, iterations=1)
 
-    # Salva a imagem binarizada
-    if not os.path.exists("output"):
-        os.makedirs("output")
-    cv2.imwrite("output/placa_binarizada.png", img_morph)
-
     # Realizar OCR na imagem binarizada com filtragem para negrito
     config = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 --psm 6'
     saida = pytesseract.image_to_string(img_morph, lang='eng', config=config).strip()
