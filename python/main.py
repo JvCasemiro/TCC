@@ -144,8 +144,27 @@ def processar_placa(img_roi, frame):
             return placa_detectada
     return None
 
+def verificar_parada():
+    """Verifica se o arquivo de parada foi criado"""
+    stop_file = os.path.join(os.path.dirname(__file__), 'stop_detection.flag')
+    if os.path.exists(stop_file):
+        try:
+            os.remove(stop_file)
+            return True
+        except:
+            pass
+    return False
+
 # Função para processar a imagem da câmera em tempo real
 def processar_camera():
+    # Remove o arquivo de parada se existir
+    stop_file = os.path.join(os.path.dirname(__file__), 'stop_detection.flag')
+    if os.path.exists(stop_file):
+        try:
+            os.remove(stop_file)
+        except:
+            pass
+            
     cap = cv2.VideoCapture(0)  # Inicializa a câmera (câmera padrão)
 
     if not cap.isOpened():
@@ -174,8 +193,8 @@ def processar_camera():
         # Mostra apenas a imagem da câmera
         cv2.imshow("Captura de Placa", frame)
 
-        # Sai do loop se pressionar 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        # Sai do loop se pressionar 'q' ou se o arquivo de parada for encontrado
+        if cv2.waitKey(1) & 0xFF == ord('q') or verificar_parada():
             break
 
     cap.release()

@@ -2,15 +2,40 @@ window.addEventListener('error', function (event) {
     return false;
 });
 
+// Variável global para controlar o processo de detecção
+let detectionInProgress = false;
+
 // Função para iniciar a detecção de placas
 function iniciarDetecao() {
     const botaoIniciar = document.getElementById('btnIniciar');
     const botaoParar = document.getElementById('btnParar');
     const cameraFeed = document.querySelector('.camera-feed');
+    
+    // Define que a detecção está em andamento
+    detectionInProgress = true;
 
     // Desabilita o botão de iniciar e habilita o de parar
     botaoIniciar.disabled = true;
     botaoParar.disabled = false;
+    
+    // Adiciona o evento de clique para o botão de parar
+    botaoParar.onclick = function() {
+        detectionInProgress = false;
+        botaoIniciar.disabled = false;
+        botaoParar.disabled = true;
+        
+        // Envia um sinal para parar o script Python
+        fetch('../python/parar_detecao.php')
+            .catch(error => console.error('Erro ao parar a detecção:', error));
+            
+        // Atualiza o status da câmera
+        const statusIndicator = document.querySelector('.status-indicator');
+        if (statusIndicator) {
+            statusIndicator.classList.remove('status-online', 'status-processing');
+            statusIndicator.classList.add('status-offline');
+            statusIndicator.nextSibling.textContent = 'Detecção Parada';
+        }
+    };
 
     // Remove mensagens anteriores
     const existingMessages = document.querySelectorAll('.loading-message, .alert');
