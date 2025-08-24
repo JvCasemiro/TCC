@@ -171,10 +171,7 @@ def processar_camera():
         else:
             mostrar_mensagem("Acesso Negado", (0, 0, 255))  # Exibe a mensagem de erro em vermelho
         
-        # Mostra a imagem binarizada
-        cv2.imshow("Imagem Binarizada", cv2.imread("output/placa_binarizada.png"))
-
-        # Mostra a imagem da câmera
+        # Mostra apenas a imagem da câmera
         cv2.imshow("Captura de Placa", frame)
 
         # Sai do loop se pressionar 'q'
@@ -186,10 +183,8 @@ def processar_camera():
 
 # Função para exibir a mensagem na tela
 def mostrar_mensagem(mensagem, cor):
-    fonte = cv2.FONT_HERSHEY_SIMPLEX
-    img_mensagem = np.zeros((300, 600, 3), dtype=np.uint8)  # Cria uma imagem para mostrar a mensagem
-    cv2.putText(img_mensagem, mensagem, (50, 150), fonte, 1, cor, 2, cv2.LINE_AA)
-    cv2.imshow("Mensagem", img_mensagem)
+    # Não mostra mais a janela de mensagem separada
+    pass
 
 # Função principal
 if __name__ == "__main__":
