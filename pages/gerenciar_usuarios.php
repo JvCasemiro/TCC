@@ -488,7 +488,6 @@ $updated_at = new DateTime();
             background-color: #95a5a6;
         }
 
-        /* Estilos para os botões de ação na tabela */
         .actions {
             display: flex;
             gap: 8px;
@@ -527,7 +526,6 @@ $updated_at = new DateTime();
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* Estilos para mensagens de carregamento e vazio */
         .loading, .no-data {
             text-align: center;
             padding: 20px;
@@ -541,7 +539,6 @@ $updated_at = new DateTime();
             text-align: center;
         }
 
-        /* Estilos específicos para o modal de edição */
         #editUserModal .modal-content {
             background-color: #fff;
             color: #000;
@@ -840,7 +837,6 @@ $updated_at = new DateTime();
                 });
         }
         
-        // Modal de edição de usuário
         const editModal = document.createElement('div');
         editModal.id = 'editUserModal';
         editModal.className = 'modal';
@@ -891,7 +887,6 @@ $updated_at = new DateTime();
         `;
         document.body.appendChild(editModal);
 
-        // Elementos do modal de edição
         const editModalElement = document.getElementById('editUserModal');
         const closeEditBtn = document.querySelector('.close-edit');
         const cancelEditBtn = document.getElementById('cancelEdit');
@@ -899,7 +894,6 @@ $updated_at = new DateTime();
         const passwordFields = document.getElementById('password-fields');
         const editForm = document.getElementById('editUserForm');
 
-        // Toggle campos de senha
         changePasswordToggle.addEventListener('change', function() {
             passwordFields.style.display = this.checked ? 'block' : 'none';
             if (!this.checked) {
@@ -908,7 +902,6 @@ $updated_at = new DateTime();
             }
         });
 
-        // Fechar modal de edição
         function closeEditModal() {
             editModal.style.display = 'none';
             document.getElementById('edit-success-alert').style.display = 'none';
@@ -918,7 +911,6 @@ $updated_at = new DateTime();
             changePasswordToggle.checked = false;
         }
 
-        // Event listeners para fechar o modal
         closeEditBtn.onclick = closeEditModal;
         cancelEditBtn.onclick = closeEditModal;
         window.addEventListener('click', function(event) {
@@ -927,7 +919,6 @@ $updated_at = new DateTime();
             }
         });
 
-        // Função para carregar dados do usuário para edição
         async function editarUsuario(userId) {
             try {
                 const response = await fetch(`buscar_usuario.php?id=${userId}`);
@@ -940,7 +931,6 @@ $updated_at = new DateTime();
                     document.getElementById('edit-email').value = user.email;
                     document.getElementById('edit-tipo-usuario').value = user.tipo_usuario;
                     
-                    // Exibir o modal
                     editModal.style.display = 'flex';
                 } else {
                     showAlert(data.message || 'Erro ao carregar dados do usuário', 'error');
@@ -951,11 +941,9 @@ $updated_at = new DateTime();
             }
         }
 
-        // Enviar formulário de edição
         editForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Esconder alertas
             document.getElementById('edit-success-alert').style.display = 'none';
             document.getElementById('edit-error-alert').style.display = 'none';
             
@@ -981,21 +969,17 @@ $updated_at = new DateTime();
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Mostrar mensagem de sucesso
                     const successAlert = document.getElementById('edit-success-alert');
                     successAlert.textContent = result.message || 'Usuário atualizado com sucesso!';
                     successAlert.className = 'alert alert-success';
                     successAlert.style.display = 'block';
                     
-                    // Atualizar a lista de usuários
                     loadUsers();
                     
-                    // Fechar o modal após 2 segundos
                     setTimeout(() => {
                         closeEditModal();
                     }, 2000);
                 } else {
-                    // Mostrar mensagem de erro
                     const errorAlert = document.getElementById('edit-error-alert');
                     errorAlert.textContent = result.message || 'Erro ao atualizar usuário';
                     errorAlert.style.display = 'block';

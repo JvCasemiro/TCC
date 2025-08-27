@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Mock IoT devices data for testing without database
 $devices = [
     [
         'id' => 1,
@@ -607,7 +606,6 @@ $devices = [
             <p>Configure e monitore seus dispositivos IoT em tempo real</p>
         </div>
         
-        <!-- Statistics Section -->
         <div class="stats-section">
             <div class="stat-card">
                 <div class="stat-number" style="color: #2ecc71;"><?php echo count(array_filter($devices, function($d) { return $d['status'] === 'online'; })); ?></div>
@@ -627,7 +625,6 @@ $devices = [
             </div>
         </div>
         
-        <!-- Controls Section -->
         <div class="controls-section">
             <div class="controls-header">
                 <div class="controls-title">
@@ -679,7 +676,6 @@ $devices = [
             </div>
         </div>
         
-        <!-- Devices Grid -->
         <div class="devices-grid" id="devicesGrid">
             <?php foreach ($devices as $device): ?>
             <div class="device-card" data-status="<?php echo $device['status']; ?>" data-type="<?php echo $device['type']; ?>" data-category="<?php echo $device['category']; ?>" data-name="<?php echo strtolower($device['name']); ?>">
@@ -785,7 +781,7 @@ $devices = [
         
         function refreshDevices() {
             showMessage('Atualizando dispositivos...', 'info');
-            // Simulate refresh
+
             setTimeout(() => {
                 location.reload();
             }, 1000);
@@ -800,12 +796,10 @@ $devices = [
             }
         }
         
-        // Auto-refresh every 30 seconds
         setInterval(() => {
             console.log('Auto-refresh dispositivos IoT...');
         }, 30000);
-        
-        // Initialize page
+
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Página de Dispositivos IoT carregada');
         });

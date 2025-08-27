@@ -641,7 +641,6 @@ try {
             <p>Monitore e gerencie o acesso de veículos com reconhecimento automático de placas.</p>
         </div>
         
-        <!-- Statistics Row -->
         <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-number">24</div>
@@ -661,7 +660,6 @@ try {
             </div>
         </div>
 
-        <!-- Camera Section -->
         <div class="card">
             <h3><i class="fas fa-video"></i> Câmera de Entrada</h3>
             <div class="camera-feed">
@@ -680,9 +678,7 @@ try {
             </div>
         </div>
 
-        <!-- Results Grid -->
         <div class="results-grid">
-            <!-- Recent Detections -->
             <div class="card">
                 <h3><i class="fas fa-history"></i> Detecções Recentes</h3>
                 <div id="recent-detections">
@@ -700,12 +696,10 @@ try {
                 </div>
             </div>
 
-            <!-- Authorized Plates -->
             <div class="card">
                 <h3><i class="fas fa-check-circle"></i> Placas Autorizadas</h3>
                 <div class="authorized-list">
-                    <?php 
-                    // Handle plate deletion
+                    <?php
                     if (isset($_GET['delete_plate']) && !empty($_GET['delete_plate'])) {
                         try {
                             $plate_to_delete = $_GET['delete_plate'];
@@ -718,7 +712,6 @@ try {
                                 $_SESSION['message'] = ['type' => 'error', 'text' => 'Placa não encontrada.'];
                             }
                             
-                            // Redirect to prevent form resubmission
                             header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
                             exit;
                             
@@ -727,7 +720,6 @@ try {
                         }
                     }
                     
-                    // Fetch authorized plates
                     $stmt = $conn->query("SELECT * FROM Placas ORDER BY Data_Cadastro DESC");
                     $authorized_plates = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     
@@ -765,7 +757,6 @@ try {
                             ?>
                         </div>
                         <script>
-                            // Auto-dismiss message after 3 seconds
                             setTimeout(function() {
                                 const message = document.getElementById('message-container');
                                 if (message) {
@@ -780,7 +771,6 @@ try {
         </div>
     </div>
     
-    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="modal">
         <div class="modal-content">
             <h3>Confirmar exclusão da placa</h3>
@@ -793,7 +783,6 @@ try {
     </div>
 
     <script>
-        // Delete confirmation modal
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('deleteModal');
             const plateToDelete = document.getElementById('plateToDelete');
@@ -801,7 +790,6 @@ try {
             const cancelDelete = document.getElementById('cancelDelete');
             let currentDeleteLink = null;
             
-            // Set up delete button click handlers
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -812,7 +800,6 @@ try {
                 });
             });
             
-            // Confirm delete
             confirmDelete.addEventListener('click', function() {
                 if (currentDeleteLink) {
                     window.location.href = currentDeleteLink;
@@ -820,13 +807,11 @@ try {
                 }
             });
             
-            // Cancel delete
             cancelDelete.addEventListener('click', function() {
                 modal.style.display = 'none';
                 currentDeleteLink = null;
             });
-            
-            // Close modal when clicking outside
+        
             window.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     modal.style.display = 'none';
@@ -849,13 +834,12 @@ try {
             }
         }
 
-        // Function to update recent detections from the server
         function updateRecentDetections() {
             fetch('get_recent_detections.php')
                 .then(response => response.json())
                 .then(data => {
                     const container = document.getElementById('recent-detections');
-                    container.innerHTML = ''; // Clear current detections
+                    container.innerHTML = ''; 
                     
                     data.forEach(detection => {
                         const newEntry = document.createElement('div');
@@ -891,12 +875,10 @@ try {
             
             container.insertBefore(newEntry, container.firstChild);
             
-            // Keep only last 5 entries
             while (container.children.length > 5) {
                 container.removeChild(container.lastChild);
             }
             
-            // Show toast notification
             showToast(`Nova placa detectada: ${plate}`, status === 'authorized' ? 'success' : 'warning');
         }
 
@@ -1027,9 +1009,7 @@ try {
             }
         });
     </script>
-    <!-- Inclui o jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Inclui o arquivo JavaScript principal -->
     <script src="../assets/js/script.js"></script>
 </body>
 </html>

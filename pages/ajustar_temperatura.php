@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// MOCK USER DATA FOR TESTING WITHOUT DATABASE
 $user = [
     'username' => $_SESSION['username'],
     'email' => $_SESSION['email'],
@@ -16,7 +15,6 @@ $user = [
 $created_at = new DateTime();
 $updated_at = new DateTime();
 
-// MOCK TEMPERATURE DATA
 $zones = [
     ['id' => 1, 'name' => 'Sala de Estar', 'current_temp' => 22.5, 'target_temp' => 24, 'mode' => 'heating', 'status' => 'on'],
     ['id' => 2, 'name' => 'Quarto Principal', 'current_temp' => 21.0, 'target_temp' => 20, 'mode' => 'cooling', 'status' => 'on'],
@@ -653,14 +651,11 @@ $zones = [
             const statusText = statusElement.querySelector('span');
             const modeButtons = card.querySelectorAll('.mode-btn');
             
-            // Remove active class from all buttons
             modeButtons.forEach(btn => btn.classList.remove('active'));
             
-            // Update card and status
             card.className = `temp-card ${mode}`;
             statusElement.className = `zone-status ${mode}`;
             
-            // Set active button and status text
             if (mode === 'heating') {
                 modeButtons[0].classList.add('active');
                 statusText.textContent = 'Aquecendo';
@@ -694,7 +689,6 @@ $zones = [
         }
         
         function showMessage(message, type = 'info') {
-            // Create toast notification
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             toast.style.cssText = `
@@ -717,13 +711,11 @@ $zones = [
             
             document.body.appendChild(toast);
             
-            // Show toast
             setTimeout(() => {
                 toast.style.opacity = '1';
                 toast.style.transform = 'translateX(0)';
             }, 100);
             
-            // Hide toast
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(100%)';
@@ -733,7 +725,6 @@ $zones = [
             }, 3000);
         }
         
-        // Simulate temperature changes
         setInterval(() => {
             const zones = document.querySelectorAll('[data-zone-id]');
             zones.forEach(zone => {
@@ -742,7 +733,6 @@ $zones = [
                 const isOn = !zone.classList.contains('off');
                 
                 if (isOn) {
-                    // Simulate small temperature fluctuations
                     const currentTemp = parseFloat(currentTempElement.textContent);
                     const variation = (Math.random() - 0.5) * 0.2;
                     const newTemp = currentTemp + variation;

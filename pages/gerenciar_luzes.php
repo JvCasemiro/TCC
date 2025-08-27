@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// MOCK USER DATA FOR TESTING WITHOUT DATABASE
 $user = [
     'username' => $_SESSION['username'],
     'email' => $_SESSION['email'],
@@ -16,7 +15,6 @@ $user = [
 $created_at = new DateTime();
 $updated_at = new DateTime();
 
-// MOCK LIGHTS DATA
 $lights = [
     ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => 'on', 'brightness' => 80, 'color' => '#ffffff'],
     ['id' => 2, 'name' => 'Quarto Principal', 'room' => 'Quarto', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
@@ -559,7 +557,6 @@ $lights = [
             const isOn = card.classList.contains('on');
             
             if (isOn) {
-                // Turn off
                 card.classList.remove('on');
                 card.classList.add('off');
                 statusElement.classList.remove('on');
@@ -568,7 +565,6 @@ $lights = [
                 brightnessSlider.disabled = true;
                 colorPicker.disabled = true;
             } else {
-                // Turn on
                 card.classList.remove('off');
                 card.classList.add('on');
                 statusElement.classList.remove('off');
@@ -631,7 +627,6 @@ $lights = [
         }
         
         function showMessage(message, type = 'info') {
-            // Create toast notification
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
             toast.style.cssText = `

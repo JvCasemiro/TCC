@@ -27,9 +27,7 @@ try {
         throw new Exception('As senhas não coincidem');
     }
 
-    // Check if database connection is available
     if ($conn === null) {
-        // For testing without database - mock success response
         echo json_encode([
             'success' => true, 
             'message' => 'Senha redefinida com sucesso! (Modo de teste sem banco de dados)',

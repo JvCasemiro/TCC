@@ -443,7 +443,6 @@ $username = $user['username'];
             </button>
 
             <div class="routines-grid" id="routinesGrid">
-                <!-- Rotina de exemplo 1 -->
                 <div class="routine-card">
                     <div class="routine-header">
                         <div class="routine-title">
