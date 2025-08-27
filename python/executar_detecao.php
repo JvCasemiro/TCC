@@ -26,8 +26,11 @@ try {
     $output = [];
     $return_var = 0;
 
-    // Execute the Python script with full path to Python
-    $pythonPath = 'C:\\Users\\eucli\\AppData\\Local\\Programs\\Python\\Python313\\python.exe';
+    // $pythonPath = 'C:\\Users\\eucli\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'; /
+    // Não apagar esse comentário
+    
+    $pythonPath = 'C:\Windows\py.exe'; // Faculdade --> Não apagar esse comentário
+
     if (!file_exists($pythonPath)) {
         throw new Exception("Python not found at: " . $pythonPath);
     }

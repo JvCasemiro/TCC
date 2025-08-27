@@ -7,7 +7,9 @@ import os
 from datetime import datetime
 
 # Configuração do Tesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # --> Não apagar esse comentário
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Alunos.DESKTOP-8SLHJJ7\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # Não apagar esse comentário
 
 # Função para conectar ao banco de dados
 def conectar_banco():
@@ -180,9 +182,13 @@ def processar_camera():
         placa = processar_placa(img_roi, frame)
 
         if placa:
+            # Apenas mostra a mensagem de sucesso e continua procurando
             mostrar_mensagem("PORTÃO ABRINDO", (0, 255, 0))  # Exibe a mensagem de sucesso em verde
-            break  # Para o programa após detectar a placa
+            # Aguarda 3 segundos para mostrar a mensagem antes de sair
+            cv2.waitKey(3000)
+            break  # Sai apenas se uma placa válida for encontrada
         else:
+            # Mostra a mensagem de acesso negado e continua processando
             mostrar_mensagem("Acesso Negado", (0, 0, 255))  # Exibe a mensagem de erro em vermelho
         
         # Mostra apenas a imagem da câmera
