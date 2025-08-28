@@ -68,6 +68,23 @@ function criarTabelas($conn) {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $conn->exec($sql_placas);
+
+        $sql_rotinas = "
+        CREATE TABLE IF NOT EXISTS Rotinas (
+            ID_Rotina INT AUTO_INCREMENT PRIMARY KEY,
+            Nome VARCHAR(100) NOT NULL,
+            Descricao TEXT,
+            Icone VARCHAR(50) NOT NULL,
+            Hora TIME NOT NULL,
+            Dia_Semana VARCHAR(20) NOT NULL,
+            ID_Usuario INT NOT NULL,
+            Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            Ativa BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        
+        $conn->exec($sql_rotinas);
         
         $stmt = $conn->prepare("SELECT COUNT(*) FROM Usuarios WHERE Nome_Usuario = 'admin'");
         $stmt->execute();
