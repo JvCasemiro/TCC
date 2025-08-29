@@ -16,20 +16,11 @@ $created_at = new DateTime();
 $updated_at = new DateTime();
 
 $cameras = [
-    ['id' => 1, 'name' => 'Entrada Principal', 'location' => 'Portão', 'status' => 'online', 'recording' => true, 'motion' => false],
-    ['id' => 2, 'name' => 'Garagem', 'location' => 'Garagem', 'status' => 'online', 'recording' => true, 'motion' => true],
-    ['id' => 3, 'name' => 'Quintal', 'location' => 'Área Externa', 'status' => 'online', 'recording' => false, 'motion' => false],
-    ['id' => 4, 'name' => 'Sala de Estar', 'location' => 'Interior', 'status' => 'offline', 'recording' => false, 'motion' => false],
-    ['id' => 5, 'name' => 'Cozinha', 'location' => 'Interior', 'status' => 'online', 'recording' => true, 'motion' => false],
-    ['id' => 6, 'name' => 'Corredor', 'location' => 'Interior', 'status' => 'online', 'recording' => true, 'motion' => true],
+    ['id' => 1, 'name' => 'Entrada Principal', 'location' => 'Portão', 'status' => 'online', 'recording' => true, 'motion' => false]
 ];
 
 $events = [
-    ['time' => '10:35', 'camera' => 'Garagem', 'event' => 'Movimento detectado', 'type' => 'motion'],
-    ['time' => '10:20', 'camera' => 'Corredor', 'event' => 'Movimento detectado', 'type' => 'motion'],
-    ['time' => '09:45', 'camera' => 'Entrada Principal', 'event' => 'Gravação iniciada', 'type' => 'recording'],
-    ['time' => '09:30', 'camera' => 'Sala de Estar', 'event' => 'Câmera offline', 'type' => 'offline'],
-    ['time' => '08:15', 'camera' => 'Quintal', 'event' => 'Gravação pausada', 'type' => 'recording'],
+    ['time' => '09:45', 'camera' => 'Entrada Principal', 'event' => 'Gravação iniciada', 'type' => 'recording']
 ];
 ?>
 <!DOCTYPE html>
@@ -195,17 +186,24 @@ $events = [
         
         .cameras-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
+            grid-template-columns: 1fr; /* Single column layout */
+            gap: 20px;
+            max-width: 800px; /* Limit maximum width for better readability */
+            margin: 0 auto; /* Center the grid */
         }
         
         .camera-card {
             background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid #e0e0e0;
             transition: all 0.3s ease;
             position: relative;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
         }
         
         .camera-card.online {
@@ -263,15 +261,16 @@ $events = [
         
         .camera-feed {
             width: 100%;
-            height: 150px;
+            height: 400px; /* Increased height */
             background: #2c3e50;
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             position: relative;
             overflow: hidden;
+            flex-grow: 1;
         }
         
         .camera-feed.offline {
@@ -280,8 +279,9 @@ $events = [
         
         .feed-placeholder {
             color: white;
-            font-size: 0.9em;
+            font-size: 1.2em;
             text-align: center;
+            padding: 20px;
         }
         
         .live-indicator {
@@ -635,12 +635,6 @@ $events = [
                             <button class="control-btn btn-view" onclick="viewCamera(<?php echo $camera['id']; ?>)" 
                                     <?php echo $camera['status'] == 'offline' ? 'disabled style="opacity:0.5;"' : ''; ?>>
                                 <i class="fas fa-eye"></i> Visualizar
-                            </button>
-                            <button class="control-btn btn-record <?php echo $camera['recording'] ? 'recording' : ''; ?>" 
-                                    onclick="toggleRecording(<?php echo $camera['id']; ?>)"
-                                    <?php echo $camera['status'] == 'offline' ? 'disabled style="opacity:0.5;"' : ''; ?>>
-                                <i class="fas fa-<?php echo $camera['recording'] ? 'stop' : 'record-vinyl'; ?>"></i>
-                                <?php echo $camera['recording'] ? 'Parar' : 'Gravar'; ?>
                             </button>
                         </div>
                     </div>
