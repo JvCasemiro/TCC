@@ -719,24 +719,23 @@ $events = [
                 } else {
                     recordIndicator.style.display = 'flex';
                 }
-                showMessage('Gravação iniciada', 'success');
             }
         }
         
         function armSystem() {
-            showMessage('Sistema de segurança armado!', 'success');
+            return;
         }
         
         function disarmSystem() {
-            showMessage('Sistema de segurança desarmado!', 'info');
+            return;
         }
         
         function viewRecordings() {
-            showMessage('Funcionalidade de gravações em desenvolvimento!', 'info');
+            return;
         }
         
         function configureAlerts() {
-            showMessage('Funcionalidade de configuração em desenvolvimento!', 'info');
+            return;
         }
         
         function toggleDropdown() {
@@ -791,11 +790,66 @@ $events = [
         }
     </script>
     <script src="../assets/js/camera.js"></script>
+    <script src="../assets/js/screen-recorder.js"></script>
     <script>
-        // Debug: Verificar se o CameraManager foi carregado
-        console.log('CameraManager carregado?', typeof window.CameraManager !== 'undefined');
-        if (window.CameraManager) {
-            console.log('Métodos disponíveis:', Object.keys(window.CameraManager));
+        // Função para armar o sistema e iniciar a gravação
+        async function armSystem() {
+            try {
+                // Inicia a gravação da tela
+                if (window.ScreenRecorder && typeof window.ScreenRecorder.start === 'function') {
+                    // Adiciona um pequeno atraso para garantir que a mensagem seja exibida
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    await window.ScreenRecorder.start();
+                } else {
+                    throw new Error('Módulo de gravação não carregado');
+                }
+                
+                // Atualiza a interface
+                const armBtn = document.querySelector('.fa-shield-alt').closest('.control-card');
+                const disarmBtn = document.querySelector('.fa-shield').closest('.control-card');
+                
+                if (armBtn) armBtn.classList.add('active');
+                if (disarmBtn) disarmBtn.classList.remove('active');
+                
+            } catch (error) {
+                console.error('Erro ao armar sistema:', error);
+            }
+        }
+        
+        // Função para desarmar o sistema e parar a gravação
+        function disarmSystem() {
+            try {
+                // Para a gravação
+                if (window.ScreenRecorder && typeof window.ScreenRecorder.stop === 'function') {
+                    window.ScreenRecorder.stop();
+                }
+                
+                // Atualiza a interface
+                const armBtn = document.querySelector('.fa-shield-alt').closest('.control-card');
+                const disarmBtn = document.querySelector('.fa-shield').closest('.control-card');
+                
+                if (armBtn) armBtn.classList.remove('active');
+                if (disarmBtn) disarmBtn.classList.add('active');
+                
+            } catch (error) {
+                return;
+            }
+        }
+        
+        // Função auxiliar para exibir mensagens
+        function showMessage(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
         }
     </script>
 </body>
