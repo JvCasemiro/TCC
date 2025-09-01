@@ -430,6 +430,43 @@ $events = [
             font-size: 0.9em;
         }
         
+        /* Estilo para notificações */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        .notification.warning {
+            background-color: #ff9800;
+        }
+        
+        .notification.info {
+            background-color: #2196F3;
+        }
+        
         .event-icon {
             width: 20px;
             text-align: center;
@@ -684,6 +721,40 @@ $events = [
     </div>
     
     <script>
+        // Função para exibir notificações
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            // Adiciona o ícone de acordo com o tipo
+            let icon = '✅';
+            if (type === 'error') icon = '❌';
+            else if (type === 'warning') icon = '⚠️';
+            else if (type === 'info') icon = 'ℹ️';
+            
+            notification.innerHTML = `
+                <span class="notification-icon">${icon}</span>
+                <span class="notification-message">${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Força o navegador a reconhecer a mudança de estilo
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Remove a notificação após 3 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
         function viewCamera(cameraId) {
             // Chamar a função viewCamera do arquivo camera.js
             if (typeof viewCamera === 'function') {
@@ -795,6 +866,9 @@ $events = [
         // Função para armar o sistema e iniciar a gravação
         async function armSystem() {
             try {
+                // Mostra notificação de início
+                showNotification('Gravação iniciada', 'success');
+                
                 // Inicia a gravação da tela
                 if (window.ScreenRecorder && typeof window.ScreenRecorder.start === 'function') {
                     // Adiciona um pequeno atraso para garantir que a mensagem seja exibida
@@ -813,15 +887,19 @@ $events = [
                 
             } catch (error) {
                 console.error('Erro ao armar sistema:', error);
+                showNotification('Erro ao iniciar gravação', 'error');
             }
         }
         
         // Função para desarmar o sistema e parar a gravação
-        function disarmSystem() {
+        async function disarmSystem() {
             try {
+                // Mostra notificação de parada
+                showNotification('Gravação encerrada', 'info');
+                
                 // Para a gravação
                 if (window.ScreenRecorder && typeof window.ScreenRecorder.stop === 'function') {
-                    window.ScreenRecorder.stop();
+                    await window.ScreenRecorder.stop();
                 }
                 
                 // Atualiza a interface
@@ -832,7 +910,8 @@ $events = [
                 if (disarmBtn) disarmBtn.classList.add('active');
                 
             } catch (error) {
-                return;
+                console.error('Erro ao desarmar sistema:', error);
+                showNotification('Erro ao parar gravação', 'error');
             }
         }
         
