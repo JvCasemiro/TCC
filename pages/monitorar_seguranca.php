@@ -162,17 +162,23 @@ $events = [
         }
         
         .security-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
-            margin-top: 30px;
+            margin-top: 20px;
+            width: 100%;
         }
         
         .cameras-section {
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         
         .section-title {
@@ -186,24 +192,27 @@ $events = [
         
         .cameras-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Single column layout */
+            grid-template-columns: 1fr;
             gap: 20px;
-            max-width: 800px; /* Limit maximum width for better readability */
-            margin: 0 auto; /* Center the grid */
+            width: 100%;
+            margin: 0;
+            height: 100%;
         }
         
         .camera-card {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             border: 2px solid #e0e0e0;
             transition: all 0.3s ease;
             position: relative;
-            min-height: 600px;
+            min-height: 70vh;  /* Use viewport height for better responsiveness */
             display: flex;
             flex-direction: column;
-            margin-bottom: 30px;
+            margin: 0;
+            width: 100%;
+            flex-grow: 1;
         }
         
         .camera-card.offline {
@@ -253,16 +262,17 @@ $events = [
         
         .camera-feed {
             width: 100%;
-            height: 400px; /* Increased height */
+            min-height: 60vh;  /* Use viewport height */
             background: #2c3e50;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin: 0;
             position: relative;
             overflow: hidden;
             flex-grow: 1;
+            text-align: center;
         }
         
         .camera-feed.offline {
@@ -274,6 +284,11 @@ $events = [
             font-size: 1.2em;
             text-align: center;
             padding: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
         }
         
         .live-indicator {
@@ -321,16 +336,18 @@ $events = [
         
         .camera-controls {
             display: flex;
-            gap: 8px;
+            gap: 12px;
+            margin-top: 15px;
+            padding: 8px 0;
         }
         
         .control-btn {
             flex: 1;
-            padding: 8px;
+            padding: 10px 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8em;
+            font-size: 0.85em;
             font-weight: 600;
             transition: all 0.3s ease;
         }
@@ -569,7 +586,7 @@ $events = [
         </div>
     </header>
     
-    <div class="container">
+    <div class="container" style="height: calc(100vh - 80px); display: flex; flex-direction: column;">
         <div class="welcome">
             <h1>Monitoramento de Segurança</h1>
             <p>Monitore câmeras e sensores de segurança em tempo real.</p>
@@ -618,33 +635,6 @@ $events = [
                                     <?php echo $camera['status'] == 'offline' ? 'disabled style="opacity:0.5;"' : ''; ?>>
                                 <i class="fas fa-eye"></i> Visualizar
                             </button>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-            
-            <div class="events-section">
-                <h2 class="section-title">
-                    <i class="fas fa-bell"></i>
-                    Eventos Recentes
-                </h2>
-                <div class="events-list">
-                    <?php foreach($events as $event): ?>
-                    <div class="event-item <?php echo $event['type']; ?>">
-                        <div class="event-time"><?php echo $event['time']; ?></div>
-                        <div class="event-icon <?php echo $event['type']; ?>">
-                            <?php if ($event['type'] == 'motion'): ?>
-                                <i class="fas fa-running"></i>
-                            <?php elseif ($event['type'] == 'recording'): ?>
-                                <i class="fas fa-record-vinyl"></i>
-                            <?php else: ?>
-                                <i class="fas fa-exclamation-triangle"></i>
-                            <?php endif; ?>
-                        </div>
-                        <div class="event-details">
-                            <div class="event-camera"><?php echo htmlspecialchars($event['camera']); ?></div>
-                            <div class="event-description"><?php echo htmlspecialchars($event['event']); ?></div>
                         </div>
                     </div>
                     <?php endforeach; ?>
