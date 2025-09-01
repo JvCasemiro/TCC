@@ -206,10 +206,6 @@ $events = [
             margin-bottom: 30px;
         }
         
-        .camera-card.online {
-            border-color: #27ae60;
-        }
-        
         .camera-card.offline {
             border-color: #e74c3c;
             opacity: 0.7;
@@ -249,10 +245,6 @@ $events = [
             gap: 5px;
             font-size: 0.9em;
             font-weight: 600;
-        }
-        
-        .camera-status.online {
-            color: #27ae60;
         }
         
         .camera-status.offline {
@@ -591,18 +583,7 @@ $events = [
                 </h2>
                 <div class="cameras-grid">
                     <?php foreach($cameras as $camera): ?>
-                    <div class="camera-card <?php echo $camera['status']; ?> <?php echo $camera['motion'] ? 'motion' : ''; ?>" data-camera-id="<?php echo $camera['id']; ?>">
-                        <div class="camera-header">
-                            <div class="camera-info">
-                                <h4><?php echo htmlspecialchars($camera['name']); ?></h4>
-                                <div class="camera-location"><?php echo htmlspecialchars($camera['location']); ?></div>
-                            </div>
-                            <div class="camera-status <?php echo $camera['status']; ?>">
-                                <i class="fas fa-circle"></i>
-                                <span><?php echo $camera['status'] == 'online' ? 'Online' : 'Offline'; ?></span>
-                            </div>
-                        </div>
-                        
+                    <div class="camera-card <?php echo $camera['motion'] ? 'motion' : ''; ?>" data-camera-id="<?php echo $camera['id']; ?>">
                         <div class="camera-feed <?php echo $camera['status']; ?>">
                             <?php if ($camera['status'] == 'online'): ?>
                                 <div class="live-indicator">AO VIVO</div>
@@ -618,6 +599,7 @@ $events = [
                                         MOVIMENTO
                                     </div>
                                 <?php endif; ?>
+                                <video id="camera-feed" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
                                 <div class="feed-placeholder">
                                     <i class="fas fa-video" style="font-size: 2em; margin-bottom: 10px;"></i><br>
                                     Feed da Câmera<br>
@@ -893,5 +875,6 @@ $events = [
             }, 3000);
         }
     </script>
+    <script src="../assets/js/camera.js"></script>
 </body>
 </html>
