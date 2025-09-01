@@ -695,88 +695,13 @@ $events = [
     
     <script>
         function viewCamera(cameraId) {
-            // Open a new window for the fullscreen view
-            const width = window.screen.width * 0.9;
-            const height = window.screen.height * 0.9;
-            const left = (window.screen.width - width) / 2;
-            const top = (window.screen.height - height) / 2;
-            
-            const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
-            const popup = window.open('', `camera_${cameraId}`, features);
-            
-            // Create the HTML for the new window
-            const html = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Visualização da Câmera ${cameraId}</title>
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-                    <style>
-                        body, html {
-                            margin: 0;
-                            padding: 0;
-                            height: 100%;
-                            overflow: hidden;
-                            background-color: #000;
-                            display: flex;
-                            flex-direction: column;
-                        }
-                        .header {
-                            background: #1a1a1a;
-                            color: white;
-                            padding: 10px;
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                        }
-                        .close-btn {
-                            background: #ff4444;
-                            color: white;
-                            border: none;
-                            padding: 5px 15px;
-                            border-radius: 4px;
-                            cursor: pointer;
-                        }
-                        .video-container {
-                            flex: 1;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            background: #000;
-                        }
-                        .placeholder {
-                            color: #666;
-                            text-align: center;
-                            padding: 20px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="video-container">
-                        <div class="placeholder">
-                            <i class="fas fa-video" style="font-size: 3em; margin-bottom: 20px; display: block;"></i>
-                            <p>Carregando feed da câmera ${cameraId}...</p>
-                            <p><small>Esta é uma visualização em tela cheia</small></p>
-                        </div>
-                    </div>
-                    <script>
-                        // Aqui você pode adicionar o código para exibir o feed real da câmera
-                        // Exemplo: carregar um iframe ou elemento de vídeo com a stream da câmera
-                        console.log('Iniciando visualização da câmera', ${cameraId});
-                    <\/script>
-                </body>
-                </html>
-            `;
-            
-            // Write the HTML to the new window
-            popup.document.open();
-            popup.document.write(html);
-            popup.document.close();
-            
-            // Optional: Focus the new window
-            popup.focus();
-            
-            showMessage(`Abrindo visualização da câmera ${cameraId} em tela cheia...`, 'info');
+            // Chamar a função viewCamera do arquivo camera.js
+            if (typeof viewCamera === 'function') {
+                viewCamera(cameraId);
+            } else {
+                console.error('Função viewCamera não encontrada');
+                showMessage('Erro: Função de visualização não disponível', 'error');
+            }
         }
         
         function toggleRecording(cameraId) {
@@ -876,5 +801,12 @@ $events = [
         }
     </script>
     <script src="../assets/js/camera.js"></script>
+    <script>
+        // Debug: Verificar se o CameraManager foi carregado
+        console.log('CameraManager carregado?', typeof window.CameraManager !== 'undefined');
+        if (window.CameraManager) {
+            console.log('Métodos disponíveis:', Object.keys(window.CameraManager));
+        }
+    </script>
 </body>
 </html>
