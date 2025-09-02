@@ -1252,9 +1252,6 @@ $events = [
                                         <i class="fas fa-calendar"></i> ${fileInfo.date} às ${fileInfo.time}
                                     </div>
                                     <div class="recording-details">
-                                        <i class="fas fa-clock"></i> Duração: ${fileInfo.duration}
-                                    </div>
-                                    <div class="recording-details">
                                         <i class="fas fa-hdd"></i> Tamanho: ${fileInfo.size}
                                     </div>
                                 </div>
@@ -1301,54 +1298,6 @@ $events = [
                 `;
             }
 
-            if (recordings.length === 0) {
-                container.innerHTML = `
-                    <div class="no-recordings">
-                        <i class="fas fa-video-slash"></i>
-                        <div>Nenhuma gravação encontrada</div>
-                        <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">
-                            As gravações aparecerão aqui quando disponíveis
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-
-            const recordingsHTML = recordings.map(recording => `
-                <div class="recording-card" onclick="selectRecording(${recording.id})">
-                    <div class="recording-thumbnail">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <div class="recording-info">
-                        <div class="recording-title">${recording.title}</div>
-                        <div class="recording-details">
-                            <i class="fas fa-video"></i> ${recording.camera}
-                        </div>
-                        <div class="recording-details">
-                            <i class="fas fa-calendar"></i> ${recording.date} às ${recording.time}
-                        </div>
-                        <div class="recording-details">
-                            <i class="fas fa-clock"></i> Duração: ${recording.duration}
-                        </div>
-                        <div class="recording-details">
-                            <i class="fas fa-hdd"></i> Tamanho: ${recording.size}
-                        </div>
-                    </div>
-                    <div class="recording-actions">
-                        <button class="recording-btn btn-play" onclick="playRecording(${recording.id}); event.stopPropagation();">
-                            <i class="fas fa-play"></i> Reproduzir
-                        </button>
-                        <button class="recording-btn btn-download" onclick="downloadRecording(${recording.id}); event.stopPropagation();">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                        <button class="recording-btn btn-delete" onclick="deleteRecording(${recording.id}); event.stopPropagation();">
-                            <i class="fas fa-trash"></i> Excluir
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            container.innerHTML = `<div class="recordings-grid">${recordingsHTML}</div>`;
         }
 
         // Funções para ações das gravações
