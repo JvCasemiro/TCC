@@ -1334,9 +1334,9 @@ $events = [
                         if (!fileInfo) return '';
                         
                         return `
-                            <div class="recording-card" onclick="selectRecording('${fileInfo.id}')">
+                            <div class="recording-card">
                                 <div class="recording-thumbnail">
-                                    <i class="fas fa-play-circle"></i>
+                                    <p style="text-align: center; font-size: 12px;">Clique no botão de reproduzir para ver a gravação</p>
                                 </div>
                                 <div class="recording-info">
                                     <div class="recording-title">${fileInfo.title}</div>
@@ -1447,11 +1447,6 @@ $events = [
             if (event.target == modal) {
                 closeDeleteModal();
             }
-        }
-
-        // Funções para ações das gravações
-        function selectRecording(id) {
-            showNotification(`Gravação ${id} selecionada`, 'info');
         }
 
         function playRecording(filename) {
