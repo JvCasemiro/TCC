@@ -911,13 +911,6 @@ $events = [
                                 </div>
                             <?php endif; ?>
                         </div>
-                        
-                        <div class="camera-controls">
-                            <button class="control-btn btn-view" onclick="viewCamera(<?php echo $camera['id']; ?>)" 
-                                    <?php echo $camera['status'] == 'offline' ? 'disabled style="opacity:0.5;"' : ''; ?>>
-                                <i class="fas fa-eye"></i> Visualizar
-                            </button>
-                        </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
