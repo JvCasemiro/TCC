@@ -1147,56 +1147,159 @@ $events = [
         function loadRecordings() {
             const container = document.getElementById('recordingsContainer');
             
-            const recordings = [
-                {
-                    id: 1,
-                    title: 'Entrada Principal - 02/09/2025',
-                    camera: 'Entrada Principal',
-                    date: '02/09/2025',
-                    time: '08:30:15',
-                    duration: '00:05:23',
-                    size: '45.2 MB',
-                    type: 'Movimento Detectado',
-                    location: 'Área do Portão - Lado Esquerdo',
-                    trigger: 'Pessoa caminhando'
-                },
-                {
-                    id: 2,
-                    title: 'Entrada Principal - 01/09/2025',
-                    camera: 'Entrada Principal',
-                    date: '01/09/2025',
-                    time: '14:22:08',
-                    duration: '00:03:17',
-                    size: '28.7 MB',
-                    type: 'Gravação Manual',
-                    location: null,
-                    trigger: null
-                },
-                {
-                    id: 3,
-                    title: 'Entrada Principal - 01/09/2025',
-                    camera: 'Entrada Principal',
-                    date: '01/09/2025',
-                    time: '19:45:33',
-                    duration: '00:07:41',
-                    size: '62.1 MB',
-                    type: 'Movimento Detectado',
-                    location: 'Centro da Entrada - Próximo ao Interfone',
-                    trigger: 'Veículo se aproximando'
-                },
-                {
-                    id: 4,
-                    title: 'Entrada Principal - 31/08/2025',
-                    camera: 'Entrada Principal',
-                    date: '31/08/2025',
-                    time: '12:15:22',
-                    duration: '00:02:58',
-                    size: '21.3 MB',
-                    type: 'Gravação Programada',
-                    location: null,
-                    trigger: null
+            // Função para formatar o tamanho do arquivo
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // Função para extrair informações do nome do arquivo
+            function extractFileInfo(file) {
+                // Formato esperado: gravacao_ID_ANO-MES-DIA_HORAMINSEG_DURACAO.extensao
+                // Exemplo: gravacao_1_2025-09-02_183609_000300.webm (3 minutos de duração)
+                const parts = file.name.split('_');
+                
+                if (parts.length >= 4) {
+                    const id = parts[1];
+                    const datePart = parts[2];
+                    const timePart = parts[3];
+                    const durationAndExt = parts[4] || '';
+                    
+                    // Extrai a duração (últimos 6 dígitos antes da extensão)
+                    let duration = '00:00:00';
+                    const durationMatch = durationAndExt.match(/^(\d{6})/);
+                    if (durationMatch) {
+                        const dur = durationMatch[1];
+                        const hours = dur.substr(0, 2);
+                        const minutes = dur.substr(2, 2);
+                        const seconds = dur.substr(4, 2);
+                        duration = `${hours}:${minutes}:${seconds}`;
+                    }
+                    
+                    // Formata a data para o padrão brasileiro
+                    const [year, month, day] = datePart.split('-');
+                    const formattedDate = `${day}/${month}/${year}`;
+                    
+                    // Formata o horário (HH:MM:SS) e ajusta o fuso horário (-3 horas)
+                    let formattedTime = '00:00:00';
+                    if (timePart && timePart.length >= 6) {
+                        let hour = parseInt(timePart.substr(0, 2), 10);
+                        const minute = timePart.substr(2, 2);
+                        const second = timePart.substr(4, 2);
+                        
+                        // Subtrai 3 horas para ajustar o fuso horário
+                        hour = (hour - 5 + 24) % 24; // Adiciona 24 antes do módulo para lidar com horas negativas
+                        
+                        // Formata a hora com 2 dígitos
+                        const formattedHour = hour.toString().padStart(2, '0');
+                        formattedTime = `${formattedHour}:${minute}:${second}`;
+                    }
+                    
+                    return {
+                        id: id,
+                        title: `Gravação - ${formattedDate} ${formattedTime}`,
+                        camera: 'Câmera Principal',
+                        date: formattedDate,
+                        time: formattedTime,
+                        duration: duration,
+                        size: file.size ? formatFileSize(file.size) : '0 MB',
+                        type: 'Gravação',
+                        filename: file.name
+                    };
                 }
-            ];
+                
+                // Se o formato não for o esperado, retorna com informações básicas
+                return {
+                    id: '0',
+                    title: file.name,
+                    camera: 'Câmera Principal',
+                    date: '--/--/----',
+                    time: '--:--:--',
+                    duration: '--:--:--',
+                    size: file.size ? formatFileSize(file.size) : '0 MB',
+                    type: 'Gravação',
+                    filename: file.name
+                };
+            }
+
+            // Requisição para obter a lista de gravações
+            fetch('../get_recordings.php')
+                .then(response => response.json())
+                .then(recordings => {
+                    if (recordings.length === 0) {
+                        showNoRecordings(container);
+                        return;
+                    }
+                    
+                    const recordingsHTML = recordings.map(recording => {
+                        const fileInfo = extractFileInfo(recording);
+                        if (!fileInfo) return '';
+                        
+                        return `
+                            <div class="recording-card" onclick="selectRecording('${fileInfo.id}')">
+                                <div class="recording-thumbnail">
+                                    <i class="fas fa-play-circle"></i>
+                                </div>
+                                <div class="recording-info">
+                                    <div class="recording-title">${fileInfo.title}</div>
+                                    <div class="recording-details">
+                                        <i class="fas fa-video"></i> ${fileInfo.camera}
+                                    </div>
+                                    <div class="recording-details">
+                                        <i class="fas fa-calendar"></i> ${fileInfo.date} às ${fileInfo.time}
+                                    </div>
+                                    <div class="recording-details">
+                                        <i class="fas fa-clock"></i> Duração: ${fileInfo.duration}
+                                    </div>
+                                    <div class="recording-details">
+                                        <i class="fas fa-hdd"></i> Tamanho: ${fileInfo.size}
+                                    </div>
+                                </div>
+                                <div class="recording-actions">
+                                    <button class="recording-btn btn-play" onclick="playRecording('${fileInfo.filename}'); event.stopPropagation();">
+                                        <i class="fas fa-play"></i> Reproduzir
+                                    </button>
+                                    <button class="recording-btn btn-download" onclick="downloadRecording('${fileInfo.filename}'); event.stopPropagation();">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                    <button class="recording-btn btn-delete" onclick="deleteRecording('${fileInfo.filename}'); event.stopPropagation();">
+                                        <i class="fas fa-trash"></i> Excluir
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    container.innerHTML = `<div class="recordings-grid">${recordingsHTML}</div>`;
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar gravações:', error);
+                    container.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>Erro ao carregar as gravações</div>
+                            <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">
+                                Tente atualizar a página ou verificar a conexão com o servidor.
+                            </div>
+                        </div>
+                    `;
+                });
+
+            // Função para exibir mensagem quando não há gravações
+            function showNoRecordings(container) {
+                container.innerHTML = `
+                    <div class="no-recordings">
+                        <i class="fas fa-video-slash"></i>
+                        <div>Nenhuma gravação encontrada</div>
+                        <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">
+                            As gravações aparecerão aqui quando disponíveis
+                        </div>
+                    </div>
+                `;
+            }
 
             if (recordings.length === 0) {
                 container.innerHTML = `
@@ -1253,21 +1356,66 @@ $events = [
             showNotification(`Gravação ${id} selecionada`, 'info');
         }
 
-        function playRecording(id) {
-            showNotification(`Reproduzindo gravação ${id}`, 'success');
+        function playRecording(filename) {
+            // Cria um elemento de vídeo para reproduzir o arquivo
+            const videoModal = document.createElement('div');
+            videoModal.style.position = 'fixed';
+            videoModal.style.top = '0';
+            videoModal.style.left = '0';
+            videoModal.style.width = '100%';
+            videoModal.style.height = '100%';
+            videoModal.style.backgroundColor = 'rgba(0,0,0,0.9)';
+            videoModal.style.display = 'flex';
+            videoModal.style.justifyContent = 'center';
+            videoModal.style.alignItems = 'center';
+            videoModal.style.zIndex = '1000';
+            videoModal.onclick = function() {
+                document.body.removeChild(videoModal);
+            };
+            
+            const video = document.createElement('video');
+            video.controls = true;
+            video.autoplay = true;
+            video.style.maxWidth = '90%';
+            video.style.maxHeight = '90%';
+            video.src = '../gravacoes/' + filename;
+            
+            videoModal.appendChild(video);
+            document.body.appendChild(videoModal);
         }
 
-        function downloadRecording(id) {
-            showNotification(`Download da gravação ${id} iniciado`, 'info');
+        function downloadRecording(filename) {
+            // Cria um link temporário para download
+            const link = document.createElement('a');
+            link.href = '../gravacoes/' + filename;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        function deleteRecording(id) {
-            if (confirm('Tem certeza que deseja excluir esta gravação?')) {
-                showNotification(`Gravação ${id} excluída`, 'warning');
-                
-                setTimeout(() => {
-                    loadRecordings();
-                }, 1000);
+        function deleteRecording(filename) {
+            if (confirm('Tem certeza que deseja excluir esta gravação? Esta ação não pode ser desfeita.')) {
+                fetch('../delete_recording.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'filename=' + encodeURIComponent(filename)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Recarrega a lista de gravações após a exclusão
+                        loadRecordings();
+                    } else {
+                        alert('Erro ao excluir a gravação: ' + (data.message || 'Erro desconhecido'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao tentar excluir a gravação');
+                });
             }
         }
 
