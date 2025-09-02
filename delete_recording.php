@@ -8,18 +8,32 @@ if (!isset($_POST['filename']) || empty($_POST['filename'])) {
 }
 
 $filename = basename($_POST['filename']); // Previne directory traversal
-$filepath = __DIR__ . '/gravacoes/' . $filename;
+$recordingsDir = __DIR__ . '/gravacoes/';
+$filepath = $recordingsDir . $filename;
+
+// Verifica se o diretório de gravações existe
+if (!is_dir($recordingsDir)) {
+    echo json_encode(['success' => false, 'message' => 'Diretório de gravações não encontrado']);
+    exit;
+}
 
 // Verifica se o arquivo existe e está dentro do diretório de gravações
-if (!file_exists($filepath) || !str_starts_with(realpath($filepath), __DIR__ . '/gravacoes/')) {
-    echo json_encode(['success' => false, 'message' => 'Arquivo não encontrado']);
+$realFilePath = realpath($filepath);
+$realRecordingsDir = realpath($recordingsDir) . DIRECTORY_SEPARATOR;
+
+if (!$realFilePath || !file_exists($filepath) || strpos($realFilePath, $realRecordingsDir) !== 0) {
+    echo json_encode(['success' => false, 'message' => 'Arquivo não encontrado ou acesso negado']);
     exit;
 }
 
 // Tenta excluir o arquivo
-if (unlink($filepath)) {
+if (@unlink($filepath)) {
     echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['success' => false, 'message' => 'Erro ao excluir o arquivo']);
+    $error = error_get_last();
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Erro ao excluir o arquivo: ' . ($error['message'] ?? 'Erro desconhecido')
+    ]);
 }
 ?>
