@@ -1,7 +1,9 @@
 <?php
 header('Content-Type: application/json');
 
-$recordingsDir = __DIR__ . '/gravacoes/';
+// Define o diretório base do projeto
+$baseDir = dirname(__DIR__); // Volta um nível a partir do diretório atual (includes)
+$recordingsDir = $baseDir . '/gravacoes/';
 $recordings = [];
 
 // Verifica se o diretório existe
@@ -19,16 +21,22 @@ if (is_dir($recordingsDir)) {
             
             // Obtém informações do arquivo
             $fileInfo = [
+                'filename' => $file,
                 'name' => $file,
                 'size' => filesize($filePath),
                 'modified' => filemtime($filePath),
-                'path' => 'gravacoes/' . $file
+                'path' => 'gravacoes/' . $file,
+                'url' => '/TCC/gravacoes/' . $file
             ];
             
             $recordings[] = $fileInfo;
         }
         closedir($dh);
     }
+} else {
+    // Se o diretório não existir, retorna um array vazio
+    echo json_encode([]);
+    exit;
 }
 
 // Ordena as gravações por data de modificação (mais recentes primeiro)

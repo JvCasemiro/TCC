@@ -1,10 +1,15 @@
 <?php
 header('Content-Type: application/json');
 
-// Verifica se o diretório de gravações existe, se não, cria
-$uploadDir = __DIR__ . '/gravacoes/';
+// Define o diretório base do projeto
+$baseDir = dirname(__DIR__); // Volta um nível a partir do diretório atual (includes)
+$uploadDir = $baseDir . '/gravacoes/';
+
+// Garante que o diretório de gravações existe
 if (!file_exists($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
+    if (!mkdir($uploadDir, 0777, true)) {
+        throw new Exception('Não foi possível criar o diretório de gravações.');
+    }
 }
 
 try {
@@ -26,13 +31,17 @@ try {
 
     // Move o arquivo para o diretório de gravações
     if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-        throw new Exception('Falha ao salvar o arquivo.');
+        throw new Exception('Falha ao salvar o arquivo. Verifique as permissões do diretório.');
     }
 
-    // Retorna sucesso
+    // Define as permissões do arquivo (opcional, dependendo da sua configuração)
+    chmod($filePath, 0644);
+
+    // Retorna sucesso com o caminho do arquivo salvo
     echo json_encode([
         'success' => true,
         'message' => 'Gravação salva com sucesso!',
+        'filepath' => $filePath,
         'file' => $fileName
     ]);
 

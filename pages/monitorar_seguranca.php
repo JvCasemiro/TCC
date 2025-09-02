@@ -1321,7 +1321,7 @@ $events = [
             }
 
             // Requisição para obter a lista de gravações
-            fetch('../get_recordings.php')
+            fetch('../includes/get_recordings.php')
                 .then(response => response.json())
                 .then(recordings => {
                     if (recordings.length === 0) {
@@ -1418,7 +1418,7 @@ $events = [
             const filename = recordingToDelete;
             closeDeleteModal();
             
-            fetch('../delete_recording.php', {
+            fetch('../includes/delete_recording.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

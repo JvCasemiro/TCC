@@ -74,7 +74,7 @@ async function startScreenRecording() {
             const formData = new FormData();
             formData.append('video', blob, `gravacao-${timestamp}.webm`);
             
-            fetch('../salvar_gravacao.php', {
+            fetch('../includes/salvar_gravacao.php', {
                 method: 'POST',
                 body: formData
             }).catch(error => {
