@@ -207,7 +207,7 @@ $events = [
             border: 2px solid #e0e0e0;
             transition: all 0.3s ease;
             position: relative;
-            min-height: 70vh;  /* Use viewport height for better responsiveness */
+            min-height: 70vh; 
             display: flex;
             flex-direction: column;
             margin: 0;
@@ -430,21 +430,20 @@ $events = [
             font-size: 0.9em;
         }
         
-        /* Estilo para notificações */
         .notification {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: 20px;
+            right: 180px;
             background-color: #4CAF50;
             color: white;
             padding: 12px 24px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
+            z-index: 10000;
             display: flex;
             align-items: center;
             gap: 10px;
-            transform: translateY(100px);
+            transform: translateY(-100px);
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             max-width: 300px;
@@ -588,6 +587,179 @@ $events = [
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #0a0f2c 0%, #1a2040 100%);
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 1200px;
+            height: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            padding: 20px 30px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #2f3640;
+        }
+
+        .close {
+            color: #666;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #e74c3c;
+        }
+
+        .modal-body {
+            padding: 30px;
+            height: calc(100% - 80px);
+            overflow-y: auto;
+            background: linear-gradient(135deg, #0a0f2c 0%, #1a2040 100%);
+        }
+
+        .recordings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .recording-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .recording-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .recording-thumbnail {
+            width: 100%;
+            height: 150px;
+            background: #2c3e50;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+        }
+
+        .recording-info {
+            color: #2f3640;
+        }
+
+        .recording-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .recording-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .recording-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .recording-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-play {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-play:hover {
+            background: #229954;
+        }
+
+        .btn-download {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #357abd;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .no-recordings {
+            text-align: center;
+            color: #ffffff;
+            padding: 60px 20px;
+            font-size: 1.2em;
+        }
+
+        .no-recordings i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -709,24 +881,49 @@ $events = [
                     <div class="control-description">Ver gravações anteriores</div>
                 </div>
                 
-                <div class="control-card" onclick="configureAlerts()">
-                    <div class="control-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="control-title">Configurar Alertas</div>
-                    <div class="control-description">Personalizar notificações</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="recordingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-play-circle"></i>
+                    Gravações de Segurança
+                </div>
+                <span class="close" onclick="closeRecordingsModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="recordingsContainer">
                 </div>
             </div>
         </div>
     </div>
     
     <script>
-        // Função para exibir notificações
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 180px;
+                background-color: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : type === 'warning' ? '#ff9800' : '#2196F3'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transform: translateY(-100px);
+                opacity: 0;
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                max-width: 300px;
+            `;
             
-            // Adiciona o ícone de acordo com o tipo
             let icon = '✅';
             if (type === 'error') icon = '❌';
             else if (type === 'warning') icon = '⚠️';
@@ -739,14 +936,14 @@ $events = [
             
             document.body.appendChild(notification);
             
-            // Força o navegador a reconhecer a mudança de estilo
             setTimeout(() => {
-                notification.classList.add('show');
+                notification.style.transform = 'translateY(0)';
+                notification.style.opacity = '1';
             }, 10);
             
-            // Remove a notificação após 3 segundos
             setTimeout(() => {
-                notification.classList.remove('show');
+                notification.style.transform = 'translateY(-100px)';
+                notification.style.opacity = '0';
                 setTimeout(() => {
                     if (notification.parentNode) {
                         notification.parentNode.removeChild(notification);
@@ -756,7 +953,6 @@ $events = [
         }
         
         function viewCamera(cameraId) {
-            // Chamar a função viewCamera do arquivo camera.js
             if (typeof viewCamera === 'function') {
                 viewCamera(cameraId);
             } else {
@@ -802,7 +998,8 @@ $events = [
         }
         
         function viewRecordings() {
-            return;
+            document.getElementById('recordingsModal').style.display = 'block';
+            loadRecordings();
         }
         
         function configureAlerts() {
@@ -839,7 +1036,7 @@ $events = [
                 font-size: 14px;
                 max-width: 300px;
                 opacity: 0;
-                transform: translateX(100%);
+                transform: translateY(-50px);
                 transition: all 0.3s ease;
             `;
             toast.textContent = message;
@@ -848,12 +1045,12 @@ $events = [
             
             setTimeout(() => {
                 toast.style.opacity = '1';
-                toast.style.transform = 'translateX(0)';
+                toast.style.transform = 'translateY(0)';
             }, 100);
             
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
+                toast.style.transform = 'translateY(-50px)';
                 setTimeout(() => {
                     document.body.removeChild(toast);
                 }, 300);
@@ -863,22 +1060,17 @@ $events = [
     <script src="../assets/js/camera.js"></script>
     <script src="../assets/js/screen-recorder.js"></script>
     <script>
-        // Função para armar o sistema e iniciar a gravação
         async function armSystem() {
             try {
-                // Mostra notificação de início
                 showNotification('Gravação iniciada', 'success');
                 
-                // Inicia a gravação da tela
                 if (window.ScreenRecorder && typeof window.ScreenRecorder.start === 'function') {
-                    // Adiciona um pequeno atraso para garantir que a mensagem seja exibida
                     await new Promise(resolve => setTimeout(resolve, 100));
                     await window.ScreenRecorder.start();
                 } else {
                     throw new Error('Módulo de gravação não carregado');
                 }
                 
-                // Atualiza a interface
                 const armBtn = document.querySelector('.fa-shield-alt').closest('.control-card');
                 const disarmBtn = document.querySelector('.fa-shield').closest('.control-card');
                 
@@ -890,19 +1082,15 @@ $events = [
                 showNotification('Erro ao iniciar gravação', 'error');
             }
         }
-        
-        // Função para desarmar o sistema e parar a gravação
+    
         async function disarmSystem() {
             try {
-                // Mostra notificação de parada
                 showNotification('Gravação encerrada', 'info');
                 
-                // Para a gravação
                 if (window.ScreenRecorder && typeof window.ScreenRecorder.stop === 'function') {
                     await window.ScreenRecorder.stop();
                 }
                 
-                // Atualiza a interface
                 const armBtn = document.querySelector('.fa-shield-alt').closest('.control-card');
                 const disarmBtn = document.querySelector('.fa-shield').closest('.control-card');
                 
@@ -915,20 +1103,186 @@ $events = [
             }
         }
         
-        // Função auxiliar para exibir mensagens
         function showMessage(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#4a90e2'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 300px;
+                opacity: 0;
+                transform: translateY(-50px);
+                transition: all 0.3s ease;
+            `;
             toast.textContent = message;
+            
             document.body.appendChild(toast);
             
             setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 100);
+            
+            setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translateY(20px)';
+                toast.style.transform = 'translateY(-50px)';
                 setTimeout(() => {
                     document.body.removeChild(toast);
                 }, 300);
             }, 3000);
+        }
+
+        function closeRecordingsModal() {
+            document.getElementById('recordingsModal').style.display = 'none';
+        }
+
+        function loadRecordings() {
+            const container = document.getElementById('recordingsContainer');
+            
+            const recordings = [
+                {
+                    id: 1,
+                    title: 'Entrada Principal - 02/09/2025',
+                    camera: 'Entrada Principal',
+                    date: '02/09/2025',
+                    time: '08:30:15',
+                    duration: '00:05:23',
+                    size: '45.2 MB',
+                    type: 'Movimento Detectado',
+                    location: 'Área do Portão - Lado Esquerdo',
+                    trigger: 'Pessoa caminhando'
+                },
+                {
+                    id: 2,
+                    title: 'Entrada Principal - 01/09/2025',
+                    camera: 'Entrada Principal',
+                    date: '01/09/2025',
+                    time: '14:22:08',
+                    duration: '00:03:17',
+                    size: '28.7 MB',
+                    type: 'Gravação Manual',
+                    location: null,
+                    trigger: null
+                },
+                {
+                    id: 3,
+                    title: 'Entrada Principal - 01/09/2025',
+                    camera: 'Entrada Principal',
+                    date: '01/09/2025',
+                    time: '19:45:33',
+                    duration: '00:07:41',
+                    size: '62.1 MB',
+                    type: 'Movimento Detectado',
+                    location: 'Centro da Entrada - Próximo ao Interfone',
+                    trigger: 'Veículo se aproximando'
+                },
+                {
+                    id: 4,
+                    title: 'Entrada Principal - 31/08/2025',
+                    camera: 'Entrada Principal',
+                    date: '31/08/2025',
+                    time: '12:15:22',
+                    duration: '00:02:58',
+                    size: '21.3 MB',
+                    type: 'Gravação Programada',
+                    location: null,
+                    trigger: null
+                }
+            ];
+
+            if (recordings.length === 0) {
+                container.innerHTML = `
+                    <div class="no-recordings">
+                        <i class="fas fa-video-slash"></i>
+                        <div>Nenhuma gravação encontrada</div>
+                        <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">
+                            As gravações aparecerão aqui quando disponíveis
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const recordingsHTML = recordings.map(recording => `
+                <div class="recording-card" onclick="selectRecording(${recording.id})">
+                    <div class="recording-thumbnail">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="recording-info">
+                        <div class="recording-title">${recording.title}</div>
+                        <div class="recording-details">
+                            <i class="fas fa-video"></i> ${recording.camera}
+                        </div>
+                        <div class="recording-details">
+                            <i class="fas fa-calendar"></i> ${recording.date} às ${recording.time}
+                        </div>
+                        <div class="recording-details">
+                            <i class="fas fa-clock"></i> Duração: ${recording.duration}
+                        </div>
+                        <div class="recording-details">
+                            <i class="fas fa-hdd"></i> Tamanho: ${recording.size}
+                        </div>
+                    </div>
+                    <div class="recording-actions">
+                        <button class="recording-btn btn-play" onclick="playRecording(${recording.id}); event.stopPropagation();">
+                            <i class="fas fa-play"></i> Reproduzir
+                        </button>
+                        <button class="recording-btn btn-download" onclick="downloadRecording(${recording.id}); event.stopPropagation();">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button class="recording-btn btn-delete" onclick="deleteRecording(${recording.id}); event.stopPropagation();">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `<div class="recordings-grid">${recordingsHTML}</div>`;
+        }
+
+        // Funções para ações das gravações
+        function selectRecording(id) {
+            showNotification(`Gravação ${id} selecionada`, 'info');
+        }
+
+        function playRecording(id) {
+            showNotification(`Reproduzindo gravação ${id}`, 'success');
+        }
+
+        function downloadRecording(id) {
+            showNotification(`Download da gravação ${id} iniciado`, 'info');
+        }
+
+        function deleteRecording(id) {
+            if (confirm('Tem certeza que deseja excluir esta gravação?')) {
+                showNotification(`Gravação ${id} excluída`, 'warning');
+                
+                setTimeout(() => {
+                    loadRecordings();
+                }, 1000);
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('recordingsModal');
+            if (event.target === modal) {
+                closeRecordingsModal();
+            }
+            
+            if (!event.target.matches('.user-name') && !event.target.closest('.user-name')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
         }
     </script>
 </body>
