@@ -760,6 +760,79 @@ $events = [
             margin-bottom: 20px;
             opacity: 0.5;
         }
+
+        /* Delete Confirmation Modal Styles */
+        #deleteConfirmationModal .modal-content {
+            max-width: 500px;
+            height: auto;
+            max-height: 90%;
+            background: white;
+        }
+
+        #deleteConfirmationModal .modal-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            padding: 15px 20px;
+        }
+
+        #deleteConfirmationModal .modal-title {
+            font-size: 1.2em;
+            color: #333;
+            gap: 10px;
+        }
+
+        #deleteConfirmationModal .modal-body {
+            padding: 20px;
+            color: #333;
+            background: white;
+        }
+
+        #deleteConfirmationModal .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            background: #f9f9f9;
+            border-radius: 0 0 8px 8px;
+            gap: 10px;
+        }
+
+        .btn-cancel, .btn-confirm {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-cancel {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+
+        .btn-cancel:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-confirm {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background-color: #c0392b;
+        }
+
+        .recording-to-delete {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #e74c3c;
+            margin: 10px 0;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
@@ -1057,6 +1130,28 @@ $events = [
             }, 3000);
         }
     </script>
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="deleteConfirmationModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+                    <h3>Confirmar Exclusão</h3>
+                </div>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p><strong>Tem certeza que deseja excluir esta gravação?</strong></p>
+                <br>
+                <p><strong>Esta ação não pode ser desfeita.</strong></p>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+                <button class="btn-confirm" onclick="confirmDelete()">Excluir</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../assets/js/camera.js"></script>
     <script src="../assets/js/screen-recorder.js"></script>
     <script>
@@ -1262,7 +1357,7 @@ $events = [
                                     <button class="recording-btn btn-download" onclick="downloadRecording('${fileInfo.filename}'); event.stopPropagation();">
                                         <i class="fas fa-download"></i> Download
                                     </button>
-                                    <button class="recording-btn btn-delete" onclick="deleteRecording('${fileInfo.filename}'); event.stopPropagation();">
+                                    <button class="recording-btn btn-delete" onclick="showDeleteModal('${fileInfo.filename}'); event.stopPropagation();">
                                         <i class="fas fa-trash"></i> Excluir
                                     </button>
                                 </div>
@@ -1298,6 +1393,60 @@ $events = [
                 `;
             }
 
+        }
+
+        // Variável para armazenar o nome do arquivo a ser excluído
+        let recordingToDelete = '';
+
+        // Funções para o modal de confirmação de exclusão
+        function showDeleteModal(filename) {
+            recordingToDelete = filename;
+            const modal = document.getElementById('deleteConfirmationModal');
+            const recordingName = filename.split('_').slice(1).join(' ').replace('.webm', '');
+            modal.style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteConfirmationModal');
+            modal.style.display = 'none';
+            recordingToDelete = '';
+        }
+
+        function confirmDelete() {
+            if (!recordingToDelete) return;
+            
+            const filename = recordingToDelete;
+            closeDeleteModal();
+            
+            fetch('../delete_recording.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'filename=' + encodeURIComponent(filename)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Gravação excluída com sucesso', 'success');
+                    // Recarrega a lista de gravações
+                    loadRecordings();
+                } else {
+                    showNotification('Erro ao excluir a gravação: ' + (data.error || 'Erro desconhecido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showNotification('Erro ao se comunicar com o servidor', 'error');
+            });
+        }
+
+        // Fechar o modal ao clicar fora dele
+        window.onclick = function(event) {
+            const modal = document.getElementById('deleteConfirmationModal');
+            if (event.target == modal) {
+                closeDeleteModal();
+            }
         }
 
         // Funções para ações das gravações
@@ -1341,31 +1490,6 @@ $events = [
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-
-        function deleteRecording(filename) {
-            if (confirm('Tem certeza que deseja excluir esta gravação? Esta ação não pode ser desfeita.')) {
-                fetch('../delete_recording.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'filename=' + encodeURIComponent(filename)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Recarrega a lista de gravações após a exclusão
-                        loadRecordings();
-                    } else {
-                        alert('Erro ao excluir a gravação: ' + (data.message || 'Erro desconhecido'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Erro ao tentar excluir a gravação');
-                });
-            }
         }
 
         window.onclick = function(event) {
