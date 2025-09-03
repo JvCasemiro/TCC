@@ -640,25 +640,6 @@ try {
             <h1>Leitura de Placas</h1>
             <p>Monitore e gerencie o acesso de veículos com reconhecimento automático de placas.</p>
         </div>
-        
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-number">24</div>
-                <div class="stat-label">Placas Hoje</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">18</div>
-                <div class="stat-label">Autorizadas</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">4</div>
-                <div class="stat-label">Desconhecidas</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">2</div>
-                <div class="stat-label">Bloqueadas</div>
-            </div>
-        </div>
 
         <div class="card">
             <h3><i class="fas fa-video"></i> Câmera de Entrada</h3>
