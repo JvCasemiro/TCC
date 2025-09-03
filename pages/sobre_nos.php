@@ -743,7 +743,7 @@ $username = $_SESSION['username'];
                     </div>
                     
                     <div class="about-image">
-                        <img src="../assets/img/smart-home-illustration.png" alt="Casa Inteligente" class="img-fluid">
+                        <img src="../assets/img/casaInteligente.jpg" alt="Casa Inteligente" class="img-fluid">
                     </div>
                 </div>
             </div>
