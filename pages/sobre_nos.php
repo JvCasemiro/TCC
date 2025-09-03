@@ -119,6 +119,7 @@ $username = $_SESSION['username'];
         }
         
         .container {
+            width: 100%;
             max-width: 1200px;
             margin: 2rem auto;
             padding: 0 2rem;
@@ -595,10 +596,136 @@ $username = $_SESSION['username'];
         }
         
         /* ===== Responsive Styles ===== */
-        @media (max-width: 1024px) {
+        /* Responsive Design */
+        @media (max-width: 1200px) {
             .hero h1 {
-                font-size: 3rem;
+                font-size: 2.8rem;
             }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            .about-grid {
+                gap: 2rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .hero {
+                padding: 6rem 0 4rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .about-content {
+                padding-right: 0;
+            }
+            
+            .about-image {
+                order: -1;
+                max-width: 80%;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 5%;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .user-info {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .domx-logo {
+                position: static;
+                transform: none;
+                margin: 1rem 0;
+                text-align: center;
+            }
+            
+            .domx-logo img {
+                height: 80px;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+            
+            .feature-icon {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 1.25rem;
+            }
+            
+            .hero {
+                padding: 5rem 0 3rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+                padding: 0.8rem 1.5rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .value-card {
+                padding: 1.5rem 1rem;
+            }
+        }
+        
+        /* Ensure images are responsive */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Prevent horizontal scrolling */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
             
             .about-grid {
                 gap: 3rem;
