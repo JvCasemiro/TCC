@@ -80,31 +80,87 @@ $username = $_SESSION['username'];
             background: #4a90e2;
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             margin-right: 1rem;
         }
         
         .back-btn:hover {
             background: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        .back-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+        }
+        
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .back-btn:hover::before {
+            left: 100%;
         }
         
         .logout-btn {
             background: #e74c3c;
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
             cursor: pointer;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .logout-btn:hover {
             background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .logout-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
+        }
+        
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .logout-btn:hover::before {
+            left: 100%;
         }
         
         .domx-logo {
@@ -808,10 +864,9 @@ $username = $_SESSION['username'];
             <span>DOMX</span>
         </a>
         <div class="user-info">
-            <a href="dashboard.php" class="back-btn">
+            <a href="menu.php" class="back-btn">
                 <i class="fas fa-arrow-left"></i> Voltar
             </a>
-            <span class="user-name"><?php echo htmlspecialchars($username); ?></span>
             <a href="../auth/logout.php" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Sair
             </a>

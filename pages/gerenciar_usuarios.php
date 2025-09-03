@@ -374,31 +374,88 @@ $updated_at = new DateTime();
             background-color: #e74c3c;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            transition: background-color 0.3s;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .logout-btn:hover {
             background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .logout-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
+        }
+        
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .logout-btn:hover::before {
+            left: 100%;
         }
         
         .back-btn {
-            background-color: #6c757d;
+            background-color: #4a90e2;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            transition: background-color 0.3s;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             margin-right: 10px;
+            text-decoration: none;
         }
         
         .back-btn:hover {
-            background-color: #5a6268;
+            background-color: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        .back-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+        }
+        
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .back-btn:hover::before {
+            left: 100%;
         }
 
         @media (max-width: 768px) {
@@ -637,7 +694,9 @@ $updated_at = new DateTime();
                     <i class="fas fa-arrow-left"></i> Voltar ao Menu
                 </a>
                 <form action="../auth/logout.php" method="post" style="display: inline;">
-                    <button type="submit" class="logout-btn">Sair</button>
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
                 </form>
             </div>
         </div>
