@@ -86,7 +86,7 @@ session_start();
         </div>
         <h1>Credenciais Inválidas</h1>
         <p>O nome de usuário ou senha informados estão incorretos. Por favor, tente novamente.</p>
-        <a href="../index.php" class="btn">
+        <a href="../pages/loginUser.php" class="btn">
             <i class="fas fa-arrow-left"></i> Voltar para o Login
         </a>
     </div>

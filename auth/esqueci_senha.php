@@ -242,7 +242,7 @@
                 </div>
                 <button type="submit">Redefinir Senha</button>
                 <div class="login-link">
-                    Lembrou sua senha? <a href="../index.php">Faça login</a>
+                    Lembrou sua senha? <a href="../pages/loginUser.php">Faça login</a>
                 </div>
             </form>
         </div>

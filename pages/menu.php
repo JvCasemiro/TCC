@@ -110,7 +110,7 @@ $username = $_SESSION['username'];
         
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 7rem auto;
             padding: 0 2rem;
         }
         
@@ -364,14 +364,6 @@ $username = $_SESSION['username'];
                 <p>Configure e monitore dispositivos IoT conectados</p>
             </a>
             <?php endif; ?>
-
-            <a href="sobre_nos.php" class="menu-card">
-                <div class="icon">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <h3>Sobre Nós</h3>
-                <p>Conheça mais sobre nossa empresa e nossa missão</p>
-            </a>
         </div>
 
         <div class="tab-container" id="tabContainer" style="display: none;">
