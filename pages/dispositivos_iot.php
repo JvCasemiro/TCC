@@ -606,25 +606,6 @@ $devices = [
             <p>Configure e monitore seus dispositivos IoT em tempo real</p>
         </div>
         
-        <div class="stats-section">
-            <div class="stat-card">
-                <div class="stat-number" style="color: #2ecc71;"><?php echo count(array_filter($devices, function($d) { return $d['status'] === 'online'; })); ?></div>
-                <div class="stat-label">Dispositivos Online</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" style="color: #e74c3c;"><?php echo count(array_filter($devices, function($d) { return $d['status'] === 'offline'; })); ?></div>
-                <div class="stat-label">Dispositivos Offline</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" style="color: #f1c40f;"><?php echo count(array_filter($devices, function($d) { return $d['type'] === 'sensor'; })); ?></div>
-                <div class="stat-label">Sensores</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" style="color: #3498db;"><?php echo count(array_filter($devices, function($d) { return $d['type'] === 'actuator'; })); ?></div>
-                <div class="stat-label">Atuadores</div>
-            </div>
-        </div>
-        
         <div class="controls-section">
             <div class="controls-header">
                 <div class="controls-title">
