@@ -1180,7 +1180,6 @@ $events = [
             }, 3000);
         }
     </script>
-    <!-- Modal de Confirmação de Exclusão -->
     <div id="deleteConfirmationModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
@@ -1292,7 +1291,6 @@ $events = [
         function loadRecordings() {
             const container = document.getElementById('recordingsContainer');
             
-            // Função para formatar o tamanho do arquivo
             function formatFileSize(bytes) {
                 if (bytes === 0) return '0 Bytes';
                 const k = 1024;
@@ -1301,10 +1299,7 @@ $events = [
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
 
-            // Função para extrair informações do nome do arquivo
             function extractFileInfo(file) {
-                // Formato esperado: gravacao_ID_ANO-MES-DIA_HORAMINSEG_DURACAO.extensao
-                // Exemplo: gravacao_1_2025-09-02_183609_000300.webm (3 minutos de duração)
                 const parts = file.name.split('_');
                 
                 if (parts.length >= 4) {
@@ -1313,7 +1308,6 @@ $events = [
                     const timePart = parts[3];
                     const durationAndExt = parts[4] || '';
                     
-                    // Extrai a duração (últimos 6 dígitos antes da extensão)
                     let duration = '00:00:00';
                     const durationMatch = durationAndExt.match(/^(\d{6})/);
                     if (durationMatch) {
@@ -1324,21 +1318,17 @@ $events = [
                         duration = `${hours}:${minutes}:${seconds}`;
                     }
                     
-                    // Formata a data para o padrão brasileiro
                     const [year, month, day] = datePart.split('-');
                     const formattedDate = `${day}/${month}/${year}`;
                     
-                    // Formata o horário (HH:MM:SS) e ajusta o fuso horário (-3 horas)
                     let formattedTime = '00:00:00';
                     if (timePart && timePart.length >= 6) {
                         let hour = parseInt(timePart.substr(0, 2), 10);
                         const minute = timePart.substr(2, 2);
                         const second = timePart.substr(4, 2);
                         
-                        // Subtrai 3 horas para ajustar o fuso horário
-                        hour = (hour - 5 + 24) % 24; // Adiciona 24 antes do módulo para lidar com horas negativas
+                        hour = (hour - 5 + 24) % 24;
                         
-                        // Formata a hora com 2 dígitos
                         const formattedHour = hour.toString().padStart(2, '0');
                         formattedTime = `${formattedHour}:${minute}:${second}`;
                     }
@@ -1356,7 +1346,6 @@ $events = [
                     };
                 }
                 
-                // Se o formato não for o esperado, retorna com informações básicas
                 return {
                     id: '0',
                     title: file.name,
@@ -1370,7 +1359,6 @@ $events = [
                 };
             }
 
-            // Requisição para obter a lista de gravações
             fetch('../includes/get_recordings.php')
                 .then(response => response.json())
                 .then(recordings => {
@@ -1430,7 +1418,6 @@ $events = [
                     `;
                 });
 
-            // Função para exibir mensagem quando não há gravações
             function showNoRecordings(container) {
                 container.innerHTML = `
                     <div class="no-recordings">
@@ -1445,10 +1432,8 @@ $events = [
 
         }
 
-        // Variável para armazenar o nome do arquivo a ser excluído
         let recordingToDelete = '';
 
-        // Funções para o modal de confirmação de exclusão
         function showDeleteModal(filename) {
             recordingToDelete = filename;
             const modal = document.getElementById('deleteConfirmationModal');
@@ -1479,7 +1464,6 @@ $events = [
             .then(data => {
                 if (data.success) {
                     showNotification('Gravação excluída com sucesso', 'success');
-                    // Recarrega a lista de gravações
                     loadRecordings();
                 } else {
                     showNotification('Erro ao excluir a gravação: ' + (data.error || 'Erro desconhecido'), 'error');
@@ -1491,7 +1475,6 @@ $events = [
             });
         }
 
-        // Fechar o modal ao clicar fora dele
         window.onclick = function(event) {
             const modal = document.getElementById('deleteConfirmationModal');
             if (event.target == modal) {
@@ -1500,7 +1483,6 @@ $events = [
         }
 
         function playRecording(filename) {
-            // Cria um elemento de vídeo para reproduzir o arquivo
             const videoModal = document.createElement('div');
             videoModal.style.position = 'fixed';
             videoModal.style.top = '0';
@@ -1528,7 +1510,6 @@ $events = [
         }
 
         function downloadRecording(filename) {
-            // Cria um link temporário para download
             const link = document.createElement('a');
             link.href = '../gravacoes/' + filename;
             link.download = filename;

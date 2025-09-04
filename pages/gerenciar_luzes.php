@@ -705,13 +705,11 @@ $lights = [
             
             document.body.appendChild(toast);
             
-            // Show toast
             setTimeout(() => {
                 toast.style.opacity = '1';
                 toast.style.transform = 'translateX(0)';
             }, 100);
             
-            // Hide toast
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateX(100%)';

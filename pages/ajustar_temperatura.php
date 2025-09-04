@@ -671,7 +671,6 @@ $zones = [
             const isOn = card.classList.contains('heating') || card.classList.contains('cooling') || card.classList.contains('auto');
             
             if (isOn) {
-                // Turn off
                 card.className = 'temp-card off';
                 statusElement.className = 'zone-status off';
                 statusText.textContent = 'Desligado';
@@ -681,7 +680,6 @@ $zones = [
                     btn.style.pointerEvents = 'none';
                 });
             } else {
-                // Turn on with auto mode
                 card.className = 'temp-card auto';
                 statusElement.className = 'zone-status auto';
                 statusText.textContent = 'Automático';
@@ -691,7 +689,7 @@ $zones = [
                     btn.style.pointerEvents = 'auto';
                     btn.classList.remove('active');
                 });
-                modeButtons[2].classList.add('active'); // Auto mode
+                modeButtons[2].classList.add('active');
             }
             
             showMessage(`Zona ${isOn ? 'desligada' : 'ligada'} com sucesso!`, 'success');

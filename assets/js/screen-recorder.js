@@ -4,7 +4,6 @@ let isRecording = false;
 
 async function startScreenRecording() {
     try {
-        // Tenta obter a stream da câmera
         const cameraStream = await navigator.mediaDevices.getUserMedia({ 
             video: {
                 width: { ideal: 1280 },
@@ -18,7 +17,6 @@ async function startScreenRecording() {
             throw new Error('Não foi possível acessar a câmera');
         }
         
-        // Cria um elemento de vídeo para exibir a câmera
         const videoPreview = document.createElement('video');
         videoPreview.srcObject = cameraStream;
         videoPreview.autoplay = true;
@@ -31,7 +29,6 @@ async function startScreenRecording() {
         videoPreview.style.pointerEvents = 'none';
         document.body.appendChild(videoPreview);
         
-        // Remove o vídeo quando a gravação for parada
         const originalStop = window.ScreenRecorder.stop;
         window.ScreenRecorder.stop = async function() {
             const result = await originalStop.apply(this, arguments);
@@ -43,13 +40,11 @@ async function startScreenRecording() {
             return result;
         };
 
-        // Cria o MediaRecorder com a stream da câmera
         mediaRecorder = new MediaRecorder(cameraStream, {
             mimeType: 'video/webm;codecs=vp8,opus',
-            videoBitsPerSecond: 2500000 // 2.5Mbps
+            videoBitsPerSecond: 2500000 
         });
 
-        // Armazena os chunks de dados da gravação
         recordedChunks = [];
         mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
@@ -57,20 +52,17 @@ async function startScreenRecording() {
             }
         };
 
-        // Quando a gravação for parada, salva o arquivo
         mediaRecorder.onstop = () => {
             const blob = new Blob(recordedChunks, {
                 type: 'video/webm'
             });
             
-            // Cria um link para download
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
             a.href = url;
             a.download = `gravacao-${timestamp}.webm`;
             
-            // Envia o arquivo para o servidor
             const formData = new FormData();
             formData.append('video', blob, `gravacao-${timestamp}.webm`);
             
@@ -79,24 +71,20 @@ async function startScreenRecording() {
                 body: formData
             }).catch(error => {
                 console.error('Erro:', error);
-                // Se der erro no upload, faz o download local
                 a.click();
             }).finally(() => {
                 URL.revokeObjectURL(url);
             });
 
-            // Para todas as tracks
             combinedStream.getTracks().forEach(track => track.stop());
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
             }
         };
 
-        // Inicia a gravação
-        mediaRecorder.start(1000); // Coleta dados a cada 1 segundo
+        mediaRecorder.start(1000); 
         isRecording = true;
         
-        // Atualiza a interface
         const recordBtn = document.querySelector('.btn-record');
         if (recordBtn) {
             recordBtn.classList.add('recording');
@@ -117,7 +105,6 @@ function stopScreenRecording() {
         mediaRecorder.stop();
         isRecording = false;
         
-        // Atualiza a interface
         const recordBtn = document.querySelector('.btn-record');
         if (recordBtn) {
             recordBtn.classList.remove('recording');
@@ -130,7 +117,6 @@ function stopScreenRecording() {
     }
 }
 
-// Exporta as funções para uso global
 window.ScreenRecorder = {
     start: startScreenRecording,
     stop: stopScreenRecording

@@ -874,7 +874,6 @@ $username = $_SESSION['username'];
     </header>
 
     <main class="main-content">
-        <!-- Hero Section -->
         <section class="hero">
             <div class="container">
                 <div class="hero-content">
@@ -884,7 +883,6 @@ $username = $_SESSION['username'];
             </div>
         </section>
 
-        <!-- About Section -->
         <section id="sobre" class="about-section">
             <div class="container">
                 <div class="section-header">
@@ -931,7 +929,6 @@ $username = $_SESSION['username'];
             </div>
         </section>
         
-        <!-- Mission Section -->
         <section class="mission-section">
             <div class="container">
                 <div class="mission-content">
@@ -941,7 +938,6 @@ $username = $_SESSION['username'];
             </div>
         </section>
         
-        <!-- Values Section -->
         <section class="values-section">
             <div class="container">
                 <div class="section-header">
@@ -1110,7 +1106,6 @@ $username = $_SESSION['username'];
     </footer>
     
     <script>
-        // Adiciona classe de scroll ao header
         window.addEventListener('scroll', function() {
             const header = document.querySelector('.header');
             if (window.scrollY > 50) {
@@ -1120,7 +1115,6 @@ $username = $_SESSION['username'];
             }
         });
         
-        // Adiciona animação suave ao rolar para as seções
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();

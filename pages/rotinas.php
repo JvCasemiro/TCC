@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Função para obter todas as rotinas do usuário
 function getRotinas($conn, $user_id) {
     try {
         $stmt = $conn->prepare("
@@ -24,7 +23,6 @@ function getRotinas($conn, $user_id) {
     }
 }
 
-// Função para salvar uma nova rotina
 function salvarRotina($conn, $dados, $user_id) {
     try {
         $stmt = $conn->prepare("
@@ -49,7 +47,6 @@ function salvarRotina($conn, $dados, $user_id) {
     }
 }
 
-// Função para atualizar uma rotina existente
 function atualizarRotina($conn, $dados, $user_id, $rotina_id) {
     try {
         $stmt = $conn->prepare("
@@ -80,7 +77,6 @@ function atualizarRotina($conn, $dados, $user_id, $rotina_id) {
     }
 }
 
-// Função para atualizar o status de uma rotina
 function atualizarStatusRotina($conn, $id_rotina, $status, $user_id) {
     try {
         $stmt = $conn->prepare("
@@ -100,7 +96,6 @@ function atualizarStatusRotina($conn, $id_rotina, $status, $user_id) {
     }
 }
 
-// Função para excluir uma rotina
 function excluirRotina($conn, $id_rotina, $user_id) {
     try {
         $stmt = $conn->prepare("
@@ -118,7 +113,6 @@ function excluirRotina($conn, $id_rotina, $user_id) {
     }
 }
 
-// Processar ações do formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $response = ['success' => false, 'message' => ''];
     
@@ -136,16 +130,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'dia_semana' => $_POST['dia_semana'] ?? '1,2,3,4,5,6,0',
                     ];
                     
-                    // Verifica se é uma edição (tem ID) ou uma nova rotina
                     if (!empty($_POST['id_rotina'])) {
-                        // Atualiza rotina existente
                         if (atualizarRotina($conn, $dados, $user_id, $_POST['id_rotina'])) {
                             $response = ['success' => true, 'message' => 'Rotina atualizada com sucesso!'];
                         } else {
                             $response['message'] = 'Erro ao atualizar rotina.';
                         }
                     } else {
-                        // Cria nova rotina
                         if (salvarRotina($conn, $dados, $user_id)) {
                             $response = ['success' => true, 'message' => 'Rotina salva com sucesso!'];
                         } else {
@@ -184,15 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obter rotinas do usuário
 $rotinas = [];
 if ($conn) {
     $rotinas = getRotinas($conn, $_SESSION['user_id']);
 }
 
-// Check if database connection is available
 if ($conn === null) {
-    // For testing without database - use session data
     $user = [
         'username' => $_SESSION['username'] ?? 'admin',
         'email' => $_SESSION['email'] ?? 'admin@exemplo.com',
@@ -201,12 +189,10 @@ if ($conn === null) {
         'user_type' => 'admin'
     ];
     
-    // Format dates
     $created_at = new DateTime($user['created_at']);
     $updated_at = new DateTime($user['updated_at']);
 } else {
     try {
-        // Fetch complete user information
         $stmt = $conn->prepare("
             SELECT 
                 Nome_Usuario as username,
@@ -222,19 +208,16 @@ if ($conn === null) {
         $user = $stmt->fetch();
         
         if (!$user) {
-            // If user not found, destroy session and redirect to login
             session_destroy();
             header('Location: ../index.php');
             exit;
         }
         
-        // Format dates
         $created_at = new DateTime($user['created_at']);
         $updated_at = new DateTime($user['updated_at']);
         
     } catch (Exception $e) {
         error_log("Error fetching user data: " . $e->getMessage());
-        // On error, destroy session and redirect to login
         session_destroy();
         header('Location: ../index.php?error=data_fetch_failed');
         exit;
@@ -1060,7 +1043,6 @@ $username = $user['username'];
                         $status_class = $rotina['Ativa'] ? 'status-active' : 'status-inactive';
                         $status_text = $rotina['Ativa'] ? 'Ativa' : 'Inativa';
                         
-                        // Formatar dias da semana
                         $dias_semana = [
                             '1' => 'Seg', '2' => 'Ter', '3' => 'Qua', 
                             '4' => 'Qui', '5' => 'Sex', '6' => 'Sáb', '0' => 'Dom'
@@ -1204,7 +1186,6 @@ $username = $user['username'];
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Exclusão -->
     <div id="deleteConfirmationModal" class="modal" style="display: none;">
         <div class="modal-content" style="max-width: 500px;">
             <span class="close" onclick="closeDeleteModal()">&times;</span>
@@ -1223,15 +1204,12 @@ $username = $user['username'];
     </div>
 
     <script>
-        // Variáveis globais
         let modoEdicao = false;
         let rotinaAtualId = null;
         
-        // Variável para armazenar o ID da rotina a ser excluída
         let rotinaParaExcluir = null;
         let rotinaParaExcluirNome = '';
         
-        // Funções para gerenciar o modal de confirmação de exclusão
         function openDeleteModal(id, nome) {
             rotinaParaExcluir = id;
             rotinaParaExcluirNome = nome;
@@ -1245,7 +1223,6 @@ $username = $user['username'];
             rotinaParaExcluirNome = '';
         }
         
-        // Função para confirmar a exclusão
         function confirmarExclusao() {
             if (!rotinaParaExcluir) return;
             
@@ -1271,7 +1248,6 @@ $username = $user['username'];
             });
         }
         
-        // Funções de manipulação do modal de rotina
         function openModal(edicao = false, dados = null) {
             const modal = document.getElementById('routineModal');
             const modalContent = document.querySelector('.modal-content');
@@ -1286,13 +1262,11 @@ $username = $user['username'];
                 document.getElementById('routineIcon').value = dados.icone || 'fas fa-home';
                 document.getElementById('routineTime').value = dados.hora || '';
                 
-                // Limpar seleções anteriores
                 const selectDias = document.getElementById('routineDays');
                 for (let i = 0; i < selectDias.options.length; i++) {
                     selectDias.options[i].selected = false;
                 }
                 
-                // Selecionar os dias salvos
                 if (dados.dias) {
                     const diasArray = dados.dias.split(',');
                     diasArray.forEach(dia => {
@@ -1328,7 +1302,6 @@ $username = $user['username'];
             rotinaAtualId = null;
         }
         
-        // Função para carregar as rotinas via AJAX
         function carregarRotinas() {
             fetch('rotinas.php')
                 .then(response => response.text())
@@ -1347,9 +1320,7 @@ $username = $user['username'];
                 });
         }
         
-        // Função para adicionar eventos aos botões dinâmicos
         function adicionarEventosBotoes() {
-            // Botões de editar
             document.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const card = this.closest('.routine-card');
@@ -1365,7 +1336,6 @@ $username = $user['username'];
                 });
             });
             
-            // Botões de ativar/pausar
             document.querySelectorAll('.btn-toggle-status').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const id = this.dataset.id;
@@ -1395,11 +1365,9 @@ $username = $user['username'];
                 });
             });
             
-            // Botões de excluir
             document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const id = this.dataset.id;
-                    // Encontra o card pai e depois o título da rotina
                     const card = this.closest('.routine-card') || this.closest('.card');
                     const titulo = card.querySelector('.card-title') || card.querySelector('h3');
                     const nome = titulo ? titulo.textContent.trim() : 'esta rotina';
@@ -1407,32 +1375,26 @@ $username = $user['username'];
                 });
             });
             
-            // Evento de clique no botão de confirmar exclusão
             document.getElementById('confirmDeleteBtn').addEventListener('click', confirmarExclusao);
         }
         
-        // Evento de envio do formulário
         document.getElementById('routineForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Obtém os valores dos campos
             const nome = document.getElementById('routineName').value.trim();
             const hora = document.getElementById('routineTime').value;
             const descricao = document.getElementById('routineDescription').value.trim();
             let icone = document.getElementById('routineIcon').value;
             
-            // Define o valor padrão para o ícone se estiver vazio
             if (!icone) {
                 icone = 'fas fa-home';
             }
             
-            // Verifica se os campos obrigatórios foram preenchidos
             if (!nome || !hora) {
                 alert('Por favor, preencha todos os campos obrigatórios.');
                 return;
             }
             
-            // Cria o FormData e adiciona os campos com os nomes corretos
             const formData = new FormData();
             formData.append('action', 'salvar');
             formData.append('nome', nome);
@@ -1440,12 +1402,10 @@ $username = $user['username'];
             formData.append('descricao', descricao);
             formData.append('icone', icone);
             
-            // Se estiver em modo de edição, adiciona o ID da rotina
             if (modoEdicao && rotinaAtualId) {
                 formData.append('id_rotina', rotinaAtualId);
             }
             
-            // Adiciona os dias selecionados
             const diasSelecionados = [];
             const selectDias = document.getElementById('routineDays');
             for (let i = 0; i < selectDias.options.length; i++) {
@@ -1453,10 +1413,8 @@ $username = $user['username'];
                     diasSelecionados.push(selectDias.options[i].value);
                 }
             }
-            // Define os dias da semana padrão se nenhum for selecionado
             formData.append('dia_semana', diasSelecionados.length > 0 ? diasSelecionados.join(',') : '1,2,3,4,5,6,0');
             
-            // Envia os dados para o servidor
             fetch('rotinas.php', {
                 method: 'POST',
                 body: formData
@@ -1475,7 +1433,6 @@ $username = $user['username'];
             });
         });
         
-        // Fechar o modal ao clicar fora dele
         window.onclick = function(event) {
             const modal = document.getElementById('routineModal');
             const deleteModal = document.getElementById('deleteConfirmationModal');
@@ -1489,12 +1446,8 @@ $username = $user['username'];
             }
         };
         
-        // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
-            // Adiciona eventos aos botões existentes
             adicionarEventosBotoes();
-            
-            // Adiciona evento para o botão de nova rotina
             document.querySelector('.add-routine-btn').addEventListener('click', function() {
                 openModal();
             });

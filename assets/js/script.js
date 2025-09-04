@@ -2,44 +2,35 @@ window.addEventListener('error', function (event) {
     return false;
 });
 
-// Variável global para controlar o processo de detecção
 let detectionInProgress = false;
 
-// Função para iniciar a detecção de placas
 function iniciarDetecao() {
     const botaoIniciar = document.getElementById('btnIniciar');
     const botaoParar = document.getElementById('btnParar');
     const cameraFeed = document.querySelector('.camera-feed');
     
-    // Define que a detecção está em andamento
     detectionInProgress = true;
 
-    // Desabilita o botão de iniciar e habilita o de parar
     botaoIniciar.disabled = true;
     botaoParar.disabled = false;
     
-    // Adiciona o evento de clique para o botão de parar
     botaoParar.onclick = function() {
         detectionInProgress = false;
         botaoIniciar.disabled = false;
         botaoParar.disabled = true;
         
-        // Envia um sinal para parar o script Python
         fetch('../python/parar_detecao.php')
             .catch(error => console.error('Erro ao parar a detecção:', error));
     };
 
-    // Remove mensagens anteriores
     const existingMessages = document.querySelectorAll('.loading-message, .alert');
     existingMessages.forEach(msg => msg.remove());
 
-    // Mostra mensagem de carregamento
     const loadingMessage = document.createElement('div');
     loadingMessage.className = 'loading-message';
     loadingMessage.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Iniciando detecção de placas...';
     cameraFeed.appendChild(loadingMessage);
 
-    // Faz a requisição para executar o script Python
     fetch('../python/executar_detecao.php')
         .then(async response => {
             if (!response.ok) {
@@ -61,23 +52,19 @@ function iniciarDetecao() {
             });
         })
         .then(data => {
-            // Remove a mensagem de carregamento
             const loadingMessage = cameraFeed.querySelector('.loading-message');
             if (loadingMessage) {
                 loadingMessage.remove();
             }
 
             if (data.success) {
-                // Mostra mensagem de sucesso
                 const successMessage = document.createElement('div');
                 successMessage.className = 'alert alert-success mt-3';
                 successMessage.textContent = 'Detecção concluída com sucesso!';
                 cameraFeed.appendChild(successMessage);
 
-                // Atualiza a lista de detecções recentes após um pequeno atraso
                 setTimeout(atualizarDetecoesRecentes, 1000);
 
-                // Mostra a imagem processada se disponível
                 const outputImage = 'python/output/placa_binarizada.png' + '?t=' + new Date().getTime();
                 const img = document.createElement('img');
                 img.src = '../' + outputImage;
@@ -85,7 +72,6 @@ function iniciarDetecao() {
                 img.style.maxWidth = '100%';
                 cameraFeed.appendChild(img);
             } else {
-                // Mostra mensagem de erro
                 const errorMessage = document.createElement('div');
                 errorMessage.className = 'alert alert-danger mt-3';
                 errorMessage.textContent = data.output ? data.output.join('\n') : 'Erro desconhecido ao executar a detecção';
@@ -95,17 +81,14 @@ function iniciarDetecao() {
         .catch(error => {
             console.error('Erro na requisição:', error);
 
-            // Remove a mensagem de carregamento se ainda existir
             const loadingMessage = document.querySelector('.loading-message');
             if (loadingMessage) {
                 loadingMessage.remove();
             }
 
-            // Mostra mensagem de erro detalhada
             const errorMessage = document.createElement('div');
             errorMessage.className = 'alert alert-danger mt-3';
 
-            // Mensagem mais amigável baseada no tipo de erro
             let errorText = 'Erro ao executar a detecção';
             if (error.message.includes('Failed to fetch')) {
                 errorText = 'Não foi possível conectar ao servidor. Verifique sua conexão com a internet.';
@@ -126,18 +109,13 @@ function iniciarDetecao() {
             }
         })
         .finally(() => {
-            // Reabilita o botão de iniciar e desabilita o de parar
             if (botaoIniciar) botaoIniciar.disabled = false;
             if (botaoParar) botaoParar.disabled = true;
         });
 }
 
-// Função para atualizar a lista de detecções recentes
 function atualizarDetecoesRecentes() {
-    // Aqui você pode adicionar o código para atualizar a lista de detecções recentes
-    // Por exemplo, fazendo uma requisição AJAX para buscar as últimas detecções
     console.log('Atualizando lista de detecções recentes...');
-    // Recarrega a página para atualizar a lista
     window.location.reload();
 }
 
@@ -228,14 +206,12 @@ function showAlert(type, message) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Only proceed with form-related code if we're on a page with forms
     const signUpButton = document.getElementById('signUp');
     const signInButton = document.getElementById('signIn');
     const container = document.getElementById('container');
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
 
-    // Only initialize form-related variables if the forms exist
     let passwordField = null;
     let confirmPasswordField = null;
 
@@ -243,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function () {
         passwordField = registerForm.querySelector('input[name="password"]');
         confirmPasswordField = registerForm.querySelector('input[name="confirm_password"]');
 
-        // Only add event listeners if the fields exist
         if (passwordField && confirmPasswordField) {
             passwordField.addEventListener('change', validatePassword);
             confirmPasswordField.addEventListener('keyup', validatePassword);
@@ -269,7 +244,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Handle sign up button click
     if (signUpButton && container) {
         signUpButton.addEventListener('click', (e) => {
             e.preventDefault();
@@ -281,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Handle sign in button click
     if (signInButton && container) {
         signInButton.addEventListener('click', (e) => {
             e.preventDefault();
@@ -303,7 +276,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Registration form submission handler
     async function handleRegisterSubmit(e) {
         e.preventDefault();
 
@@ -361,7 +333,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Adiciona evento de clique para o botão Iniciar Detecção
 const botaoIniciar = document.querySelector('.control-btn .fa-play')?.parentElement;
 if (botaoIniciar) {
     botaoIniciar.addEventListener('click', function (e) {
@@ -370,14 +341,11 @@ if (botaoIniciar) {
     });
 }
 
-// Adiciona evento de clique para o botão Parar
 const botaoParar = document.querySelector('.control-btn .fa-stop')?.parentElement;
 if (botaoParar) {
     botaoParar.addEventListener('click', function (e) {
         e.preventDefault();
-        // Aqui você pode adicionar a lógica para parar a detecção
         console.log('Detecção interrompida pelo usuário');
-        // Recarrega a página para parar qualquer processo em andamento
         window.location.reload();
     });
 }

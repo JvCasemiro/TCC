@@ -16,7 +16,6 @@ if ($conn === null) {
         'user_type' => 'admin'
     ];
     
-    // Format dates
     $created_at = new DateTime($user['created_at']);
     $updated_at = new DateTime($user['updated_at']);
 } else {
@@ -41,7 +40,6 @@ if ($conn === null) {
             exit;
         }
         
-        // Format dates
         $created_at = new DateTime($user['created_at']);
         $updated_at = new DateTime($user['updated_at']);
         
