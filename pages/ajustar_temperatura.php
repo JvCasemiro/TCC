@@ -648,12 +648,6 @@ $zones = [
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="schedule-section">
-                        <button class="schedule-btn" onclick="scheduleTemperature(<?php echo $zone['id']; ?>)">
-                            <i class="fas fa-clock"></i> Programar Horários
-                        </button>
-                    </div>
                 </div>
             </div>
             <?php endforeach; ?>
