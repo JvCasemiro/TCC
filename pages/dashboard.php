@@ -74,7 +74,7 @@ if ($conn === null) {
         
         .container {
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 6.5rem auto;
             padding: 20px;
         }
         
@@ -490,18 +490,6 @@ if ($conn === null) {
                 <button class="control-btn" onclick="window.location.href='leitura_placas.php'">
                     <i class="fas fa-search"></i>
                     Monitorar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-calendar-alt"></i>
-                </div>
-                <h3>Rotinas</h3>
-                <p>Crie e gerencie rotinas automáticas para sua casa.</p>
-                <button class="control-btn" onclick="window.location.href='rotinas.php'">
-                    <i class="fas fa-tools"></i>
-                    Configurar
                 </button>
             </div>
         </div>
