@@ -586,34 +586,90 @@ $username = $user['username'];
         }
         
         .back-btn {
-            background: #4a90e2;
+            background: linear-gradient(135deg, #4a90e2 0%, #3a7bc8 100%);
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
             cursor: pointer;
+            font-size: 14px;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             text-decoration: none;
-            transition: background 0.3s;
-            margin-right: 1rem;
+            margin-right: 10px;
         }
         
         .back-btn:hover {
-            background: #357abd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        .back-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+        }
+        
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .back-btn:hover::before {
+            left: 100%;
         }
         
         .logout-btn {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
             cursor: pointer;
+            font-size: 14px;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             text-decoration: none;
-            transition: background 0.3s;
         }
         
         .logout-btn:hover {
-            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        .logout-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
+        }
+        
+        .logout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .logout-btn:hover::before {
+            left: 100%;
         }
         
         .domx-logo {
@@ -966,13 +1022,10 @@ $username = $user['username'];
                 <i class="fas fa-home"></i> DOMX
             </div>
             <div class="user-info">
-                <a href="dashboard.php" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+                <a href="dashboard.php" class="back-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem; border-radius: 25px; background: linear-gradient(135deg, #4a90e2 0%, #3a7bc8 100%); color: white; font-size: 14px; transition: all 0.4s ease-in-out; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);">
+                    <i class="fas fa-arrow-left"></i> Voltar
                 </a>
-                <span class="user-name">
-                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($username); ?>
-                </span>
-                <a href="../auth/logout.php" class="logout-btn">
+                <a href="../auth/logout.php" class="logout-btn" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; text-decoration: none; border: none; padding: 0.6rem 1.5rem; border-radius: 25px; cursor: pointer; font-size: 14px; transition: all 0.4s ease-in-out; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); display: inline-flex; align-items: center; gap: 0.5rem; margin-left: 8px;">
                     <i class="fas fa-sign-out-alt"></i> Sair
                 </a>
             </div>
