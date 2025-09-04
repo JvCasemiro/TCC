@@ -453,6 +453,40 @@ $devices = [
             color: white;
         }
         
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(164, 164, 164, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #1e3a8a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -728,6 +762,14 @@ $devices = [
         </div>
     </div>
     
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Atualizando dispositivos...</p>
+        </div>
+    </div>
+    
     <script>
         function showMessage(message, type = 'info') {
             alert(message);
@@ -761,11 +803,14 @@ $devices = [
         }
         
         function refreshDevices() {
-            showMessage('Atualizando dispositivos...', 'info');
-
+            // Show loading overlay
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = 'flex';
+            
+            // Simulate a small delay to show the loading (in a real app, this would be your AJAX call)
             setTimeout(() => {
                 location.reload();
-            }, 1000);
+            }, 3000);
         }
         
         function controlDevice(deviceId) {
