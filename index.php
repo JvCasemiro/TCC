@@ -1304,7 +1304,6 @@
                         <li><a href="#nossos-servicos"><i class="fas fa-chevron-right"></i> Automação Residencial</a></li>
                         <li><a href="#nossos-servicos"><i class="fas fa-chevron-right"></i> Segurança Eletrônica</a></li>
                         <li><a href="#nossos-servicos"><i class="fas fa-chevron-right"></i> Iluminação Inteligente</a></li>
-                        <li><a href="#nossos-servicos"><i class="fas fa-chevron-right"></i> Climatização</a></li>
                         <li><a href="#nossos-servicos"><i class="fas fa-chevron-right"></i> Projetos Personalizados</a></li>
                     </ul>
                 </div>
