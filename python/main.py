@@ -6,12 +6,10 @@ import re
 import os
 from datetime import datetime
 
-# Configuração do Tesseract
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # --> Não apagar esse comentário
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Alunos.DESKTOP-8SLHJJ7\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # Não apagar esse comentário
 
-# Função para conectar ao banco de dados
 def conectar_banco():
     try:
         import mysql.connector
@@ -27,19 +25,17 @@ def conectar_banco():
         print(f"Erro ao conectar ao banco de dados: {err}")
         return None
 
-# Função para validar as placas
-# Função para validar as placas
 def validar_placa(placa):
-    placa = placa.upper().strip()  # Garante que a placa esteja em maiúsculas
-    placa = re.sub(r'\s+', '', placa)  # Remove qualquer espaço ou quebra de linha
+    placa = placa.upper().strip()
+    placa = re.sub(r'\s+', '', placa)
 
     regex_placa = re.compile(r'''
-    (?:(?:[A-Z]{3}\d[A-Z]\d{2})|    # Formato de placa antigo (ABC1A23)
-    (?:[A-Z]{3}-?\d{4})|            # Formato de placa antiga (ABC-1234)
-    (?:[A-Z]{2}\d[A-Z]\d{2})|       # Formato de placa novo (AB1A23)
-    (?:[A-Z]{2}-?\d{4})|            # Formato de placa novo (AB-1234)
-    (?:[A-Z]{3}\d{4})|              # Formato de placa antigo (ABC1234)
-    (?:[A-Z]{2}\d{3}\d))            # Formato de placa nova (AB12345)
+    (?:(?:[A-Z]{3}\d[A-Z]\d{2})|
+    (?:[A-Z]{3}-?\d{4})|
+    (?:[A-Z]{2}\d[A-Z]\d{2})|
+    (?:[A-Z]{2}-?\d{4})|
+    (?:[A-Z]{3}\d{4})|
+    (?:[A-Z]{2}\d{3}\d))
 ''', re.VERBOSE | re.MULTILINE)
 
     if regex_placa.match(placa):
@@ -47,7 +43,6 @@ def validar_placa(placa):
     else:
         return None
 
-# Função para verificar o acesso
 def verificar_acesso(numero_placa):
     numero_placa = validar_placa(numero_placa)
     if not numero_placa:
@@ -61,16 +56,13 @@ def verificar_acesso(numero_placa):
             
         cursor = conn.cursor(dictionary=True)
         
-        # Formata a placa para o padrão do banco (ex: ABC-1234)
         placa_formatada = f"{numero_placa[:3]}-{numero_placa[3:7]}" if len(numero_placa) == 7 else numero_placa
         
-        # Verifica se a placa existe no banco
         query = "SELECT * FROM Placas WHERE Numeracao = %s"
         cursor.execute(query, (placa_formatada,))
         placa = cursor.fetchone()
         
         if placa:
-            # Atualiza o último acesso
             update_query = "UPDATE Placas SET Ultimo_Acesso = NOW() WHERE ID_Placa = %s"
             cursor.execute(update_query, (placa['ID_Placa'],))
             conn.commit()
@@ -87,35 +79,26 @@ def verificar_acesso(numero_placa):
             cursor.close()
             conn.close()
 
-# Função para processar a placa da imagem
 def processar_placa(img_roi, frame):
-    # Redimensiona a imagem para melhorar a precisão do OCR
-    resize_img_roi = cv2.resize(img_roi, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)  # Usando 2x de aumento
+    resize_img_roi = cv2.resize(img_roi, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
     img_cinza = cv2.cvtColor(resize_img_roi, cv2.COLOR_BGR2GRAY)
 
-    # Aplicar CLAHE para melhorar o contraste da imagem
-    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))  # Ajuste do CLAHE para um contraste mais suave
+    clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
     img_contraste = clahe.apply(img_cinza)
 
-    # Binarização com Threshold adaptativo para melhor separação de objetos
     _, img_bin = cv2.threshold(img_contraste, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-    # Aplicar filtro de mediana para reduzir ruídos
     img_median = cv2.medianBlur(img_bin, 3)
 
-    # Aplique Morphological Transform para limpar a imagem
     kernel = np.ones((3, 3), np.uint8)
     img_morph = cv2.morphologyEx(img_median, cv2.MORPH_CLOSE, kernel, iterations=1)
 
-    # Realizar OCR na imagem binarizada com filtragem para negrito
     config = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 --psm 6'
     saida = pytesseract.image_to_string(img_morph, lang='eng', config=config).strip()
 
-    # Limpar quebras de linha e espaços extras
-    saida = re.sub(r'\s+', '', saida)  # Remove espaços e quebras de linha
+    saida = re.sub(r'\s+', '', saida)
     placa_detectada = saida.upper()
 
-    # Usar regex para capturar apenas a numeração da placa
     regex_numero_placa = re.compile(r'''
     (?:(?:[A-Z]{3}\d[A-Z]\d{2})| 
     (?:[A-Z]{3}-?\d{4})|
@@ -133,7 +116,6 @@ def processar_placa(img_roi, frame):
         placa_detectada = None
         print("Não foi possível detectar a numeração da placa.")
 
-    # Verificar se a placa é válida e tem acesso
     if placa_detectada:
         acesso_permitido, mensagem = verificar_acesso(placa_detectada)
         print(f"Placa: {placa_detectada} - {mensagem}")
@@ -152,9 +134,7 @@ def verificar_parada():
             pass
     return False
 
-# Função para processar a imagem da câmera em tempo real
 def processar_camera():
-    # Remove o arquivo de parada se existir
     stop_file = os.path.join(os.path.dirname(__file__), 'stop_detection.flag')
     if os.path.exists(stop_file):
         try:
@@ -162,50 +142,40 @@ def processar_camera():
         except:
             pass
             
-    cap = cv2.VideoCapture(0)  # Inicializa a câmera (câmera padrão)
+    cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         print("Erro ao acessar a câmera!")
         return
 
     while True:
-        # Captura um frame da câmera
         ret, frame = cap.read()
         
         if not ret:
             print("Erro ao capturar imagem!")
             break
         
-        # Aqui você pode ajustar a região de interesse (ROI) se necessário
-        img_roi = frame  # Usamos o frame inteiro, mas você pode aplicar uma máscara ou selecionar uma área específica.
+        img_roi = frame
 
         placa = processar_placa(img_roi, frame)
 
         if placa:
-            # Apenas mostra a mensagem de sucesso e continua procurando
-            mostrar_mensagem("PORTÃO ABRINDO", (0, 255, 0))  # Exibe a mensagem de sucesso em verde
-            # Aguarda 3 segundos para mostrar a mensagem antes de sair
+            mostrar_mensagem("PORTÃO ABRINDO", (0, 255, 0))
             cv2.waitKey(3000)
-            break  # Sai apenas se uma placa válida for encontrada
+            break
         else:
-            # Mostra a mensagem de acesso negado e continua processando
-            mostrar_mensagem("Acesso Negado", (0, 0, 255))  # Exibe a mensagem de erro em vermelho
+            mostrar_mensagem("Acesso Negado", (0, 0, 255))
         
-        # Mostra apenas a imagem da câmera
         cv2.imshow("Captura de Placa", frame)
 
-        # Sai do loop se pressionar 'q' ou se o arquivo de parada for encontrado
         if cv2.waitKey(1) & 0xFF == ord('q') or verificar_parada():
             break
 
     cap.release()
     cv2.destroyAllWindows()
 
-# Função para exibir a mensagem na tela
 def mostrar_mensagem(mensagem, cor):
-    # Não mostra mais a janela de mensagem separada
     pass
 
-# Função principal
 if __name__ == "__main__":
-    processar_camera()  # Processa a câmera em tempo real
+    processar_camera()
