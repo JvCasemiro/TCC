@@ -803,11 +803,9 @@ $devices = [
         }
         
         function refreshDevices() {
-            // Show loading overlay
             const overlay = document.getElementById('loadingOverlay');
             overlay.style.display = 'flex';
             
-            // Simulate a small delay to show the loading (in a real app, this would be your AJAX call)
             setTimeout(() => {
                 location.reload();
             }, 3000);

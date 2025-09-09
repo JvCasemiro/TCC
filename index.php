@@ -1431,7 +1431,6 @@
                     if (this.isElementInViewport(element)) {
                         this.animateElement(element);
                     } else {
-                        // Reset animation when element is out of view
                         element.classList.remove('visible');
                     }
                 });
