@@ -622,10 +622,10 @@ $updated_at = new DateTime();
         #editUserModal select {
             width: 100%;
             padding: 8px 12px;
-            border: 1px solid #34495e;
+            border: 1px solid #000;
             border-radius: 4px;
             background-color: #fff;
-            color: #ecf0f1;
+            color: #000;
             font-size: 14px;
         }
 
@@ -922,10 +922,9 @@ $updated_at = new DateTime();
                             <option value="admin">Administrador</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="change-password-toggle"> Alterar senha
-                        </label>
+                    <div class="form-group" style="display: flex; align-items: center; white-space: nowrap; height: 24px;">
+                        <label for="change-password-toggle" style="margin: 0; padding-right: 0; line-height: 24px; display: inline-block;">Alterar senha</label>
+                        <input type="checkbox" id="change-password-toggle" style="margin: 0 0 0 -2px; padding: 0; position: relative; top: 1px;">
                     </div>
                     <div id="password-fields" style="display: none;">
                         <div class="form-group">
