@@ -16,11 +16,11 @@ $created_at = new DateTime();
 $updated_at = new DateTime();
 
 $lights = [
-    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => 'on', 'brightness' => 80, 'color' => '#ffffff'],
-    ['id' => 2, 'name' => 'Quarto Principal', 'room' => 'Quarto', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
-    ['id' => 3, 'name' => 'Cozinha', 'room' => 'Cozinha', 'status' => 'on', 'brightness' => 100, 'color' => '#ffffff'],
-    ['id' => 4, 'name' => 'Banheiro', 'room' => 'Banheiro', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
-    ['id' => 5, 'name' => 'Varanda', 'room' => 'Externa', 'status' => 'on', 'brightness' => 60, 'color' => '#ffd700'],
+    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => 'off', 'brightness' => 80, 'color' => '#ffffff'],
+    // ['id' => 2, 'name' => 'Quarto Principal', 'room' => 'Quarto', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
+    // ['id' => 3, 'name' => 'Cozinha', 'room' => 'Cozinha', 'status' => 'on', 'brightness' => 100, 'color' => '#ffffff'],
+    // ['id' => 4, 'name' => 'Banheiro', 'room' => 'Banheiro', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
+    // ['id' => 5, 'name' => 'Varanda', 'room' => 'Externa', 'status' => 'on', 'brightness' => 60, 'color' => '#ffd700'],
 ];
 ?>
 <!DOCTYPE html>
