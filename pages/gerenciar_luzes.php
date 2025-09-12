@@ -7,6 +7,22 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Start the light controller script if it's not already running
+$output = [];
+$status = 0;
+$script_path = dirname(__DIR__) . '\start_light_controller.bat';
+
+// Check if the process is already running
+$command = 'tasklist /FI "WINDOWTITLE eq light_controller" 2>NUL | find /I "python.exe" >NUL';
+exec($command, $output, $status);
+
+// If process is not running, start it
+if ($status !== 0) {
+    // Start the script in a new window
+    $command = 'start "light_controller" /B cmd /c "' . $script_path . '"';
+    pclose(popen($command, 'r'));
+}
+
 $user = [
     'username' => $_SESSION['username'],
     'email' => $_SESSION['email'],
@@ -611,16 +627,10 @@ $lights = [
             const colorPicker = card.querySelector('.color-picker');
             
             const isOn = card.classList.contains('on');
+            const newStatus = !isOn;
             
-            if (isOn) {
-                card.classList.remove('on');
-                card.classList.add('off');
-                statusElement.classList.remove('on');
-                statusElement.classList.add('off');
-                statusText.textContent = 'Desligada';
-                brightnessSlider.disabled = true;
-                colorPicker.disabled = true;
-            } else {
+            // Update UI immediately for better responsiveness
+            if (newStatus) {
                 card.classList.remove('off');
                 card.classList.add('on');
                 statusElement.classList.remove('off');
@@ -628,10 +638,84 @@ $lights = [
                 statusText.textContent = 'Ligada';
                 brightnessSlider.disabled = false;
                 colorPicker.disabled = false;
+            } else {
+                card.classList.remove('on');
+                card.classList.add('off');
+                statusElement.classList.remove('on');
+                statusElement.classList.add('off');
+                statusText.textContent = 'Desligada';
+                brightnessSlider.disabled = true;
+                colorPicker.disabled = true;
             }
             
-            showMessage(`Luz ${isOn ? 'desligada' : 'ligada'} com sucesso!`, 'success');
+            // Send request to update light status
+            fetch('../includes/update_light.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    light_id: lightId,
+                    status: newStatus ? 'ON' : 'OFF'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(`Luz ${newStatus ? 'ligada' : 'desligada'} com sucesso!`, 'success');
+                } else {
+                    // Revert UI if the request fails
+                    if (isOn) {
+                        card.classList.remove('off');
+                        card.classList.add('on');
+                        statusElement.classList.remove('off');
+                        statusElement.classList.add('on');
+                        statusText.textContent = 'Ligada';
+                        brightnessSlider.disabled = false;
+                        colorPicker.disabled = false;
+                    } else {
+                        card.classList.remove('on');
+                        card.classList.add('off');
+                        statusElement.classList.remove('on');
+                        statusElement.classList.add('off');
+                        statusText.textContent = 'Desligada';
+                        brightnessSlider.disabled = true;
+                        colorPicker.disabled = true;
+                    }
+                    showMessage('Erro ao atualizar o status da luz', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Revert UI on error
+                if (isOn) {
+                    card.classList.remove('off');
+                    card.classList.add('on');
+                    statusElement.classList.remove('off');
+                    statusElement.classList.add('on');
+                    statusText.textContent = 'Ligada';
+                    brightnessSlider.disabled = false;
+                    colorPicker.disabled = false;
+                } else {
+                    card.classList.remove('on');
+                    card.classList.add('off');
+                    statusElement.classList.remove('on');
+                    statusElement.classList.add('off');
+                    statusText.textContent = 'Desligada';
+                    brightnessSlider.disabled = true;
+                    colorPicker.disabled = true;
+                }
+                showMessage('Erro de conexão', 'error');
+            });
         }
+
+        // Clean up when page is unloaded
+        window.addEventListener('beforeunload', function() {
+            // We don't actually want to stop the script here
+            // as other users might be using it
+            // The script will keep running in the background
+            console.log('Page is being unloaded, but keeping the light controller running');
+        });
         
         function changeBrightness(lightId, value) {
             document.getElementById(`brightness-value-${lightId}`).textContent = value + '%';
