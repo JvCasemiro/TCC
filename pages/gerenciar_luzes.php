@@ -31,8 +31,16 @@ $user = [
 $created_at = new DateTime();
 $updated_at = new DateTime();
 
+// Read the current light status from the file
+$lightStatusFile = __DIR__ . '/../light_status.txt';
+$lightStatus = 'off';
+if (file_exists($lightStatusFile)) {
+    $status = trim(file_get_contents($lightStatusFile));
+    $lightStatus = (strtoupper($status) === 'ON') ? 'on' : 'off';
+}
+
 $lights = [
-    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => 'off', 'brightness' => 80, 'color' => '#ffffff'],
+    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => $lightStatus, 'brightness' => 80, 'color' => '#ffffff'],
     // ['id' => 2, 'name' => 'Quarto Principal', 'room' => 'Quarto', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
     // ['id' => 3, 'name' => 'Cozinha', 'room' => 'Cozinha', 'status' => 'on', 'brightness' => 100, 'color' => '#ffffff'],
     // ['id' => 4, 'name' => 'Banheiro', 'room' => 'Banheiro', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
@@ -619,6 +627,30 @@ $lights = [
     </div>
     
     <script>
+        // Initialize light status when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // The initial status is already set by PHP
+            // We just need to make sure the UI reflects it
+            const initialStatus = '<?php echo $lightStatus; ?>';
+            if (initialStatus === 'on') {
+                const card = document.querySelector('[data-light-id="1"]');
+                if (card) {
+                    const statusElement = card.querySelector('.light-status');
+                    const statusText = statusElement.querySelector('span');
+                    const brightnessSlider = document.getElementById('brightness-1');
+                    const colorPicker = card.querySelector('.color-picker');
+                    
+                    card.classList.remove('off');
+                    card.classList.add('on');
+                    statusElement.classList.remove('off');
+                    statusElement.classList.add('on');
+                    statusText.textContent = 'Ligada';
+                    if (brightnessSlider) brightnessSlider.disabled = false;
+                    if (colorPicker) colorPicker.disabled = false;
+                }
+            }
+        });
+
         function toggleLight(lightId) {
             const card = document.querySelector(`[data-light-id="${lightId}"]`);
             const statusElement = card.querySelector('.light-status');
