@@ -42,11 +42,6 @@ if (!in_array($status, ['ON', 'OFF'])) {
 $statusFile = __DIR__ . '/../light_status.txt';
 file_put_contents($statusFile, $status);
 
-// Log the action
-$logFile = __DIR__ . '/../light_control.log';
-$logMessage = date('Y-m-d H:i:s') . " - Light $lightId turned $status\n";
-file_put_contents($logFile, $logMessage, FILE_APPEND);
-
 // Return success response
 http_response_code(200);
 echo json_encode([

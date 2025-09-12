@@ -16,8 +16,6 @@ def read_light_status():
         return False
 
 def main():
-    print("Starting Light Controller Service...")
-    print("Press Ctrl+C to stop")
     
     arduino = ArduinoController()
     last_status = None
@@ -29,12 +27,7 @@ def main():
             # Only send command if status changed
             if current_status != last_status:
                 status_str = "ON" if current_status else "OFF"
-                print(f"[{datetime.now()}] Light status changed to: {status_str}")
-                
-                if arduino.send_command(status_str):
-                    print(f"  -> Command sent to Arduino: {status_str}")
-                else:
-                    print("  -> Failed to send command to Arduino")
+                arduino.send_command(status_str)
                 
                 last_status = current_status
             
