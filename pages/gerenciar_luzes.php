@@ -40,11 +40,11 @@ if (file_exists($lightStatusFile)) {
 }
 
 $lights = [
-    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => $lightStatus, 'brightness' => 80, 'color' => '#ffffff'],
-    // ['id' => 2, 'name' => 'Quarto Principal', 'room' => 'Quarto', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
-    // ['id' => 3, 'name' => 'Cozinha', 'room' => 'Cozinha', 'status' => 'on', 'brightness' => 100, 'color' => '#ffffff'],
-    // ['id' => 4, 'name' => 'Banheiro', 'room' => 'Banheiro', 'status' => 'off', 'brightness' => 0, 'color' => '#ffffff'],
-    // ['id' => 5, 'name' => 'Varanda', 'room' => 'Externa', 'status' => 'on', 'brightness' => 60, 'color' => '#ffd700'],
+    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => $lightStatus, 'brightness' => 80],
+    // ['id' => 2, 'name' => 'Quarto Principal', 'room' => 'Quarto', 'status' => 'off', 'brightness' => 0],
+    // ['id' => 3, 'name' => 'Cozinha', 'room' => 'Cozinha', 'status' => 'on', 'brightness' => 100],
+    // ['id' => 4, 'name' => 'Banheiro', 'room' => 'Banheiro', 'status' => 'off', 'brightness' => 0],
+    // ['id' => 5, 'name' => 'Varanda', 'room' => 'Externa', 'status' => 'on', 'brightness' => 60],
 ];
 ?>
 <!DOCTYPE html>
@@ -597,30 +597,8 @@ $lights = [
                         </div>
                     </div>
                     
-                    <div class="control-group">
-                        <label>Cor</label>
-                        <div class="color-control">
-                            <input type="color" value="<?php echo $light['color']; ?>" class="color-picker"
-                                   onchange="changeColor(<?php echo $light['id']; ?>, this.value)"
-                                   <?php echo $light['status'] == 'off' ? 'disabled' : ''; ?>>
-                            <span class="color-name" id="color-name-<?php echo $light['id']; ?>">
-                                <?php echo $light['color'] == '#ffffff' ? 'Branco' : 'Personalizada'; ?>
-                            </span>
-                        </div>
-                    </div>
                 </div>
                 
-                <div class="light-actions">
-                    <button class="btn btn-primary" onclick="setPreset(<?php echo $light['id']; ?>, 'warm')">
-                        <i class="fas fa-sun"></i> Quente
-                    </button>
-                    <button class="btn btn-primary" onclick="setPreset(<?php echo $light['id']; ?>, 'cool')">
-                        <i class="fas fa-snowflake"></i> Fria
-                    </button>
-                    <button class="btn btn-secondary" onclick="scheduleLight(<?php echo $light['id']; ?>)">
-                        <i class="fas fa-clock"></i> Agendar
-                    </button>
-                </div>
             </div>
             <?php endforeach; ?>
         </div>
@@ -638,7 +616,6 @@ $lights = [
                     const statusElement = card.querySelector('.light-status');
                     const statusText = statusElement.querySelector('span');
                     const brightnessSlider = document.getElementById('brightness-1');
-                    const colorPicker = card.querySelector('.color-picker');
                     
                     card.classList.remove('off');
                     card.classList.add('on');
@@ -646,7 +623,6 @@ $lights = [
                     statusElement.classList.add('on');
                     statusText.textContent = 'Ligada';
                     if (brightnessSlider) brightnessSlider.disabled = false;
-                    if (colorPicker) colorPicker.disabled = false;
                 }
             }
         });
@@ -656,7 +632,6 @@ $lights = [
             const statusElement = card.querySelector('.light-status');
             const statusText = statusElement.querySelector('span');
             const brightnessSlider = document.getElementById(`brightness-${lightId}`);
-            const colorPicker = card.querySelector('.color-picker');
             
             const isOn = card.classList.contains('on');
             const newStatus = !isOn;
@@ -668,16 +643,14 @@ $lights = [
                 statusElement.classList.remove('off');
                 statusElement.classList.add('on');
                 statusText.textContent = 'Ligada';
-                brightnessSlider.disabled = false;
-                colorPicker.disabled = false;
+                if (brightnessSlider) brightnessSlider.disabled = false;
             } else {
                 card.classList.remove('on');
                 card.classList.add('off');
                 statusElement.classList.remove('on');
                 statusElement.classList.add('off');
                 statusText.textContent = 'Desligada';
-                brightnessSlider.disabled = true;
-                colorPicker.disabled = true;
+                if (brightnessSlider) brightnessSlider.disabled = true;
             }
             
             // Send request to update light status
@@ -754,35 +727,6 @@ $lights = [
             showMessage(`Intensidade ajustada para ${value}%`, 'info');
         }
         
-        function changeColor(lightId, color) {
-            const colorName = document.getElementById(`color-name-${lightId}`);
-            colorName.textContent = color === '#ffffff' ? 'Branco' : 'Personalizada';
-            showMessage('Cor alterada com sucesso!', 'success');
-        }
-        
-        function setPreset(lightId, preset) {
-            const brightnessSlider = document.getElementById(`brightness-${lightId}`);
-            const colorPicker = document.querySelector(`[data-light-id="${lightId}"] .color-picker`);
-            const colorName = document.getElementById(`color-name-${lightId}`);
-            
-            if (preset === 'warm') {
-                brightnessSlider.value = 70;
-                colorPicker.value = '#ffd700';
-                colorName.textContent = 'Quente';
-                changeBrightness(lightId, 70);
-                showMessage('Preset "Luz Quente" aplicado!', 'success');
-            } else if (preset === 'cool') {
-                brightnessSlider.value = 90;
-                colorPicker.value = '#e6f3ff';
-                colorName.textContent = 'Fria';
-                changeBrightness(lightId, 90);
-                showMessage('Preset "Luz Fria" aplicado!', 'success');
-            }
-        }
-        
-        function scheduleLight(lightId) {
-            showMessage('Funcionalidade de agendamento em desenvolvimento!', 'info');
-        }
         
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
