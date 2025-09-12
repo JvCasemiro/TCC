@@ -1,5 +1,7 @@
+import sys
+sys.dont_write_bytecode = True
+
 import time
-from datetime import datetime
 from arduino_controller import ArduinoController
 import os
 
