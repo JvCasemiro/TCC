@@ -12,9 +12,7 @@ def read_light_status():
         with open(status_file, 'r') as f:
             return f.read().strip() == 'ON'
     except FileNotFoundError:
-        # If file doesn't exist, create it with default OFF status
-        with open(status_file, 'w') as f:
-            f.write('OFF')
+        # Return default OFF status if file doesn't exist
         return False
 
 def main():

@@ -60,44 +60,5 @@ class ArduinoController:
             self.serial_connection.close()
             print("Serial connection closed")
 
-def check_light_status():
-    """Check the light status from the database or file"""
-    # In a real implementation, you would query the database here
-    # For this example, we'll use a simple file to store the status
-    status_file = 'light_status.txt'
-    try:
-        with open(status_file, 'r') as f:
-            return f.read().strip() == 'ON'
-    except FileNotFoundError:
-        return False
-
-def update_light_status(status):
-    """Update the light status in the database or file"""
-    status_file = 'light_status.txt'
-    with open(status_file, 'w') as f:
-        f.write('ON' if status else 'OFF')
-
 if __name__ == "__main__":
-    controller = ArduinoController()
-    
-    try:
-        while True:
-            # This would be replaced with your actual web interface logic
-            # For now, we'll just toggle the light every 5 seconds as an example
-            current_status = check_light_status()
-            new_status = not current_status
-            
-            if new_status:
-                print(f"[{datetime.now()}] Turning light ON")
-                controller.send_command("ON")
-            else:
-                print(f"[{datetime.now()}] Turning light OFF")
-                controller.send_command("OFF")
-            
-            update_light_status(new_status)
-            time.sleep(5)  # Check every 5 seconds
-            
-    except KeyboardInterrupt:
-        print("\nExiting...")
-    finally:
-        controller.close()
+    print("This script is meant to be imported, not run directly.")
