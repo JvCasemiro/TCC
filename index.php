@@ -294,7 +294,6 @@
             margin-bottom: 0.5rem;
         }
         
-        /* ===== Base Styles ===== */
         .container {
             width: 100%;
             max-width: 1200px;
@@ -504,7 +503,6 @@
             transform: scale(1.03);
         }
         
-        /* ===== Mission Section ===== */
         .mission-section {
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
             padding: 6rem 0;
@@ -528,7 +526,6 @@
             line-height: 1.8;
         }
         
-        /* ===== Values Section ===== */
         .values-section {
             padding: 6rem 0;
             background: white;
@@ -581,7 +578,6 @@
             margin: 0;
         }
         
-        /* ===== Footer ===== */
         footer {
             background: var(--dark);
             color: white;
@@ -678,8 +674,6 @@
             font-size: 0.9rem;
         }
         
-        /* ===== Responsive Styles ===== */
-        /* Responsive Design */
         @media (max-width: 1200px) {
             .hero h1 {
                 font-size: 2.4rem;
@@ -798,20 +792,17 @@
             }
         }
         
-        /* Ensure images are responsive */
         img {
             max-width: 100%;
             height: auto;
         }
         
-        /* Prevent horizontal scrolling */
         html, body {
             overflow-x: hidden;
             width: 100%;
             scroll-behavior: smooth;
         }
         
-        /* ===== Scroll Effects & Animations ===== */
         .scroll-progress {
             position: fixed;
             top: 0;
@@ -984,7 +975,6 @@
         .stagger-delay-3 { transition-delay: 0.3s; }
         .stagger-delay-4 { transition-delay: 0.4s; }
         
-        /* Enhanced hover effects with scroll */
         .value-card {
             transition: all 0.4s ease, transform 0.8s ease;
         }

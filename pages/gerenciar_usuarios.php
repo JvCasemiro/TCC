@@ -477,7 +477,6 @@ $updated_at = new DateTime();
             }
         }
 
-        /* Estilos do Modal */
         .modal {
             display: none;
             position: fixed;

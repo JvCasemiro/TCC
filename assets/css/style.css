@@ -408,7 +408,6 @@ input:invalid + .error-message {
     display: block;
 }
 
-/* Estilos para os botões de gravação */
 .recording-indicator {
     display: none;
     width: 12px;
@@ -434,7 +433,6 @@ input:invalid + .error-message {
     background-color: #ff3a1a;
 }
 
-/* Estilos para as notificações toast */
 .toast {
     position: fixed;
     bottom: 20px;
@@ -466,7 +464,6 @@ input:invalid + .error-message {
     background-color: #ff9800;
 }
 
-/* Estilo para os botões de controle ativos */
 .control-card {
     transition: all 0.3s ease;
     cursor: pointer;
@@ -488,7 +485,6 @@ input:invalid + .error-message {
     font-weight: 600 !important;
 }
 
-/* Estilo para o indicador de gravação */
 .recording-badge {
     position: fixed;
     top: 20px;

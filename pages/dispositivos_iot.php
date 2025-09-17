@@ -453,7 +453,6 @@ $devices = [
             color: white;
         }
         
-        /* Loading Overlay Styles */
         .loading-overlay {
             display: none;
             position: fixed;
@@ -762,7 +761,6 @@ $devices = [
         </div>
     </div>
     
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner">
             <div class="spinner"></div>

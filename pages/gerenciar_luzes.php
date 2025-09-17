@@ -7,18 +7,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Start the light controller script if it's not already running
 $output = [];
 $status = 0;
 $script_path = dirname(__DIR__) . '\start_light_controller.bat';
-
-// Check if the process is already running
 $command = 'tasklist /FI "WINDOWTITLE eq light_controller" 2>NUL | find /I "python.exe" >NUL';
 exec($command, $output, $status);
 
-// If process is not running, start it
 if ($status !== 0) {
-    // Start the script in a new window
     $command = 'start "light_controller" /B cmd /c "' . $script_path . '"';
     pclose(popen($command, 'r'));
 }
@@ -31,7 +26,6 @@ $user = [
 $created_at = new DateTime();
 $updated_at = new DateTime();
 
-// Read the current light status from the file
 $lightStatusFile = __DIR__ . '/../light_status.txt';
 $lightStatus = 'off';
 if (file_exists($lightStatusFile)) {
@@ -605,10 +599,7 @@ $lights = [
     </div>
     
     <script>
-        // Initialize light status when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // The initial status is already set by PHP
-            // We just need to make sure the UI reflects it
             const initialStatus = '<?php echo $lightStatus; ?>';
             if (initialStatus === 'on') {
                 const card = document.querySelector('[data-light-id="1"]');
@@ -636,7 +627,6 @@ $lights = [
             const isOn = card.classList.contains('on');
             const newStatus = !isOn;
             
-            // Update UI immediately for better responsiveness
             if (newStatus) {
                 card.classList.remove('off');
                 card.classList.add('on');
@@ -653,7 +643,6 @@ $lights = [
                 if (brightnessSlider) brightnessSlider.disabled = true;
             }
             
-            // Send request to update light status
             fetch('../includes/update_light.php', {
                 method: 'POST',
                 headers: {
@@ -669,7 +658,6 @@ $lights = [
                 if (data.success) {
                     showMessage(`Luz ${newStatus ? 'ligada' : 'desligada'} com sucesso!`, 'success');
                 } else {
-                    // Revert UI if the request fails
                     if (isOn) {
                         card.classList.remove('off');
                         card.classList.add('on');
@@ -692,7 +680,6 @@ $lights = [
             })
             .catch(error => {
                 console.error('Error:', error);
-                // Revert UI on error
                 if (isOn) {
                     card.classList.remove('off');
                     card.classList.add('on');
@@ -714,11 +701,7 @@ $lights = [
             });
         }
 
-        // Clean up when page is unloaded
         window.addEventListener('beforeunload', function() {
-            // We don't actually want to stop the script here
-            // as other users might be using it
-            // The script will keep running in the background
             console.log('Page is being unloaded, but keeping the light controller running');
         });
         

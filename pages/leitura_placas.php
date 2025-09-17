@@ -581,7 +581,6 @@ try {
             background: #c82333;
         }
         
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;

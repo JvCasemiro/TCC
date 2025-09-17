@@ -262,7 +262,7 @@ $events = [
         
         .camera-feed {
             width: 100%;
-            min-height: 60vh;  /* Use viewport height */
+            min-height: 60vh;
             background: #2c3e50;
             border-radius: 12px;
             display: flex;
@@ -643,7 +643,6 @@ $events = [
             }
         }
 
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -816,7 +815,6 @@ $events = [
             opacity: 0.5;
         }
 
-        /* Delete Confirmation Modal Styles */
         #deleteConfirmationModal .modal-content {
             max-width: 500px;
             height: auto;

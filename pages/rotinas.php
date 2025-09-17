@@ -272,7 +272,6 @@ $username = $user['username'];
             flex-wrap: wrap;
         }
         
-        /* Estilos específicos para os botões de ação nas rotinas */
         .routine-actions .btn {
             min-width: 100px;
             justify-content: center;
@@ -286,13 +285,11 @@ $username = $user['username'];
             margin-right: 4px;
         }
         
-        /* Efeito de hover mais suave para os botões de ação */
         .routine-actions .btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        /* Estilo dos botões de ação no modal */
         .routine-actions {
             display: flex;
             justify-content: space-between;
@@ -331,12 +328,10 @@ $username = $user['username'];
             transform: translateY(0);
         }
         
-        /* Ajustes para o formulário no modal */
         .modal-content form {
             margin-top: 1rem;
         }
         
-        /* Melhorando a aparência dos campos do formulário */
         .form-control {
             width: 100%;
             padding: 0.75rem;
@@ -352,7 +347,6 @@ $username = $user['username'];
             box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
         }
         
-        /* Melhorando a aparência do select múltiplo */
         select[multiple].form-control {
             min-height: 150px;
             padding: 0.5rem;
@@ -375,7 +369,6 @@ $username = $user['username'];
             color: white;
         }
         
-        /* Estilos para botões */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -495,7 +488,6 @@ $username = $user['username'];
             font-size: 1rem;
         }
         
-        /* Estilo para mensagens de feedback */
         .alert {
             padding: 12px 20px;
             margin-bottom: 20px;
@@ -539,7 +531,6 @@ $username = $user['username'];
             opacity: 1;
         }
         
-        /* Estilo para quando não há rotinas */
         .no-routines {
             grid-column: 1 / -1;
             text-align: center;
@@ -776,8 +767,6 @@ $username = $user['username'];
             margin-bottom: 1rem;
         }
         
-        /* Removido form-row que dividia em colunas */
-        
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
@@ -821,7 +810,6 @@ $username = $user['username'];
             border-color: #4a90e2;
         }
         
-        /* Estilos do Modal */
         .modal {
             display: none;
             position: fixed;
@@ -848,7 +836,6 @@ $username = $user['username'];
             border-top: 4px solid #4a90e2;
         }
         
-        /* Estilo específico para o modal de confirmação de exclusão */
         #deleteConfirmationModal .modal-content {
             border-top-color: #dc3545;
             max-width: 450px;
@@ -880,7 +867,6 @@ $username = $user['username'];
             gap: 8px;
         }
         
-        /* Estilo específico para o modal de edição */
         .modal-content.editing {
             border-top-color: #28a745;
         }
@@ -920,7 +906,6 @@ $username = $user['username'];
             outline: none;
         }
         
-        /* Animações */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -937,7 +922,6 @@ $username = $user['username'];
             }
         }
         
-        /* Estilos para selects múltiplos */
         .form-group select[multiple] {
             min-height: 120px;
             padding: 8px;
