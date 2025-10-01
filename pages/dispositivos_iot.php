@@ -840,23 +840,43 @@ $devices = [
         async function updateLightStatus(deviceId, deviceCategory) {
             try {
                 const response = await fetch('../get_light_status.php');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
+                
+                if (!data) {
+                    throw new Error('No data received from server');
+                }
                 
                 updateLightStatusUI(data, deviceId, deviceCategory);
             } catch (error) {
                 console.error('Error fetching light status:', error);
-                document.getElementById('lightStatusText').textContent = 'Erro ao carregar status';
-                document.getElementById('lightStatusLight').classList.remove('on');
+                const statusText = document.getElementById('lightStatusText');
+                const statusLight = document.getElementById('lightStatusLight');
+                
+                if (statusText) statusText.textContent = 'Erro ao carregar status';
+                if (statusLight) statusLight.classList.remove('on');
             }
         }
 
         function updateLightStatusUI(data, deviceId, deviceCategory) {
+            if (!data || typeof data.status === 'undefined') {
+                console.error('Invalid data received:', data);
+                return;
+            }
+            
             const lightStatus = data.status;
             const lightStatusElement = document.getElementById('lightStatusText');
             const lightStatusLight = document.getElementById('lightStatusLight');
             const percentageCircle = document.getElementById('percentageCircle');
             const percentageValue = document.getElementById('percentageValue');
             const lightsGrid = document.getElementById('lightsGrid');
+            
+            if (!lightStatusElement || !lightStatusLight) {
+                console.error('Required DOM elements not found');
+                return;
+            }
             
             if (lightStatus === 'ON') {
                 lightStatusElement.textContent = 'Ligado';
@@ -881,10 +901,16 @@ $devices = [
             
             const percentage = lightStatus === 'ON' ? 100 : 0;
             
-            percentageCircle.style.background = `conic-gradient(#00C851 ${percentage}%, #0a0f2c ${percentage}%)`;
-            percentageValue.textContent = `${percentage}%`;
+            if (percentageCircle) {
+                percentageCircle.style.background = `conic-gradient(#00C851 ${percentage}%, #0a0f2c ${percentage}%)`;
+            }
             
-            lightsGrid.innerHTML = `
+            if (percentageValue) {
+                percentageValue.textContent = `${percentage}%`;
+            }
+            
+            if (lightsGrid) {
+                lightsGrid.innerHTML = `
                 <div class="light-card">
                     <div class="light-icon">
                         <i class="fas fa-${icon} ${lightStatus === 'ON' ? 'text-success' : 'text-muted'}" 
@@ -896,6 +922,7 @@ $devices = [
                     <p class="light-value">${lightStatus === 'ON' ? 'Ligado' : 'Desligado'}</p>
                 </div>
             `;
+            }
         }
 
         window.onclick = function(event) {
