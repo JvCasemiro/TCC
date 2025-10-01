@@ -31,28 +31,6 @@ $devices = [
         'battery' => null
     ],
     [
-        'id' => 3,
-        'name' => 'Sensor de Umidade - Jardim',
-        'type' => 'sensor',
-        'category' => 'humidity',
-        'status' => 'offline',
-        'value' => '45%',
-        'location' => 'Jardim',
-        'last_update' => date('Y-m-d H:i:s', strtotime('-30 minutes')),
-        'battery' => 12
-    ],
-    [
-        'id' => 4,
-        'name' => 'Câmera de Segurança - Entrada',
-        'type' => 'sensor',
-        'category' => 'security',
-        'status' => 'online',
-        'value' => 'Gravando',
-        'location' => 'Entrada Principal',
-        'last_update' => date('Y-m-d H:i:s', strtotime('-30 seconds')),
-        'battery' => null
-    ],
-    [
         'id' => 5,
         'name' => 'Termostato - Ar Condicionado',
         'type' => 'actuator',
@@ -62,17 +40,6 @@ $devices = [
         'location' => 'Sala de Estar',
         'last_update' => date('Y-m-d H:i:s', strtotime('-5 minutes')),
         'battery' => null
-    ],
-    [
-        'id' => 6,
-        'name' => 'Sensor de Movimento - Corredor',
-        'type' => 'sensor',
-        'category' => 'motion',
-        'status' => 'online',
-        'value' => 'Sem movimento',
-        'location' => 'Corredor',
-        'last_update' => date('Y-m-d H:i:s', strtotime('-1 minute')),
-        'battery' => 67
     ]
 ];
 ?>
@@ -636,7 +603,7 @@ $devices = [
     <div class="container">
         <div class="page-title">
             <h1><i class="fas fa-microchip"></i> Dispositivos IoT</h1>
-            <p>Configure e monitore seus dispositivos IoT em tempo real</p>
+            <p>Monitore seus dispositivos IoT</p>
         </div>
         
         <div class="controls-section">
@@ -645,9 +612,6 @@ $devices = [
                     <i class="fas fa-sliders-h"></i> Controles e Filtros
                 </div>
                 <div class="controls-actions">
-                    <button class="nav-btn primary" onclick="showMessage('Funcionalidade em desenvolvimento!')">
-                        <i class="fas fa-plus"></i> Adicionar Dispositivo
-                    </button>
                     <button class="nav-btn" onclick="refreshDevices()">
                         <i class="fas fa-sync-alt"></i> Atualizar
                     </button>
@@ -658,22 +622,6 @@ $devices = [
                 <div class="filter-group">
                     <label>Buscar:</label>
                     <input type="text" class="search-input" placeholder="Nome do dispositivo..." onkeyup="filterDevices()">
-                </div>
-                <div class="filter-group">
-                    <label>Status:</label>
-                    <select class="filter-select" onchange="filterDevices()">
-                        <option value="">Todos</option>
-                        <option value="online">Online</option>
-                        <option value="offline">Offline</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Tipo:</label>
-                    <select class="filter-select" onchange="filterDevices()">
-                        <option value="">Todos</option>
-                        <option value="sensor">Sensores</option>
-                        <option value="actuator">Atuadores</option>
-                    </select>
                 </div>
                 <div class="filter-group">
                     <label>Categoria:</label>
@@ -747,24 +695,20 @@ $devices = [
         
         function filterDevices() {
             const searchTerm = document.querySelector('.search-input').value.toLowerCase();
-            const statusFilter = document.querySelectorAll('.filter-select')[0].value;
-            const typeFilter = document.querySelectorAll('.filter-select')[1].value;
-            const categoryFilter = document.querySelectorAll('.filter-select')[2].value;
+            const categoryFilter = document.querySelector('.filter-select').value;
             
             const cards = document.querySelectorAll('.device-card');
             
             cards.forEach(card => {
                 const name = card.dataset.name;
-                const status = card.dataset.status;
-                const type = card.dataset.type;
                 const category = card.dataset.category;
                 
                 const matchesSearch = name.includes(searchTerm);
-                const matchesStatus = !statusFilter || status === statusFilter;
-                const matchesType = !typeFilter || type === typeFilter;
                 const matchesCategory = !categoryFilter || category === categoryFilter;
                 
-                if (matchesSearch && matchesStatus && matchesType && matchesCategory) {
+                const isVisible = matchesSearch && matchesCategory;
+                
+                if (isVisible) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
