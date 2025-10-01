@@ -692,7 +692,7 @@ $devices = [
         
         <div class="devices-grid" id="devicesGrid">
             <?php foreach ($devices as $device): ?>
-            <div class="device-card" data-status="<?php echo $device['status']; ?>" data-type="<?php echo $device['type']; ?>" data-category="<?php echo $device['category']; ?>" data-name="<?php echo strtolower($device['name']); ?>">
+            <div class="device-card" data-type="<?php echo $device['type']; ?>" data-category="<?php echo $device['category']; ?>" data-name="<?php echo strtolower($device['name']); ?>">
                 <div class="device-header">
                     <div class="device-info">
                         <h3><?php echo htmlspecialchars($device['name']); ?></h3>
@@ -700,9 +700,6 @@ $devices = [
                             <i class="fas fa-map-marker-alt"></i>
                             <?php echo htmlspecialchars($device['location']); ?>
                         </div>
-                    </div>
-                    <div class="device-status status-<?php echo $device['status']; ?>">
-                        <?php echo $device['status']; ?>
                     </div>
                 </div>
                 
@@ -724,36 +721,11 @@ $devices = [
                     <?php echo htmlspecialchars($device['value']); ?>
                 </div>
                 
-                <div class="device-details">
-                    <span>
-                        <i class="fas fa-clock"></i>
-                        <?php echo date('H:i', strtotime($device['last_update'])); ?>
-                    </span>
-                    <?php if ($device['battery'] !== null): ?>
-                    <div class="battery-indicator">
-                        <i class="fas fa-battery-half"></i>
-                        <div class="battery-level">
-                            <div class="battery-fill battery-<?php echo $device['battery'] > 50 ? 'high' : ($device['battery'] > 20 ? 'medium' : 'low'); ?>" 
-                                 style="width: <?php echo $device['battery']; ?>%"></div>
-                        </div>
-                        <span><?php echo $device['battery']; ?>%</span>
-                    </div>
-                    <?php else: ?>
-                    <span><i class="fas fa-plug"></i> AC</span>
-                    <?php endif; ?>
-                </div>
-                
                 <div class="device-actions">
-                    <button class="action-btn btn-configure" onclick="showMessage('Configuração do dispositivo em desenvolvimento!')">
-                        <i class="fas fa-cog"></i> Configurar
-                    </button>
                     <button class="action-btn btn-monitor" onclick="showMessage('Monitoramento em tempo real em desenvolvimento!')">
                         <i class="fas fa-chart-line"></i> Monitorar
                     </button>
                     <?php if ($device['type'] === 'actuator'): ?>
-                    <button class="action-btn btn-control" onclick="controlDevice(<?php echo $device['id']; ?>)">
-                        <i class="fas fa-power-off"></i> Controlar
-                    </button>
                     <?php endif; ?>
                 </div>
             </div>
