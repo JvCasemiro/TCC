@@ -503,7 +503,7 @@ $devices = [
                     <i class="fas fa-sliders-h"></i> Controles e Filtros
                 </div>
                 <div class="controls-actions">
-                    <button class="nav-btn" onclick="refreshDevices()">
+                    <button type="button" class="nav-btn" onclick="filterDevices()">
                         <i class="fas fa-sync-alt"></i> Atualizar
                     </button>
                 </div>
@@ -512,19 +512,7 @@ $devices = [
             <div class="filter-section">
                 <div class="filter-group">
                     <label>Buscar:</label>
-                    <input type="text" class="search-input" placeholder="Nome do dispositivo..." onkeyup="filterDevices()">
-                </div>
-                <div class="filter-group">
-                    <label>Categoria:</label>
-                    <select class="filter-select" onchange="filterDevices()">
-                        <option value="">Todas</option>
-                        <option value="temperature">Temperatura</option>
-                        <option value="lighting">Iluminação</option>
-                        <option value="humidity">Umidade</option>
-                        <option value="security">Segurança</option>
-                        <option value="climate">Climatização</option>
-                        <option value="motion">Movimento</option>
-                    </select>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Nome do dispositivo...">
                 </div>
             </div>
         </div>
@@ -948,21 +936,14 @@ $devices = [
         }
         
         function filterDevices() {
-            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
-            const categoryFilter = document.querySelector('.filter-select').value;
-            
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const cards = document.querySelectorAll('.device-card');
             
             cards.forEach(card => {
-                const name = card.dataset.name;
-                const category = card.dataset.category;
+                const name = card.querySelector('h3').textContent.toLowerCase();
+                const isVisible = name.includes(searchTerm);
                 
-                const matchesSearch = name.includes(searchTerm);
-                const matchesCategory = !categoryFilter || category === categoryFilter;
-                
-                const isVisible = matchesSearch && matchesCategory;
-                
-                if (isVisible) {
+                if (searchTerm === '' || isVisible) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
@@ -970,10 +951,21 @@ $devices = [
             });
         }
         
+        // Add event listener for Enter key in search input
+        document.getElementById('searchInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                filterDevices();
+            }
+        });
+        
         function refreshDevices() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.style.display = 'flex';
             
+            // Clear search when refreshing
+            document.getElementById('searchInput').value = '';
+            
+            // Reload the page after a short delay
             setTimeout(() => {
                 location.reload();
             }, 3000);
