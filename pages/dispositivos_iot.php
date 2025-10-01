@@ -15,9 +15,7 @@ $devices = [
         'category' => 'temperature',
         'status' => 'online',
         'value' => '23.5°C',
-        'location' => 'Sala de Estar',
-        'last_update' => date('Y-m-d H:i:s', strtotime('-2 minutes')),
-        'battery' => 85
+        'location' => 'Sala de Estar'
     ],
     [
         'id' => 2,
@@ -26,20 +24,16 @@ $devices = [
         'category' => 'lighting',
         'status' => 'online',
         'value' => 'Ligada (75%)',
-        'location' => 'Quarto Principal',
-        'last_update' => date('Y-m-d H:i:s', strtotime('-1 minute')),
-        'battery' => null
+        'location' => 'Quarto Principal'
     ],
     [
-        'id' => 5,
+        'id' => 3,
         'name' => 'Termostato - Ar Condicionado',
         'type' => 'actuator',
         'category' => 'climate',
         'status' => 'online',
         'value' => '22°C',
-        'location' => 'Sala de Estar',
-        'last_update' => date('Y-m-d H:i:s', strtotime('-5 minutes')),
-        'battery' => null
+        'location' => 'Sala de Estar'
     ]
 ];
 ?>
@@ -258,11 +252,10 @@ $devices = [
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 20px;
+            padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            text-align: center;
         }
         
         .device-card:hover {
@@ -271,51 +264,10 @@ $devices = [
             border-color: rgba(102, 126, 234, 0.5);
         }
         
-        .device-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-        
-        .device-info h3 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-            color: #fff;
-        }
-        
-        .device-location {
-            font-size: 0.9rem;
-            color: #ccc;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .device-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-        
-        .status-online {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
-            border: 1px solid #2ecc71;
-        }
-        
-        .status-offline {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            border: 1px solid #e74c3c;
-        }
-        
         .device-icon {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             margin-bottom: 15px;
-            opacity: 0.8;
+            display: block;
         }
         
         .icon-temperature { color: #e67e22; }
@@ -325,83 +277,29 @@ $devices = [
         .icon-climate { color: #2ecc71; }
         .icon-motion { color: #9b59b6; }
         
-        .device-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #667eea;
+        .device-info h3 {
+            font-size: 1.2rem;
+            margin: 0 0 15px 0;
+            color: #fff;
+            font-weight: 600;
         }
-        
-        .device-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-        
-        .battery-indicator {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .battery-level {
-            width: 30px;
-            height: 15px;
-            border: 1px solid #ccc;
-            border-radius: 2px;
-            position: relative;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .battery-fill {
-            height: 100%;
-            border-radius: 1px;
-            transition: all 0.3s;
-        }
-        
-        .battery-high { background: #2ecc71; }
-        .battery-medium { background: #f1c40f; }
-        .battery-low { background: #e74c3c; }
         
         .device-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .action-btn {
-            flex: 1;
-            min-width: 100px;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-        
-        .btn-configure {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-configure:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            transform: translateY(-1px);
+            margin-top: 15px;
         }
         
         .btn-monitor {
             background: rgba(52, 152, 219, 0.2);
             color: #3498db;
             border: 1px solid #3498db;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn-monitor:hover {
@@ -409,15 +307,8 @@ $devices = [
             color: white;
         }
         
-        .btn-control {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
-            border: 1px solid #2ecc71;
-        }
-        
-        .btn-control:hover {
-            background: #2ecc71;
-            color: white;
+        .btn-monitor i {
+            margin-right: 5px;
         }
         
         .loading-overlay {
@@ -640,17 +531,7 @@ $devices = [
         
         <div class="devices-grid" id="devicesGrid">
             <?php foreach ($devices as $device): ?>
-            <div class="device-card" data-type="<?php echo $device['type']; ?>" data-category="<?php echo $device['category']; ?>" data-name="<?php echo strtolower($device['name']); ?>">
-                <div class="device-header">
-                    <div class="device-info">
-                        <h3><?php echo htmlspecialchars($device['name']); ?></h3>
-                        <div class="device-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <?php echo htmlspecialchars($device['location']); ?>
-                        </div>
-                    </div>
-                </div>
-                
+            <div class="device-card">
                 <div class="device-icon icon-<?php echo $device['category']; ?>">
                     <?php
                     $icons = [
@@ -665,16 +546,14 @@ $devices = [
                     <i class="<?php echo $icons[$device['category']] ?? 'fas fa-microchip'; ?>"></i>
                 </div>
                 
-                <div class="device-value">
-                    <?php echo htmlspecialchars($device['value']); ?>
+                <div class="device-info">
+                    <h3><?php echo htmlspecialchars($device['name']); ?></h3>
                 </div>
                 
                 <div class="device-actions">
-                    <button class="action-btn btn-monitor" onclick="showMonitoringModal('<?php echo $device['id']; ?>', '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
+                    <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
                         <i class="fas fa-chart-line"></i> Monitorar
-                    </button>
-                    <?php if ($device['type'] === 'actuator'): ?>
-                    <?php endif; ?>
+                    </a>
                 </div>
             </div>
             <?php endforeach; ?>
