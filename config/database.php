@@ -45,19 +45,6 @@ function criarTabelas($conn) {
         
         $conn->exec($sql_usuarios);
         
-        $sql_logs = "
-        CREATE TABLE IF NOT EXISTS Logs_Autenticacao (
-            ID_Log INT AUTO_INCREMENT PRIMARY KEY,
-            ID_Usuario INT NULL,
-            Tipo_Acao VARCHAR(50) NOT NULL,
-            Endereco_IP VARCHAR(45) NULL,
-            Navegador VARCHAR(255) NULL,
-            Data_Hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
-        $conn->exec($sql_logs);
-        
         $sql_placas = "
         CREATE TABLE IF NOT EXISTS Placas (
             ID_Placa INT AUTO_INCREMENT PRIMARY KEY,
