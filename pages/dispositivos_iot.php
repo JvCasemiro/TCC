@@ -670,7 +670,7 @@ $devices = [
                 </div>
                 
                 <div class="device-actions">
-                    <button class="action-btn btn-monitor" onclick="showMessage('Monitoramento em tempo real em desenvolvimento!')">
+                    <button class="action-btn btn-monitor" onclick="showMonitoringModal('<?php echo $device['id']; ?>', '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
                         <i class="fas fa-chart-line"></i> Monitorar
                     </button>
                     <?php if ($device['type'] === 'actuator'): ?>
@@ -688,7 +688,382 @@ $devices = [
         </div>
     </div>
     
+    <!-- Monitoring Dashboard Popup -->
+    <div id="monitoringModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-tachometer-alt"></i> Monitoramento em Tempo Real</h2>
+                <span class="close-btn" onclick="closeMonitoringModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="status-summary">
+                    <div class="status-card">
+                        <h3>Monitoramento do Dispositivo</h3>
+                        <div class="status-indicator" id="lightStatusIndicator">
+                            <div class="status-light" id="lightStatusLight"></div>
+                            <span id="lightStatusText">Carregando...</span>
+                        </div>
+                        <div class="status-percentage">
+                            <div class="percentage-circle" id="percentageCircle">
+                                <span id="percentageValue">0%</span>
+                            </div>
+                            <p>Status atual</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="device-info" style="margin-bottom: 20px; text-align: center;">
+                    <h3 id="deviceName" style="margin: 0; color: #fff;"></h3>
+                    <p id="deviceLocation" style="margin: 5px 0 0; color: #aaa;"></p>
+                </div>
+                <div class="lights-grid" id="lightsGrid">
+                    <!-- Device status will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a1e3a 0%, #0a0f2c 100%);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Status Summary */
+        .status-summary {
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-card h3 {
+            margin-top: 0;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-light {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #ff4444;
+            box-shadow: 0 0 10px #ff4444;
+        }
+
+        .status-light.on {
+            background-color: #00C851;
+            box-shadow: 0 0 15px #00C851;
+        }
+
+        #lightStatusText {
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .status-percentage {
+            margin-top: 20px;
+        }
+
+        .percentage-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(#00C851 0%, #0a0f2c 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 200, 81, 0.3);
+        }
+
+        .percentage-circle::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: #1a1e3a;
+            border-radius: 50%;
+        }
+
+        #percentageValue {
+            position: relative;
+            color: #fff;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .status-percentage p {
+            color: #aaa;
+            margin: 5px 0 0;
+        }
+
+        /* Lights Grid */
+        .lights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .light-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .light-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .light-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .light-status.off {
+            background-color: #ff4444;
+            box-shadow: 0 0 10px #ff4444;
+        }
+
+        .light-status.on {
+            background-color: #00C851;
+            box-shadow: 0 0 15px #00C851;
+        }
+
+        .light-name {
+            color: #fff;
+            margin: 5px 0;
+            font-weight: 500;
+        }
+
+        .light-location {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+
+        .light-value {
+            font-weight: bold;
+            margin: 5px 0;
+            color: #00C851;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .lights-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
     <script>
+        // Show the monitoring modal for a specific device
+        function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
+            const modal = document.getElementById('monitoringModal');
+            modal.dataset.deviceId = deviceId;
+            
+            // Update modal title and device info
+            document.getElementById('deviceName').textContent = deviceName;
+            document.getElementById('deviceLocation').textContent = deviceLocation;
+            
+            // Show the modal
+            modal.style.display = 'block';
+            
+            // Start monitoring
+            updateLightStatus(deviceId, deviceCategory);
+            
+            // Update status every 5 seconds
+            const intervalId = setInterval(() => updateLightStatus(deviceId, deviceCategory), 5000);
+            
+            // Store interval ID to clear it when modal is closed
+            modal.dataset.intervalId = intervalId;
+        }
+
+        // Close the monitoring modal
+        function closeMonitoringModal() {
+            const modal = document.getElementById('monitoringModal');
+            // Clear the update interval
+            if (modal.dataset.intervalId) {
+                clearInterval(parseInt(modal.dataset.intervalId));
+            }
+            modal.style.display = 'none';
+        }
+
+        // Update light status from the server for a specific device
+        async function updateLightStatus(deviceId, deviceCategory) {
+            try {
+                // For now, we're using a single light status file
+                // In a real application, you would pass the deviceId to the endpoint
+                const response = await fetch('../get_light_status.php');
+                const data = await response.json();
+                
+                // Update the UI with the new status
+                updateLightStatusUI(data, deviceId, deviceCategory);
+            } catch (error) {
+                console.error('Error fetching light status:', error);
+                document.getElementById('lightStatusText').textContent = 'Erro ao carregar status';
+                document.getElementById('lightStatusLight').classList.remove('on');
+            }
+        }
+
+        // Update the UI with the light status data for a specific device
+        function updateLightStatusUI(data, deviceId, deviceCategory) {
+            const lightStatus = data.status;
+            const lightStatusElement = document.getElementById('lightStatusText');
+            const lightStatusLight = document.getElementById('lightStatusLight');
+            const percentageCircle = document.getElementById('percentageCircle');
+            const percentageValue = document.getElementById('percentageValue');
+            const lightsGrid = document.getElementById('lightsGrid');
+            
+            // Update status indicator
+            if (lightStatus === 'ON') {
+                lightStatusElement.textContent = 'Ligado';
+                lightStatusLight.classList.add('on');
+            } else {
+                lightStatusElement.textContent = 'Desligado';
+                lightStatusLight.classList.remove('on');
+            }
+            
+            // Set icon based on device category
+            const iconMap = {
+                'lighting': 'lightbulb',
+                'temperature': 'thermometer-half',
+                'climate': 'wind',
+                'security': 'shield-alt',
+                'humidity': 'tint',
+                'motion': 'walking'
+            };
+            
+            const icon = iconMap[deviceCategory] || 'lightbulb';
+            const deviceName = document.getElementById('deviceName').textContent;
+            const deviceLocation = document.getElementById('deviceLocation').textContent;
+            
+            // Calculate percentage (for multiple lights, this would be dynamic)
+            const percentage = lightStatus === 'ON' ? 100 : 0;
+            
+            // Update percentage circle
+            percentageCircle.style.background = `conic-gradient(#00C851 ${percentage}%, #0a0f2c ${percentage}%)`;
+            percentageValue.textContent = `${percentage}%`;
+            
+            // Update device card
+            lightsGrid.innerHTML = `
+                <div class="light-card">
+                    <div class="light-icon">
+                        <i class="fas fa-${icon} ${lightStatus === 'ON' ? 'text-success' : 'text-muted'}" 
+                           style="color: ${lightStatus === 'ON' ? '#00C851' : '#6c757d'}"></i>
+                    </div>
+                    <div class="light-status ${lightStatus === 'ON' ? 'on' : 'off'}"></div>
+                    <h4 class="light-name">${deviceName}</h4>
+                    <p class="light-location">${deviceLocation}</p>
+                    <p class="light-value">${lightStatus === 'ON' ? 'Ligado' : 'Desligado'}</p>
+                </div>
+            `;
+        }
+
+        // Close modal when clicking outside the content
+        window.onclick = function(event) {
+            const modal = document.getElementById('monitoringModal');
+            if (event.target === modal) {
+                closeMonitoringModal();
+            }
+        }
+
         function showMessage(message, type = 'info') {
             alert(message);
         }
