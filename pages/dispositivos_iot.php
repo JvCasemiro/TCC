@@ -555,7 +555,6 @@ $devices = [
         </div>
     </div>
     
-    <!-- Monitoring Dashboard Popup -->
     <div id="monitoringModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -582,15 +581,11 @@ $devices = [
                     <h3 id="deviceName" style="margin: 0; color: #fff;"></h3>
                     <p id="deviceLocation" style="margin: 5px 0 0; color: #aaa;"></p>
                 </div>
-                <div class="lights-grid" id="lightsGrid">
-                    <!-- Device status will be populated by JavaScript -->
-                </div>
             </div>
         </div>
     </div>
 
     <style>
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -653,7 +648,6 @@ $devices = [
             flex: 1;
         }
 
-        /* Status Summary */
         .status-summary {
             margin-bottom: 30px;
         }
@@ -738,7 +732,6 @@ $devices = [
             margin: 5px 0 0;
         }
 
-        /* Lights Grid */
         .lights-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -820,47 +813,35 @@ $devices = [
     </style>
 
     <script>
-        // Show the monitoring modal for a specific device
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
             const modal = document.getElementById('monitoringModal');
             modal.dataset.deviceId = deviceId;
             
-            // Update modal title and device info
             document.getElementById('deviceName').textContent = deviceName;
             document.getElementById('deviceLocation').textContent = deviceLocation;
             
-            // Show the modal
             modal.style.display = 'block';
             
-            // Start monitoring
             updateLightStatus(deviceId, deviceCategory);
             
-            // Update status every 5 seconds
             const intervalId = setInterval(() => updateLightStatus(deviceId, deviceCategory), 5000);
             
-            // Store interval ID to clear it when modal is closed
             modal.dataset.intervalId = intervalId;
         }
 
-        // Close the monitoring modal
         function closeMonitoringModal() {
             const modal = document.getElementById('monitoringModal');
-            // Clear the update interval
             if (modal.dataset.intervalId) {
                 clearInterval(parseInt(modal.dataset.intervalId));
             }
             modal.style.display = 'none';
         }
 
-        // Update light status from the server for a specific device
         async function updateLightStatus(deviceId, deviceCategory) {
             try {
-                // For now, we're using a single light status file
-                // In a real application, you would pass the deviceId to the endpoint
                 const response = await fetch('../get_light_status.php');
                 const data = await response.json();
                 
-                // Update the UI with the new status
                 updateLightStatusUI(data, deviceId, deviceCategory);
             } catch (error) {
                 console.error('Error fetching light status:', error);
@@ -869,7 +850,6 @@ $devices = [
             }
         }
 
-        // Update the UI with the light status data for a specific device
         function updateLightStatusUI(data, deviceId, deviceCategory) {
             const lightStatus = data.status;
             const lightStatusElement = document.getElementById('lightStatusText');
@@ -878,7 +858,6 @@ $devices = [
             const percentageValue = document.getElementById('percentageValue');
             const lightsGrid = document.getElementById('lightsGrid');
             
-            // Update status indicator
             if (lightStatus === 'ON') {
                 lightStatusElement.textContent = 'Ligado';
                 lightStatusLight.classList.add('on');
@@ -887,7 +866,6 @@ $devices = [
                 lightStatusLight.classList.remove('on');
             }
             
-            // Set icon based on device category
             const iconMap = {
                 'lighting': 'lightbulb',
                 'temperature': 'thermometer-half',
@@ -901,14 +879,11 @@ $devices = [
             const deviceName = document.getElementById('deviceName').textContent;
             const deviceLocation = document.getElementById('deviceLocation').textContent;
             
-            // Calculate percentage (for multiple lights, this would be dynamic)
             const percentage = lightStatus === 'ON' ? 100 : 0;
             
-            // Update percentage circle
             percentageCircle.style.background = `conic-gradient(#00C851 ${percentage}%, #0a0f2c ${percentage}%)`;
             percentageValue.textContent = `${percentage}%`;
             
-            // Update device card
             lightsGrid.innerHTML = `
                 <div class="light-card">
                     <div class="light-icon">
@@ -923,7 +898,6 @@ $devices = [
             `;
         }
 
-        // Close modal when clicking outside the content
         window.onclick = function(event) {
             const modal = document.getElementById('monitoringModal');
             if (event.target === modal) {
@@ -951,7 +925,6 @@ $devices = [
             });
         }
         
-        // Add event listener for Enter key in search input
         document.getElementById('searchInput').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
                 filterDevices();
@@ -962,10 +935,8 @@ $devices = [
             const overlay = document.getElementById('loadingOverlay');
             overlay.style.display = 'flex';
             
-            // Clear search when refreshing
             document.getElementById('searchInput').value = '';
             
-            // Reload the page after a short delay
             setTimeout(() => {
                 location.reload();
             }, 3000);

@@ -12,7 +12,6 @@ def read_light_status():
         with open(status_file, 'r') as f:
             return f.read().strip() == 'ON'
     except FileNotFoundError:
-        # Return default OFF status if file doesn't exist
         return False
 
 def main():
@@ -24,14 +23,12 @@ def main():
         while True:
             current_status = read_light_status()
             
-            # Only send command if status changed
             if current_status != last_status:
                 status_str = "ON" if current_status else "OFF"
                 arduino.send_command(status_str)
                 
                 last_status = current_status
             
-            # Check status every second
             time.sleep(1)
             
     except KeyboardInterrupt:

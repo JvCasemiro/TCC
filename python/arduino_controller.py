@@ -12,25 +12,23 @@ class ArduinoController:
     
     def find_arduino(self):
         """Find and connect to Arduino"""
-        # First try COM9 specifically (your Arduino port)
         self.port = 'COM9'
         try:
             self.serial_connection = serial.Serial(self.port, 9600, timeout=1)
-            time.sleep(2)  # Wait for Arduino to reset
+            time.sleep(2)
             print(f"Connected to Arduino on {self.port}")
             return
         except Exception as e:
             print(f"Could not connect to {self.port}: {e}")
             self.port = None
         
-        # If COM9 fails, try to find Arduino automatically
         ports = list(serial.tools.list_ports.comports())
         for p in ports:
             if 'Arduino' in str(p.description) or 'CH340' in str(p.description):
                 try:
                     self.port = p.device
                     self.serial_connection = serial.Serial(self.port, 9600, timeout=1)
-                    time.sleep(2)  # Wait for Arduino to reset
+                    time.sleep(2)
                     print(f"Connected to Arduino on {self.port}")
                     return
                 except Exception as e:
