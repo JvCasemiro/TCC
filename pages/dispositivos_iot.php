@@ -19,7 +19,7 @@ $devices = [
     ],
     [
         'id' => 2,
-        'name' => 'Lâmpada Smart - Quarto',
+        'name' => 'Lâmpadas',
         'type' => 'actuator',
         'category' => 'lighting',
         'status' => 'online',
@@ -311,6 +311,33 @@ $devices = [
             margin-right: 5px;
         }
         
+        .btn-register {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+        
+        .btn-register:hover {
+            background: #4CAF50;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-register i {
+            margin-right: 5px;
+        }
+        
         .loading-overlay {
             display: none;
             position: fixed;
@@ -542,6 +569,11 @@ $devices = [
                     <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
                         <i class="fas fa-chart-line"></i> Monitorar
                     </a>
+                    <?php if ($device['category'] === 'lighting'): ?>
+                    <a href="#" class="btn-register" onclick="event.stopPropagation(); registerDevice(<?php echo $device['id']; ?>)">
+                        <i class="fas fa-plus-circle"></i> Cadastrar
+                    </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -813,6 +845,45 @@ $devices = [
     </style>
 
     <script>
+        function registerDevice(deviceId) {
+            // Exibe um alerta de confirmação
+            if (confirm('Deseja cadastrar este dispositivo de iluminação?')) {
+                // Aqui você pode adicionar o código para processar o cadastro
+                // Por exemplo, fazer uma requisição AJAX para o servidor
+                console.log('Dispositivo a ser cadastrado:', deviceId);
+                
+                // Exemplo de requisição AJAX (descomente e ajuste conforme necessário)
+                /*
+                fetch('processar_cadastro.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        deviceId: deviceId,
+                        action: 'register'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Dispositivo cadastrado com sucesso!');
+                        // Atualiza a interface se necessário
+                    } else {
+                        alert('Erro ao cadastrar dispositivo: ' + (data.message || 'Erro desconhecido'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao processar a requisição');
+                });
+                */
+                
+                // Por enquanto, apenas um alerta de sucesso
+                alert('Dispositivo cadastrado com sucesso!');
+            }
+        }
+        
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
             const modal = document.getElementById('monitoringModal');
             modal.dataset.deviceId = deviceId;

@@ -34,11 +34,7 @@ if (file_exists($lightStatusFile)) {
 }
 
 $lights = [
-    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => $lightStatus, 'brightness' => 80],
-    // ['id' => 2, 'name' => 'Quarto Principal', 'room' => 'Quarto', 'status' => 'off', 'brightness' => 0],
-    // ['id' => 3, 'name' => 'Cozinha', 'room' => 'Cozinha', 'status' => 'on', 'brightness' => 100],
-    // ['id' => 4, 'name' => 'Banheiro', 'room' => 'Banheiro', 'status' => 'off', 'brightness' => 0],
-    // ['id' => 5, 'name' => 'Varanda', 'room' => 'Externa', 'status' => 'on', 'brightness' => 60],
+    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => $lightStatus, 'brightness' => 80]
 ];
 ?>
 <!DOCTYPE html>
