@@ -33,18 +33,164 @@ if (file_exists($lightStatusFile)) {
     $lightStatus = (strtoupper($status) === 'ON') ? 'on' : 'off';
 }
 
-$lights = [
-    ['id' => 1, 'name' => 'Sala de Estar', 'room' => 'Sala', 'status' => $lightStatus, 'brightness' => 80]
-];
+// Busca as lâmpadas cadastradas no banco de dados
+$lights = [];
+try {
+    $stmt = $conn->prepare("SELECT * FROM Lampadas WHERE ID_Usuario = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $lights_db = $stmt->fetchAll();
+    
+    foreach ($lights_db as $lampada) {
+        $lights[] = [
+            'id' => $lampada['ID_Lampada'],
+            'name' => $lampada['Nome'],
+            'room' => $lampada['Comodo'],
+            'status' => $lampada['Status'] ?? 'off',
+            'brightness' => $lampada['Brilho'] ?? 50
+        ];
+    }
+} catch (PDOException $e) {
+    // Em caso de erro, usa uma lista vazia
+    $lights = [];
+}
+
+// Se não houver lâmpadas cadastradas, exibe uma mensagem
+$noLights = empty($lights);
 ?>
-<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciar Luzes - Automação Residencial</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="shortcut icon" href="../assets/img/logo_domx_sem_nome.png" type="image/x-icon">
+    
+    <script>
+        // Variáveis globais
+        let currentLightId = null;
+        let currentButton = null;
+        
+        // Função para remover uma lâmpada
+        function removeLight(lightId, button) {
+            currentLightId = lightId;
+            currentButton = button;
+            
+            // Exibe o modal de confirmação
+            const modal = document.getElementById('confirmDeleteModal');
+            const lightName = button.closest('.light-card').querySelector('h3').textContent;
+            document.getElementById('lightToDelete').textContent = lightName;
+            modal.style.display = 'flex';
+        }
+        
+        // Função para confirmar a exclusão
+        function confirmDelete() {
+            if (!currentLightId || !currentButton) return;
+            
+            const modal = document.getElementById('confirmDeleteModal');
+            
+            fetch('processar_lampada.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=remover&id=${currentLightId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Lâmpada removida com sucesso!', 'success');
+                    // Remove o card da lâmpada
+                    currentButton.closest('.light-card').remove();
+                    
+                    // Verifica se ainda existem lâmpadas
+                    if (document.querySelectorAll('.light-card').length === 0) {
+                        window.location.reload(); // Recarrega para mostrar a mensagem de "nenhuma lâmpada"
+                    }
+                } else {
+                    showMessage('Erro ao remover: ' + (data.message || 'Erro desconhecido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showMessage('Erro ao processar a requisição', 'error');
+            })
+            .finally(() => {
+                // Fecha o modal e limpa as variáveis
+                modal.style.display = 'none';
+                currentLightId = null;
+                currentButton = null;
+            });
+        }
+        
+        // Função para cancelar a exclusão
+        function cancelDelete() {
+            const modal = document.getElementById('confirmDeleteModal');
+            modal.style.display = 'none';
+            currentLightId = null;
+            currentButton = null;
+        }
+        
+        // Função para exibir mensagens
+        function showMessage(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#4a90e2'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 300px;
+                opacity: 0;
+                transform: translateY(-50px);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-times-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+            }
+            
+            toast.innerHTML = `${icon} ${message}`;
+            
+            document.body.appendChild(toast);
+            
+            // Anima a entrada
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Remove após 5 segundos
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-50px)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 5000);
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -55,7 +201,7 @@ $lights = [
         
         body {
             background: linear-gradient(135deg, #0a0f2c 0%, #0a0f2c 100%);
-            color: #ffffff;
+            color: #000;
         }
         
         .container {
@@ -214,25 +360,11 @@ $lights = [
         .light-card.on {
             border-left: 5px solid #27ae60;
         }
-        
         .light-card.off {
             border-left: 5px solid #e74c3c;
         }
         
-        .light-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .light-info h3 {
-            color: #2f3640;
-            margin-bottom: 5px;
-            font-size: 1.3em;
-        }
-        
-        .light-info .room {
+        .light-name {
             color: #666;
             font-size: 0.9em;
         }
@@ -370,8 +502,83 @@ $lights = [
         
         .light-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-action {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .btn-action i {
+            font-size: 0.9em;
+        }
+        
+        .btn-remove {
+            color: #ff6b6b !important;
+            border-color: #ff6b6b !important;
+        }
+        
+        .btn-remove:hover {
+            background: rgba(255, 107, 107, 0.1) !important;
+        }
+        
+        .no-lights {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        
+        .no-lights i {
+            font-size: 48px;
+            color: #4CAF50;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+        
+        .no-lights h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .no-lights p {
+            margin-bottom: 20px;
+            color: #aaa;
+        }
+        
+        .btn-add-light {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-add-light:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
         }
         
         .btn {
@@ -550,34 +757,41 @@ $lights = [
             <p>Controle todas as luzes da sua casa de forma inteligente e personalizada.</p>
         </div>
         
-        <div class="lights-grid">
-            <?php foreach($lights as $light): ?>
-            <div class="light-card <?php echo $light['status']; ?>" data-light-id="<?php echo $light['id']; ?>">
-                <div class="light-header">
-                    <div class="light-info">
-                        <h3><?php echo htmlspecialchars($light['name']); ?></h3>
-                        <div class="room"><?php echo htmlspecialchars($light['room']); ?></div>
-                    </div>
-                    <div class="light-status <?php echo $light['status']; ?>">
-                        <i class="fas fa-lightbulb"></i>
-                        <span><?php echo $light['status'] == 'on' ? 'Ligada' : 'Desligada'; ?></span>
-                    </div>
-                </div>
-                
-                <div class="light-controls">
-                    <div class="control-group">
-                        <label>Liga/Desliga</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" <?php echo $light['status'] == 'on' ? 'checked' : ''; ?> 
-                                   onchange="toggleLight(<?php echo $light['id']; ?>)">
-                            <span class="slider"></span>
-                        </label>
+        <?php if ($noLights): ?>
+            <div class="no-lights" style="text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; margin: 20px 0;">
+                <i class="far fa-lightbulb" style="font-size: 48px; color: #4CAF50; margin-bottom: 15px;"></i>
+                <h3 style="margin-bottom: 10px;">Nenhuma lâmpada cadastrada</h3>
+                <p style="margin-bottom: 20px; color: #ccc;">Adicione uma lâmpada na página de Dispositivos IoT para começar</p>
+            </div>
+        <?php else: ?>
+            <div class="lights-grid">
+                <?php foreach($lights as $light): ?>
+                <div class="light-card <?php echo $light['status']; ?>" data-light-id="<?php echo $light['id']; ?>">
+                    <div class="light-header">
+                        <div class="light-info">
+                            <h3><?php echo htmlspecialchars($light['name']); ?></h3>
+                            <div class="room"><?php echo htmlspecialchars($light['room']); ?></div>
+                        </div>
+                        <div class="light-status <?php echo $light['status']; ?>">
+                            <i class="fas fa-lightbulb"></i>
+                            <span><?php echo $light['status'] == 'on' ? 'Ligada' : 'Desligada'; ?></span>
+                        </div>
                     </div>
                     
-                    <div class="control-group">
-                        <label>Intensidade</label>
-                        <div class="brightness-control">
-                            <input type="range" min="0" max="100" value="<?php echo $light['brightness']; ?>" 
+                    <div class="light-controls">
+                        <div class="control-group">
+                            <label>Liga/Desliga</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" <?php echo $light['status'] == 'on' ? 'checked' : ''; ?> 
+                                       onchange="toggleLight(<?php echo $light['id']; ?>)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label>Intensidade</label>
+                            <div class="brightness-control">
+                                <input type="range" min="0" max="100" value="<?php echo $light['brightness']; ?>" 
                                    class="brightness-slider" id="brightness-<?php echo $light['id']; ?>"
                                    onchange="changeBrightness(<?php echo $light['id']; ?>, this.value)"
                                    <?php echo $light['status'] == 'off' ? 'disabled' : ''; ?>>
@@ -589,12 +803,149 @@ $lights = [
                     
                 </div>
                 
+                <div class="light-actions">
+                    <button class="btn-action" onclick="showLightSchedule(<?php echo $light['id']; ?>)">
+                        <i class="far fa-clock"></i> Programar
+                    </button>
+                    <button class="btn-action" onclick="showLightSettings(<?php echo $light['id']; ?>, '<?php echo htmlspecialchars($light['name'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($light['room'], ENT_QUOTES); ?>')">
+                        <i class="fas fa-cog"></i> Configurações
+                    </button>
+                    <button class="btn-action btn-remove" onclick="removeLight(<?php echo $light['id']; ?>, this)">
+                        <i class="fas fa-trash"></i> Remover
+                    </button>
+                </div>
+                
             </div>
             <?php endforeach; ?>
         </div>
+        <?php endif; ?>
     </div>
     
     <script>
+        // Variáveis globais
+        let currentLightId = null;
+        let currentButton = null;
+        
+        // Função para remover uma lâmpada
+        function removeLight(lightId, button) {
+            currentLightId = lightId;
+            currentButton = button;
+            
+            // Exibe o modal de confirmação
+            const modal = document.getElementById('confirmDeleteModal');
+            const lightName = button.closest('.light-card').querySelector('h3').textContent;
+            document.getElementById('lightToDelete').textContent = lightName;
+            modal.style.display = 'block';
+        }
+        
+        // Função para confirmar a exclusão
+        function confirmDelete() {
+            if (!currentLightId || !currentButton) return;
+            
+            const modal = document.getElementById('confirmDeleteModal');
+            
+            fetch('processar_lampada.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=remover&id=${currentLightId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Lâmpada removida com sucesso!', 'success');
+                    // Remove o card da lâmpada
+                    currentButton.closest('.light-card').remove();
+                    
+                    // Verifica se ainda existem lâmpadas
+                    if (document.querySelectorAll('.light-card').length === 0) {
+                        window.location.reload(); // Recarrega para mostrar a mensagem de "nenhuma lâmpada"
+                    }
+                } else {
+                    showMessage('Erro ao remover: ' + (data.message || 'Erro desconhecido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showMessage('Erro ao processar a requisição', 'error');
+            })
+            .finally(() => {
+                // Fecha o modal e limpa as variáveis
+                modal.style.display = 'none';
+                currentLightId = null;
+                currentButton = null;
+            });
+        }
+        
+        // Função para cancelar a exclusão
+        function cancelDelete() {
+            const modal = document.getElementById('confirmDeleteModal');
+            modal.style.display = 'none';
+            currentLightId = null;
+            currentButton = null;
+        }
+        
+        // Função para exibir mensagens
+        function showMessage(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#4a90e2'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 300px;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-times-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+            }
+            
+            toast.innerHTML = `${icon} ${message}`;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 5000);
+        }
+        
+        // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', function() {
             const initialStatus = '<?php echo $lightStatus; ?>';
             if (initialStatus === 'on') {
@@ -639,6 +990,8 @@ $lights = [
                 if (brightnessSlider) brightnessSlider.disabled = true;
             }
             
+            console.log('Enviando requisição para atualizar status da luz:', { lightId, newStatus });
+            
             fetch('../includes/update_light.php', {
                 method: 'POST',
                 headers: {
@@ -649,33 +1002,50 @@ $lights = [
                     status: newStatus ? 'ON' : 'OFF'
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Resposta recebida, status:', response.status);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        console.error('Erro na resposta:', text);
+                        throw new Error(`Erro HTTP! status: ${response.status}, resposta: ${text}`);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.success) {
+                console.log('Dados da resposta:', data);
+                if (data && data.success) {
                     showMessage(`Luz ${newStatus ? 'ligada' : 'desligada'} com sucesso!`, 'success');
                 } else {
+                    const errorMessage = data && data.error ? data.error : 'Erro desconhecido ao atualizar o status da luz';
+                    console.error('Erro na resposta da API:', errorMessage);
+                    showMessage(`Erro: ${errorMessage}`, 'error');
+                    
+                    // Reverte a UI para o estado anterior
                     if (isOn) {
                         card.classList.remove('off');
                         card.classList.add('on');
                         statusElement.classList.remove('off');
                         statusElement.classList.add('on');
                         statusText.textContent = 'Ligada';
-                        brightnessSlider.disabled = false;
-                        colorPicker.disabled = false;
+                        if (brightnessSlider) brightnessSlider.disabled = false;
+                        if (colorPicker) colorPicker.disabled = false;
                     } else {
                         card.classList.remove('on');
                         card.classList.add('off');
                         statusElement.classList.remove('on');
                         statusElement.classList.add('off');
                         statusText.textContent = 'Desligada';
-                        brightnessSlider.disabled = true;
-                        colorPicker.disabled = true;
+                        if (brightnessSlider) brightnessSlider.disabled = true;
+                        if (colorPicker) colorPicker.disabled = true;
                     }
-                    showMessage('Erro ao atualizar o status da luz', 'error');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Erro na requisição:', error);
+                showMessage(`Erro ao atualizar o status da luz: ${error.message}`, 'error');
+                
+                // Reverte a UI para o estado anterior
                 if (isOn) {
                     card.classList.remove('off');
                     card.classList.add('on');
@@ -704,6 +1074,55 @@ $lights = [
         function changeBrightness(lightId, value) {
             document.getElementById(`brightness-value-${lightId}`).textContent = value + '%';
             showMessage(`Intensidade ajustada para ${value}%`, 'info');
+            
+            // Atualiza o brilho no banco de dados
+            fetch('processar_lampada.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=atualizar_brilho&id=${lightId}&brilho=${value}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    showMessage('Erro ao atualizar o brilho: ' + (data.message || 'Erro desconhecido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showMessage('Erro ao atualizar o brilho', 'error');
+            });
+        }
+        
+        function showLightSettings(lightId, name, room) {
+            const newName = prompt('Editar nome da lâmpada:', name);
+            if (newName === null) return; // Usuário cancelou
+            
+            const newRoom = prompt('Editar cômodo:', room);
+            if (newRoom === null) return; // Usuário cancelou
+            
+            fetch('processar_lampada.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=atualizar&id=${lightId}&nome=${encodeURIComponent(newName)}&comodo=${encodeURIComponent(newRoom)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Configurações atualizadas com sucesso!', 'success');
+                    // Recarrega a página para atualizar os dados
+                    window.location.reload();
+                } else {
+                    showMessage('Erro ao atualizar: ' + (data.message || 'Erro desconhecido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showMessage('Erro ao processar a requisição', 'error');
+            });
         }
         
         
@@ -729,6 +1148,158 @@ $lights = [
                 top: 20px;
                 right: 20px;
                 background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#4a90e2'};
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-50px)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Função para alternar o estado da lâmpada
+        function toggleLight(lightId, element) {
+            const isOn = element.classList.toggle('on');
+            const icon = element.querySelector('i');
+            
+            // Atualiza o ícone baseado no estado
+            if (isOn) {
+                icon.className = 'fas fa-lightbulb';
+                element.style.background = 'rgba(76, 209, 55, 0.2)';
+                element.style.borderColor = '#4cd137';
+            } else {
+                icon.className = 'far fa-lightbulb';
+                element.style.background = 'rgba(255, 255, 255, 0.05)';
+                element.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            }
+            
+            // Aqui você pode adicionar a lógica para enviar o comando para a lâmpada
+            console.log(`Lâmpada ${lightId} ${isOn ? 'ligada' : 'desligada'}`);
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+                <span class="close-btn" onclick="cancelDelete()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja remover a lâmpada <strong id="lightToDelete"></strong>?</p>
+                <p class="text-warning"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>
+                
+                <div class="form-actions" style="margin-top: 30px; justify-content: flex-end;">
+                    <button type="button" class="btn-cancel" onclick="cancelDelete()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn-confirm btn-remove" onclick="confirmDelete()">
+                        <i class="fas fa-trash"></i> Sim, remover
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="confirmDeleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+                <span class="close-btn" onclick="cancelDelete()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja remover a lâmpada <strong id="lightToDelete"></strong>?</p>
+                <p class="text-warning"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="cancelDelete()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn-confirm btn-remove" onclick="confirmDelete()">
+                        <i class="fas fa-trash"></i> Sim, remover
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        // Variáveis globais
+        let currentLightId = null;
+        let currentButton = null;
+        
+        // Função para remover uma lâmpada
+        function removeLight(lightId, button) {
+            currentLightId = lightId;
+            currentButton = button;
+            
+            // Exibe o modal de confirmação
+            const modal = document.getElementById('confirmDeleteModal');
+            const lightName = button.closest('.light-card').querySelector('h3').textContent;
+            document.getElementById('lightToDelete').textContent = lightName;
+            modal.style.display = 'flex';
+        }
+        
+        // Função para confirmar a exclusão
+        function confirmDelete() {
+            if (!currentLightId || !currentButton) return;
+            
+            const modal = document.getElementById('confirmDeleteModal');
+            
+            fetch('processar_lampada.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=remover&id=${currentLightId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Lâmpada removida com sucesso!', 'success');
+                    // Remove o card da lâmpada
+                    currentButton.closest('.light-card').remove();
+                    
+                    // Verifica se ainda existem lâmpadas
+                    if (document.querySelectorAll('.light-card').length === 0) {
+                        window.location.reload(); // Recarrega para mostrar a mensagem de "nenhuma lâmpada"
+                    }
+                } else {
+                    showMessage('Erro ao remover: ' + (data.message || 'Erro desconhecido'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showMessage('Erro ao processar a requisição', 'error');
+            })
+            .finally(() => {
+                // Fecha o modal e limpa as variáveis
+                modal.style.display = 'none';
+                currentLightId = null;
+                currentButton = null;
+            });
+        }
+        
+        // Função para cancelar a exclusão
+        function cancelDelete() {
+            const modal = document.getElementById('confirmDeleteModal');
+            modal.style.display = 'none';
+            currentLightId = null;
+            currentButton = null;
+        }
+        
+        // Função para exibir mensagens
+        function showMessage(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#4a90e2'};
                 color: white;
                 padding: 15px 20px;
                 border-radius: 8px;
@@ -737,26 +1308,434 @@ $lights = [
                 font-size: 14px;
                 max-width: 300px;
                 opacity: 0;
-                transform: translateX(100%);
+                transform: translateY(-50px);
                 transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             `;
-            toast.textContent = message;
+            
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-times-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+            }
+            
+            toast.innerHTML = `${icon} ${message}`;
             
             document.body.appendChild(toast);
             
+            // Anima a entrada
             setTimeout(() => {
                 toast.style.opacity = '1';
-                toast.style.transform = 'translateX(0)';
+                toast.style.transform = 'translateY(0)';
             }, 100);
             
+            // Remove após 5 segundos
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
+                toast.style.transform = 'translateY(-50px)';
                 setTimeout(() => {
-                    document.body.removeChild(toast);
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
                 }, 300);
-            }, 3000);
+            }, 5000);
         }
+        
+        // Inicialização quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', function() {
+            const initialStatus = '<?php echo $lightStatus; ?>';
+            if (initialStatus === 'on') {
+                const card = document.querySelector('[data-light-id="1"]');
+                if (card) {
+                    const statusElement = card.querySelector('.light-status');
+                    const statusText = statusElement.querySelector('span');
+                    const brightnessSlider = document.getElementById('brightness-1');
+                    
+                    card.classList.remove('off');
+                    card.classList.add('on');
+                    statusElement.classList.remove('off');
+                    statusElement.classList.add('on');
+                    statusText.textContent = 'Ligada';
+                    if (brightnessSlider) brightnessSlider.disabled = false;
+                }
+            }
+        });
     </script>
+
+    <!-- Estilos para o modal de confirmação -->
+    <style>
+        .text-warning {
+            color: #f39c12;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .text-warning i {
+            font-size: 1.1em;
+        }
+        
+        .btn-confirm.btn-remove {
+            background: #e74c3c !important;
+            border: none !important;
+        }
+        
+        .btn-confirm.btn-remove:hover {
+            background: #c0392b !important;
+            transform: translateY(-2px);
+        }
+        
+        /* Estilo para o modal de confirmação */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #2c3e50;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-btn:hover {
+            color: #fff;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            color: #ecf0f1;
+            line-height: 1.6;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn-cancel {
+            background: #7f8c8d !important;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-cancel:hover {
+            background: #95a5a6 !important;
+            transform: translateY(-2px);
+        }
+        
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #2c3e50;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-btn:hover {
+            color: #fff;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            color: #ecf0f1;
+            line-height: 1.6;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn-cancel {
+            background: #7f8c8d !important;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-confirm {
+            background: #e74c3c !important;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-confirm:hover {
+            background: #c0392b !important;
+            transform: translateY(-2px);
+        }
+        
+        .text-warning {
+            color: #f39c12;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .text-warning i {
+            font-size: 1.1em;
+        }
+        
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: #2c3e50;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-btn {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-btn:hover {
+            color: #fff;
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+            color: #ecf0f1;
+            line-height: 1.6;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn-cancel {
+            background: #7f8c8d !important;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-confirm {
+            background: #e74c3c !important;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-confirm:hover {
+            background: #c0392b !important;
+            transform: translateY(-2px);
+        }
+    </style>
+    
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="confirmDeleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+                <span class="close-btn" onclick="cancelDelete()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja remover a lâmpada <strong id="lightToDelete"></strong>?</p>
+                <p class="text-warning"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="cancelDelete()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn-confirm btn-remove" onclick="confirmDelete()">
+                        <i class="fas fa-trash"></i> Sim, remover
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -642,6 +642,127 @@ $devices = [
             max-height: 80vh;
             display: flex;
             flex-direction: column;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Estilos específicos para o modal de lâmpada */
+        #lampadaModal .modal-content {
+            max-width: 500px;
+            max-height: 90vh;
+        }
+        
+        #lampadaModal .modal-header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            padding: 15px 20px;
+        }
+        
+        #lampadaModal .modal-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #lampadaModal .modal-body {
+            padding: 25px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        #lampadaForm .form-group {
+            margin-bottom: 20px;
+        }
+        
+        #lampadaForm label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+        
+        #lampadaForm input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        #lampadaForm input[type="text"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.3);
+        }
+        
+        #lampadaForm .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #lampadaForm .btn-cancel,
+        #lampadaForm .btn-confirm {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        #lampadaForm .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+        }
+        
+        #lampadaForm .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        #lampadaForm .btn-confirm {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+        
+        #lampadaForm .btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            #lampadaModal .modal-content {
+                width: 90%;
+                margin: 20px auto;
+            }
+            
+            #lampadaForm .form-actions {
+                flex-direction: column;
+            }
+            
+            #lampadaForm .btn-cancel,
+            #lampadaForm .btn-confirm {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         .modal-header {
@@ -845,43 +966,28 @@ $devices = [
     </style>
 
     <script>
-        function registerDevice(deviceId) {
-            // Exibe um alerta de confirmação
-            if (confirm('Deseja cadastrar este dispositivo de iluminação?')) {
-                // Aqui você pode adicionar o código para processar o cadastro
-                // Por exemplo, fazer uma requisição AJAX para o servidor
-                console.log('Dispositivo a ser cadastrado:', deviceId);
-                
-                // Exemplo de requisição AJAX (descomente e ajuste conforme necessário)
-                /*
-                fetch('processar_cadastro.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        deviceId: deviceId,
-                        action: 'register'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Dispositivo cadastrado com sucesso!');
-                        // Atualiza a interface se necessário
-                    } else {
-                        alert('Erro ao cadastrar dispositivo: ' + (data.message || 'Erro desconhecido'));
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Erro ao processar a requisição');
-                });
-                */
-                
-                // Por enquanto, apenas um alerta de sucesso
-                alert('Dispositivo cadastrado com sucesso!');
+        // Função para abrir o modal de cadastro de lâmpada
+        function openLampadaModal(deviceId) {
+            const modal = document.getElementById('lampadaModal');
+            if (modal) {
+                modal.style.display = 'block';
+                document.getElementById('lampadaNome').focus();
+            } else {
+                console.error('Modal não encontrado');
             }
+        }
+        
+        // Função para fechar o modal
+        function closeLampadaModal() {
+            const modal = document.getElementById('lampadaModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Função para registrar um novo dispositivo
+        function registerDevice(deviceId) {
+            openLampadaModal(deviceId);
         }
         
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
@@ -1004,7 +1110,64 @@ $devices = [
         }
 
         function showMessage(message, type = 'info') {
-            alert(message);
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : type === 'warning' ? '#f39c12' : '#4a90e2'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                font-size: 14px;
+                max-width: 300px;
+                opacity: 0;
+                transform: translateY(-50px);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            // Adiciona ícone baseado no tipo de mensagem
+            let icon = '';
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-times-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+            }
+            
+            toast.innerHTML = `${icon} ${message}`;
+            
+            document.body.appendChild(toast);
+            
+            // Anima a entrada
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Remove após 3 segundos
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-50px)';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
         }
         
         function filterDevices() {
@@ -1049,13 +1212,102 @@ $devices = [
             }
         }
         
-        setInterval(() => {
-            console.log('Auto-refresh dispositivos IoT...');
-        }, 30000);
-
+        // Inicialização quando o DOM estiver pronto
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Página de Dispositivos IoT carregada');
+            
+            // Elementos do modal
+            const lampadaModal = document.getElementById('lampadaModal');
+            const closeModal = document.querySelector('.close-lampada');
+            const lampadaForm = document.getElementById('lampadaForm');
+            
+            if (!lampadaModal || !closeModal || !lampadaForm) {
+                console.error('Elementos do modal não encontrados');
+                return;
+            }
+
+            // Fechar modal ao clicar no X
+            closeModal.onclick = function() {
+                lampadaModal.style.display = 'none';
+                lampadaForm.reset();
+            };
+
+            // Fechar modal ao clicar fora dele
+            window.onclick = function(event) {
+                if (event.target === lampadaModal) {
+                    lampadaModal.style.display = 'none';
+                    lampadaForm.reset();
+                }
+            };
+
+            // Enviar formulário
+            lampadaForm.onsubmit = function(e) {
+                e.preventDefault();
+                const nome = document.getElementById('lampadaNome').value.trim();
+                const comodo = document.getElementById('lampadaComodo').value.trim();
+                
+                if (!nome || !comodo) {
+                    showMessage('Por favor, preencha todos os campos.', 'warning');
+                    return false;
+                }
+                
+                // Envia os dados para o servidor
+                fetch('processar_lampada.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=adicionar&nome=${encodeURIComponent(nome)}&comodo=${encodeURIComponent(comodo)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage('Lâmpada cadastrada com sucesso!', 'success');
+                        lampadaModal.style.display = 'none';
+                        lampadaForm.reset();
+                        window.location.reload();
+                    } else {
+                        throw new Error(data.message || 'Erro ao cadastrar lâmpada');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    showMessage(error.message || 'Erro ao processar a requisição', 'error');
+                });
+                
+                return false;
+            };
         });
     </script>
+    
+    <!-- Modal de Cadastro de Lâmpada -->
+    <div id="lampadaModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-lightbulb"></i> Cadastrar Nova Lâmpada</h2>
+                <span class="close-lampada">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="lampadaForm">
+                    <div class="form-group">
+                        <label for="lampadaNome">Nome da Lâmpada</label>
+                        <input type="text" id="lampadaNome" placeholder="Ex: Lâmpada da Sala" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lampadaComodo">Cômodo</label>
+                        <input type="text" id="lampadaComodo" placeholder="Ex: Sala, Quarto, Cozinha" required>
+                    </div>
+                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('lampadaModal').style.display='none'">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-confirm">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

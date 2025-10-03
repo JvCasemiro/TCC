@@ -45,6 +45,19 @@ function criarTabelas($conn) {
         
         $conn->exec($sql_usuarios);
         
+        $sql_lampadas = "
+        CREATE TABLE IF NOT EXISTS Lampadas (
+            ID_Lampada INT AUTO_INCREMENT PRIMARY KEY,
+            Nome VARCHAR(100) NOT NULL,
+            Comodo VARCHAR(50) NOT NULL,
+            Status VARCHAR(10) DEFAULT 'off',
+            Brilho INT DEFAULT 50,
+            ID_Usuario INT,
+            Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        
         $sql_placas = "
         CREATE TABLE IF NOT EXISTS Placas (
             ID_Placa INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,6 +67,7 @@ function criarTabelas($conn) {
             Ultimo_Acesso TIMESTAMP NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
+        $conn->exec($sql_lampadas);
         $conn->exec($sql_placas);
         
         $stmt = $conn->prepare("SELECT COUNT(*) FROM Usuarios WHERE Nome_Usuario = 'admin'");
