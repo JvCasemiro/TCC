@@ -20,7 +20,7 @@ try {
     $statusInfo = $lightController->getStatus();
     
     // Obtém os detalhes das lâmpadas do banco de dados
-    $stmt = $conn->query("SELECT ID_Lampada, Nome, Comodo, Status, Brilho FROM Lampadas ORDER BY ID_Lampada");
+    $stmt = $conn->query("SELECT ID_Lampada, Nome, Comodo, Status FROM Lampadas ORDER BY ID_Lampada");
     $lampadas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Prepara a resposta

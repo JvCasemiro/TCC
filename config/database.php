@@ -51,7 +51,6 @@ function criarTabelas($conn) {
             Nome VARCHAR(100) NOT NULL,
             Comodo VARCHAR(50) NOT NULL,
             Status VARCHAR(10) DEFAULT 'off',
-            Brilho INT DEFAULT 50,
             ID_Usuario INT,
             Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
