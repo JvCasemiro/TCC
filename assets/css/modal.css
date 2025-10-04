@@ -32,6 +32,54 @@
     color: white !important;
 }
 
+/* Estilo para as mensagens toast */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+    max-width: 350px;
+}
+
+.toast i {
+    font-size: 1.2em;
+}
+
+.toast-success {
+    background-color: #27ae60;
+}
+
+.toast-error {
+    background-color: #e74c3c;
+}
+
+.toast-warning {
+    background-color: #f39c12;
+}
+
+.toast-info {
+    background-color: #3498db;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Estilo para o modal de confirmação */
 .modal {
     display: none;
