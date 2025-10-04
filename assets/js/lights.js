@@ -4,67 +4,178 @@
 let currentLightId = null;
 let currentButton = null;
 
-// Função para remover uma lâmpada
-function removeLight(lightId, button) {
-    currentLightId = lightId;
-    currentButton = button;
-    
-    // Exibe o modal de confirmação
-    const modal = document.getElementById('confirmDeleteModal');
-    const lightName = button.closest('.light-card').querySelector('h3').textContent;
-    document.getElementById('lightToDelete').textContent = lightName;
-    modal.style.display = 'flex';
+// Verifica se o elemento existe
+function elementExists(selector) {
+    return document.querySelector(selector) !== null;
 }
 
-// Função para confirmar a exclusão
-function confirmDelete() {
-    if (!currentLightId || !currentButton) return;
-    
-    const modal = document.getElementById('confirmDeleteModal');
-    
-    fetch('processar_lampada.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=remover&id=${currentLightId}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showMessage('Lâmpada removida com sucesso!', 'success');
-            // Remove o card da lâmpada
-            currentButton.closest('.light-card').remove();
-            
-            // Verifica se ainda existem lâmpadas
-            if (document.querySelectorAll('.light-card').length === 0) {
-                window.location.reload();
-            }
-        } else {
-            showMessage('Erro ao remover: ' + (data.message || 'Erro desconhecido'), 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        showMessage('Erro ao processar a requisição', 'error');
-    })
-    .finally(() => {
-        modal.style.display = 'none';
-        currentLightId = null;
-        currentButton = null;
-    });
-}
-
-// Função para cancelar a exclusão
-function cancelDelete() {
-    const modal = document.getElementById('confirmDeleteModal');
-    modal.style.display = 'none';
-    currentLightId = null;
-    currentButton = null;
+// Obtém o elemento do card da lâmpada
+function getLightCard(lightId) {
+    return document.querySelector(`[data-light-id="${lightId}"]`);
 }
 
 // Função para exibir mensagens
 function showMessage(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    
+    // Adiciona o toast ao corpo do documento
+    document.body.appendChild(toast);
+    
+    // Remove o toast após 3 segundos
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+// Função para atualizar o status de todas as lâmpadas
+function updateLightsStatus() {
+    fetch('../includes/get_lights_status.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Atualiza o status de cada lâmpada
+                data.lampadas.forEach(lampada => {
+                    const card = getLightCard(lampada.ID_Lampada);
+                    if (card) {
+                        const statusElement = card.querySelector('.light-status');
+                        const statusText = statusElement ? statusElement.querySelector('span') : null;
+                        const status = lampada.Status === 'on' ? 'on' : 'off';
+                        
+                        // Atualiza o visual do card
+                        card.setAttribute('data-status', status);
+                        if (statusText) {
+                            statusText.textContent = status === 'on' ? 'Ligada' : 'Desligada';
+                        }
+                        
+                        // Atualiza o botão de toggle
+                        const toggleBtn = card.querySelector('.toggle-btn');
+                        if (toggleBtn) {
+                            toggleBtn.innerHTML = status === 'on' ? 
+                                '<i class="fas fa-lightbulb"></i>' : 
+                                '<i class="far fa-lightbulb"></i>';
+                            toggleBtn.className = `toggle-btn ${status}`;
+                        }
+                        
+                        // Atualiza o slider de brilho
+                        const brightnessSlider = card.querySelector('.brightness-slider');
+                        if (brightnessSlider) {
+                            brightnessSlider.value = lampada.Brilho || 50;
+                        }
+                    }
+                });
+                
+                // Atualiza a porcentagem de lâmpadas acesas
+                const percentageElement = document.getElementById('lights-percentage');
+                if (percentageElement) {
+                    percentageElement.textContent = `${data.porcentagem}%`;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao atualizar status das lâmpadas:', error);
+        });
+}
+
+// Função para alternar o estado da lâmpada
+function toggleLight(lightId, element = null) {
+    const card = document.querySelector(`[data-light-id="${lightId}"]`);
+    if (!card) return;
+    
+    const currentStatus = card.getAttribute('data-status') || 'off';
+    const newStatus = currentStatus === 'on' ? 'off' : 'on';
+    
+    // Atualiza o estado visual imediatamente para feedback do usuário
+    card.setAttribute('data-status', newStatus);
+    
+    if (element) {
+        element.innerHTML = newStatus === 'on' ? 
+            '<i class="fas fa-lightbulb"></i>' : 
+            '<i class="far fa-lightbulb"></i>';
+        element.className = `toggle-btn ${newStatus}`;
+    }
+    
+    // Envia a requisição para atualizar o status
+    fetch('../includes/update_light.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            light_id: lightId,
+            status: newStatus
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            // Reverte as alterações visuais em caso de erro
+            card.setAttribute('data-status', currentStatus);
+            if (element) {
+                element.innerHTML = currentStatus === 'on' ? 
+                    '<i class="fas fa-lightbulb"></i>' : 
+                    '<i class="far fa-lightbulb"></i>';
+                element.className = `toggle-btn ${currentStatus}`;
+            }
+            showMessage('Erro ao atualizar a lâmpada: ' + (data.message || 'Erro desconhecido'), 'error');
+        } else {
+            // Atualiza o status de todas as lâmpadas para garantir consistência
+            updateLightsStatus();
+            showMessage(`Lâmpada ${lightId} ${newStatus === 'on' ? 'ligada' : 'desligada'} com sucesso!`, 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        // Reverte as alterações visuais em caso de erro
+        card.setAttribute('data-status', currentStatus);
+        if (element) {
+            element.innerHTML = currentStatus === 'on' ? 
+                '<i class="fas fa-lightbulb"></i>' : 
+                '<i class="far fa-lightbulb"></i>';
+            element.className = `toggle-btn ${currentStatus}`;
+        }
+        showMessage('Erro ao conectar ao servidor', 'error');
+    });
+}
+
+// Função para ajustar o brilho da lâmpada
+function changeBrightness(lightId, value) {
+    const card = document.querySelector(`[data-light-id="${lightId}"]`);
+    if (!card) return;
+    
+    // Envia a requisição para atualizar o brilho
+    fetch('../includes/update_light.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            light_id: lightId,
+            brightness: parseInt(value)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            showMessage('Erro ao ajustar o brilho: ' + (data.message || 'Erro desconhecido'), 'error');
+        } else {
+            // Atualiza o status de todas as lâmpadas para garantir consistência
+            updateLightsStatus();
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        showMessage('Erro ao conectar ao servidor', 'error');
+    });
+}
+
+// Função para exibir mensagens
+function showMessage(message, type = 'info') {
+    // Remove mensagens existentes
+    const existingMessages = document.querySelectorAll('.message');
+    existingMessages.forEach(msg => msg.remove());
+    
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
     messageDiv.textContent = message;
@@ -91,86 +202,46 @@ function showMessage(message, type = 'info') {
     }, 5000);
 }
 
-// Função para alternar o estado da lâmpada
-function toggleLight(lightId, element = null) {
-    const card = document.querySelector(`[data-light-id="${lightId}"]`);
-    if (!card) return;
+// Inicialização quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualiza o status das lâmpadas a cada 5 segundos
+    updateLightsStatus();
+    setInterval(updateLightsStatus, 5000);
     
-    const statusElement = card.querySelector('.light-status');
-    const statusText = statusElement ? statusElement.querySelector('span') : null;
-    const brightnessSlider = document.getElementById(`brightness-${lightId}`);
-    const isOn = card.classList.contains('on');
-    
-    // Atualiza o estado visual imediatamente para melhor resposta do usuário
-    if (isOn) {
-        card.classList.remove('on');
-        if (statusText) statusText.textContent = 'Desligada';
-        if (brightnessSlider) brightnessSlider.disabled = true;
-    } else {
-        card.classList.add('on');
-        if (statusText) statusText.textContent = 'Ligada';
-        if (brightnessSlider) brightnessSlider.disabled = false;
-    }
-    
-    // Se o elemento foi passado (clique no ícone), atualiza o ícone
-    if (element) {
-        const isOnNow = element.classList.toggle('on');
-        const icon = element.querySelector('i');
-        if (icon) {
-            if (isOnNow) {
-                icon.className = 'fas fa-lightbulb';
-                icon.style.color = '#ffd700';
-            } else {
-                icon.className = 'far fa-lightbulb';
-                icon.style.color = '#666';
+    // Configura os tooltips
+    const tooltips = document.querySelectorAll('[data-tooltip]');
+    tooltips.forEach(tooltip => {
+        tooltip.addEventListener('mouseenter', function() {
+            const tooltipText = this.getAttribute('data-tooltip');
+            const tooltipElement = document.createElement('div');
+            tooltipElement.className = 'tooltip';
+            tooltipElement.textContent = tooltipText;
+            this.appendChild(tooltipElement);
+            
+            // Posiciona o tooltip
+            const rect = this.getBoundingClientRect();
+            tooltipElement.style.top = `${rect.top - tooltipElement.offsetHeight - 10}px`;
+            tooltipElement.style.left = `${rect.left + (this.offsetWidth / 2) - (tooltipElement.offsetWidth / 2)}px`;
+        });
+        
+        tooltip.addEventListener('mouseleave', function() {
+            const tooltipElement = this.querySelector('.tooltip');
+            if (tooltipElement) {
+                tooltipElement.remove();
             }
-        }
-    }
-    
-    // Envia a requisição para o servidor
-    fetch('processar_lampada.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=alternar&id=${lightId}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.success) {
-            // Reverte as alterações visuais em caso de erro
-            if (isOn) {
-                card.classList.add('on');
-                if (statusText) statusText.textContent = 'Ligada';
-                if (brightnessSlider) brightnessSlider.disabled = false;
-            } else {
-                card.classList.remove('on');
-                if (statusText) statusText.textContent = 'Desligada';
-                if (brightnessSlider) brightnessSlider.disabled = true;
-            }
-            showMessage('Erro ao atualizar o estado da lâmpada', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        // Reverte as alterações visuais em caso de erro
-        if (isOn) {
-            card.classList.add('on');
-            if (statusText) statusText.textContent = 'Ligada';
-            if (brightnessSlider) brightnessSlider.disabled = false;
-        } else {
-            card.classList.remove('on');
-            if (statusText) statusText.textContent = 'Desligada';
-            if (brightnessSlider) brightnessSlider.disabled = true;
-        }
-        showMessage('Erro ao conectar ao servidor', 'error');
+        });
     });
-}
+});
 
 // Função para ajustar o brilho
 function changeBrightness(lightId, value) {
-    const card = document.querySelector(`[data-light-id="${lightId}"]`);
+    const card = getLightCard(lightId);
     const brightnessValue = document.getElementById(`brightness-value-${lightId}`);
+    
+    if (!card) {
+        console.error(`Card da lâmpada ${lightId} não encontrado`);
+        return;
+    }
     
     // Atualiza o valor exibido
     if (brightnessValue) {
@@ -305,34 +376,65 @@ function showMessage(message, type = 'info') {
 
 // Função para ligar/desligar a lâmpada
 function toggleLight(lightId, element) {
-    const isOn = element.classList.toggle('on');
-    const icon = element.querySelector('i');
+    // Tenta encontrar o elemento se não foi fornecido
+    if (!element) {
+        element = document.querySelector(`[data-light-id="${lightId}"]`);
+        if (!element) {
+            console.error(`Elemento da lâmpada ${lightId} não encontrado`);
+            return;
+        }
+    }
+
+    // Encontra os elementos necessários
+    const card = element.closest('.light-card') || element;
+    const icon = element.querySelector('i') || card.querySelector('i');
     const brightnessSlider = document.getElementById(`brightness-${lightId}`);
-    const brightnessValue = brightnessSlider ? brightnessSlider.value : 100;
+    const statusText = card.querySelector('.light-status span');
+    const isCurrentlyOn = card.classList.contains('on');
+    const newStatus = !isCurrentlyOn;
     
-    // Atualiza o ícone baseado no estado
-    if (isOn) {
-        icon.className = 'fas fa-lightbulb';
-        element.style.color = '#f1c40f';
+    // Atualiza a interface imediatamente para melhor resposta
+    if (newStatus) {
+        card.classList.add('on');
+        if (icon) {
+            icon.className = 'fas fa-lightbulb';
+            icon.style.color = '#f1c40f';
+        }
+        if (statusText) statusText.textContent = 'Ligada';
+        if (brightnessSlider) brightnessSlider.disabled = false;
     } else {
-        icon.className = 'far fa-lightbulb';
-        element.style.color = '#95a5a6';
+        card.classList.remove('on');
+        if (icon) {
+            icon.className = 'far fa-lightbulb';
+            icon.style.color = '#95a5a6';
+        }
+        if (statusText) statusText.textContent = 'Desligada';
+        if (brightnessSlider) brightnessSlider.disabled = true;
     }
     
     // Envia a requisição para atualizar o status
-    fetch('processar_lampada.php', {
+    fetch('../includes/update_light.php', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
         },
-        body: `action=toggle&id=${lightId}&status=${isOn ? 'on' : 'off'}&brightness=${brightnessValue}`
+        body: JSON.stringify({
+            light_id: lightId,
+            status: newStatus ? 'ON' : 'OFF'
+        })
     })
     .then(response => response.json())
     .then(data => {
         if (!data.success) {
             showMessage('Erro ao atualizar a lâmpada: ' + (data.message || 'Erro desconhecido'), 'error');
             // Reverte a mudança em caso de erro
-            element.classList.toggle('on');
+            card.classList.toggle('on');
+            if (icon) {
+                icon.className = isCurrentlyOn ? 'fas fa-lightbulb' : 'far fa-lightbulb';
+                icon.style.color = isCurrentlyOn ? '#f1c40f' : '#95a5a6';
+            }
+            if (statusText) statusText.textContent = isCurrentlyOn ? 'Ligada' : 'Desligada';
+            if (brightnessSlider) brightnessSlider.disabled = !isCurrentlyOn;
             if (isOn) {
                 icon.className = 'far fa-lightbulb';
                 element.style.color = '#95a5a6';

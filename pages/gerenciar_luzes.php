@@ -698,53 +698,116 @@ $noLights = empty($lights);
     </div>
     
     <script>
+        // Função para atualizar o estado de uma lâmpada
+        function updateLightState(lightId, isOn) {
+            const card = document.querySelector(`[data-light-id="${lightId}"]`);
+            if (!card) return;
+            
+            const statusElement = card.querySelector('.light-status');
+            const statusText = statusElement ? statusElement.querySelector('span') : null;
+            const brightnessSlider = document.getElementById(`brightness-${lightId}`);
+            const toggleSwitch = card.querySelector('input[type="checkbox"]');
+            
+            // Atualiza as classes
+            card.classList.toggle('on', isOn);
+            card.classList.toggle('off', !isOn);
+            
+            if (statusElement) {
+                statusElement.classList.toggle('on', isOn);
+                statusElement.classList.toggle('off', !isOn);
+            }
+            
+            // Atualiza o texto do status
+            if (statusText) {
+                statusText.textContent = isOn ? 'Ligada' : 'Desligada';
+            }
+            
+            // Habilita/desabilita o controle de brilho
+            if (brightnessSlider) {
+                brightnessSlider.disabled = !isOn;
+            }
+            
+            // Atualiza o estado do toggle switch
+            if (toggleSwitch) {
+                toggleSwitch.checked = isOn;
+            }
+        }
+        
+        // Função para carregar o status das lâmpadas
+        function loadLightsStatus() {
+            fetch('../includes/get_lights_status.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar status das lâmpadas');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.status) {
+                        // Atualiza o estado de cada lâmpada com base no status retornado
+                        for (let i = 0; i < data.status.length; i++) {
+                            const lightId = i + 1;
+                            const isOn = data.status[i] === '1';
+                            updateLightState(lightId, isOn);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar status das lâmpadas:', error);
+                });
+        }
         
         // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', function() {
-            const initialStatus = '<?php echo $lightStatus; ?>';
-            if (initialStatus === 'on') {
-                const card = document.querySelector('[data-light-id="1"]');
-                if (card) {
-                    const statusElement = card.querySelector('.light-status');
-                    const statusText = statusElement.querySelector('span');
-                    const brightnessSlider = document.getElementById('brightness-1');
-                    
-                    card.classList.remove('off');
-                    card.classList.add('on');
-                    statusElement.classList.remove('off');
-                    statusElement.classList.add('on');
-                    statusText.textContent = 'Ligada';
-                    if (brightnessSlider) brightnessSlider.disabled = false;
-                }
-            }
+            // Carrega o status inicial das lâmpadas
+            loadLightsStatus();
+            
+            // Atualiza o status a cada 5 segundos
+            setInterval(loadLightsStatus, 5000);
         });
 
         function toggleLight(lightId) {
             const card = document.querySelector(`[data-light-id="${lightId}"]`);
+            if (!card) {
+                console.error('Card não encontrado para o ID:', lightId);
+                return;
+            }
+            
             const statusElement = card.querySelector('.light-status');
+            if (!statusElement) {
+                console.error('Elemento .light-status não encontrado no card:', lightId);
+                return;
+            }
+            
             const statusText = statusElement.querySelector('span');
             const brightnessSlider = document.getElementById(`brightness-${lightId}`);
+            const toggleSwitch = card.querySelector('input[type="checkbox"]');
             
             const isOn = card.classList.contains('on');
             const newStatus = !isOn;
             
-            if (newStatus) {
-                card.classList.remove('off');
-                card.classList.add('on');
-                statusElement.classList.remove('off');
-                statusElement.classList.add('on');
-                statusText.textContent = 'Ligada';
-                if (brightnessSlider) brightnessSlider.disabled = false;
-            } else {
-                card.classList.remove('on');
-                card.classList.add('off');
-                statusElement.classList.remove('on');
-                statusElement.classList.add('off');
-                statusText.textContent = 'Desligada';
-                if (brightnessSlider) brightnessSlider.disabled = true;
+            // Atualiza as classes e o estado visual
+            card.classList.toggle('on', newStatus);
+            card.classList.toggle('off', !newStatus);
+            statusElement.classList.toggle('on', newStatus);
+            statusElement.classList.toggle('off', !newStatus);
+            
+            // Atualiza o texto do status
+            if (statusText) {
+                statusText.textContent = newStatus ? 'Ligada' : 'Desligada';
             }
             
-            console.log('Enviando requisição para atualizar status da luz:', { lightId, newStatus });
+            // Atualiza o estado do slider de brilho
+            if (brightnessSlider) {
+                brightnessSlider.disabled = !newStatus;
+            }
+            
+            // Atualiza o estado do toggle switch
+            if (toggleSwitch) {
+                toggleSwitch.checked = newStatus;
+            }
+            
+            console.log('Enviando requisição para atualizar status da luz:', { lightId, status: newStatus ? 'ON' : 'OFF' });
             
             fetch('../includes/update_light.php', {
                 method: 'POST',
@@ -919,19 +982,150 @@ $noLights = empty($lights);
 
         // Função para alternar o estado da lâmpada
         function toggleLight(lightId, element) {
-            const isOn = element.classList.toggle('on');
-            const icon = element.querySelector('i');
-            
-            // Atualiza o ícone baseado no estado
-            if (isOn) {
-                icon.className = 'fas fa-lightbulb';
-                element.style.background = 'rgba(76, 209, 55, 0.2)';
-                element.style.borderColor = '#4cd137';
-            } else {
-                icon.className = 'far fa-lightbulb';
-                element.style.background = 'rgba(255, 255, 255, 0.05)';
-                element.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            const card = document.querySelector(`[data-light-id="${lightId}"]`);
+            if (!card) {
+                console.error('Card não encontrado para o ID:', lightId);
+                return;
             }
+            
+            const statusElement = card.querySelector('.light-status');
+            if (!statusElement) {
+                console.error('Elemento .light-status não encontrado no card:', lightId);
+                return;
+            }
+            
+            const statusText = statusElement.querySelector('span');
+            const brightnessSlider = document.getElementById(`brightness-${lightId}`);
+            const toggleSwitch = element || card.querySelector('input[type="checkbox"]');
+            
+            const isOn = card.classList.contains('on');
+            const newStatus = !isOn;
+            
+            // Atualiza as classes e o estado visual
+            card.classList.toggle('on', newStatus);
+            card.classList.toggle('off', !newStatus);
+            statusElement.classList.toggle('on', newStatus);
+            statusElement.classList.toggle('off', !newStatus);
+            
+            // Atualiza o texto do status
+            if (statusText) {
+                statusText.textContent = newStatus ? 'Ligada' : 'Desligada';
+            }
+            
+            // Atualiza o estado do slider de brilho
+            if (brightnessSlider) {
+                brightnessSlider.disabled = !newStatus;
+            }
+            
+            // Atualiza o estado do toggle switch
+            if (toggleSwitch) {
+                toggleSwitch.checked = newStatus;
+            }
+            
+            // Atualiza o estilo do elemento se fornecido
+            if (element) {
+                const icon = element.querySelector('i');
+                if (icon) {
+                    if (newStatus) {
+                        icon.className = 'fas fa-lightbulb';
+                        element.style.background = 'rgba(76, 209, 55, 0.2)';
+                        element.style.borderColor = '#4cd137';
+                    } else {
+                        icon.className = 'far fa-lightbulb';
+                        element.style.background = 'rgba(255, 255, 255, 0.05)';
+                        element.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    }
+                }
+            }
+            
+            console.log('Enviando requisição para atualizar status da luz:', { lightId, status: newStatus ? 'ON' : 'OFF' });
+            
+            fetch('../includes/update_light.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    light_id: lightId,
+                    status: newStatus ? 'ON' : 'OFF'
+                })
+            })
+            .then(response => {
+                console.log('Resposta recebida, status:', response.status);
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        console.error('Erro na resposta:', text);
+                        throw new Error(`Erro HTTP! status: ${response.status}, resposta: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.success) {
+                    console.error('Erro ao atualizar status da luz:', data.message);
+                    // Reverte as alterações visuais em caso de erro
+                    card.classList.toggle('on', !newStatus);
+                    card.classList.toggle('off', newStatus);
+                    statusElement.classList.toggle('on', !newStatus);
+                    statusElement.classList.toggle('off', newStatus);
+                    if (statusText) {
+                        statusText.textContent = !newStatus ? 'Ligada' : 'Desligada';
+                    }
+                    if (brightnessSlider) {
+                        brightnessSlider.disabled = newStatus;
+                    }
+                    if (toggleSwitch) {
+                        toggleSwitch.checked = !newStatus;
+                    }
+                    // Reverte o estilo do elemento se fornecido
+                    if (element) {
+                        const icon = element.querySelector('i');
+                        if (icon) {
+                            if (!newStatus) {
+                                icon.className = 'fas fa-lightbulb';
+                                element.style.background = 'rgba(76, 209, 55, 0.2)';
+                                element.style.borderColor = '#4cd137';
+                            } else {
+                                icon.className = 'far fa-lightbulb';
+                                element.style.background = 'rgba(255, 255, 255, 0.05)';
+                                element.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                            }
+                        }
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erro na requisição:', error);
+                // Reverte as alterações visuais em caso de erro
+                card.classList.toggle('on', !newStatus);
+                card.classList.toggle('off', newStatus);
+                statusElement.classList.toggle('on', !newStatus);
+                statusElement.classList.toggle('off', newStatus);
+                if (statusText) {
+                    statusText.textContent = !newStatus ? 'Ligada' : 'Desligada';
+                }
+                if (brightnessSlider) {
+                    brightnessSlider.disabled = newStatus;
+                }
+                if (toggleSwitch) {
+                    toggleSwitch.checked = !newStatus;
+                }
+                // Reverte o estilo do elemento se fornecido
+                if (element) {
+                    const icon = element.querySelector('i');
+                    if (icon) {
+                        if (!newStatus) {
+                            icon.className = 'fas fa-lightbulb';
+                            element.style.background = 'rgba(76, 209, 55, 0.2)';
+                            element.style.borderColor = '#4cd137';
+                        } else {
+                            icon.className = 'far fa-lightbulb';
+                            element.style.background = 'rgba(255, 255, 255, 0.05)';
+                            element.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                        }
+                    }
+                }
+            });
             
             // Aqui você pode adicionar a lógica para enviar o comando para a lâmpada
             console.log(`Lâmpada ${lightId} ${isOn ? 'ligada' : 'desligada'}`);
