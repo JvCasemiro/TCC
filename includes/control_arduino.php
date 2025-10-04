@@ -14,11 +14,9 @@ header('Access-Control-Allow-Headers: Content-Type');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/php_errors.log');
 
 // Configurações
 $pythonScript = __DIR__ . '/../python/arduino_control.py';
-$logFile = __DIR__ . '/arduino_control.log';
 
 // Função para enviar resposta JSON e encerrar o script
 function sendJsonResponse($success, $message, $httpCode = 200) {
@@ -30,9 +28,8 @@ function sendJsonResponse($success, $message, $httpCode = 200) {
     exit;
 }
 
-// Log da requisição recebida
+// Obtém os dados da requisição
 $requestData = file_get_contents('php://input');
-file_put_contents($logFile, date('Y-m-d H:i:s') . " - Requisição recebida: " . $requestData . "\n", FILE_APPEND);
 
 // Verifica se é uma requisição OPTIONS (pré-voo CORS)
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -74,15 +71,6 @@ try {
         throw new Exception('Lâmpada não encontrada no banco de dados');
     }
     
-    // Log para depuração
-    $logMessage = sprintf(
-        "[%s] Tentando controlar lâmpada - ID: %d, Nome: %s, Status: %s\n",
-        date('Y-m-d H:i:s'),
-        $lightId,
-        $light['Nome'],
-        $status
-    );
-    file_put_contents($logFile, $logMessage, FILE_APPEND);
     
     // Verifica se o script Python existe
     if (!file_exists($pythonScript)) {
@@ -96,17 +84,12 @@ try {
         $status
     );
     
-    // Log do comando
-    file_put_contents($logFile, "Executando comando: $command\n", FILE_APPEND);
-    
     // Executa o comando e captura a saída
     $output = [];
     $return_var = 0;
     exec($command, $output, $return_var);
     
-    // Log da saída
     $outputStr = implode("\n", $output);
-    file_put_contents($logFile, "Saída do comando (código $return_var): $outputStr\n", FILE_APPEND);
     
     if ($return_var !== 0) {
         throw new Exception("Erro ao executar o script Python (código $return_var): $outputStr");
@@ -116,14 +99,11 @@ try {
     $stmt = $conn->prepare("UPDATE Lampadas SET Status = ? WHERE ID_Lampada = ?");
     $stmt->execute([$status, $lightId]);
     
-    // Log de sucesso
-    file_put_contents($logFile, "Lâmpada atualizada com sucesso!\n", FILE_APPEND);
-    
     // Resposta de sucesso
     sendJsonResponse(true, 'Comando enviado com sucesso');
     
 } catch (Exception $e) {
     $errorMessage = 'Erro: ' . $e->getMessage();
-    file_put_contents($logFile, "[ERRO] $errorMessage\n", FILE_APPEND);
+    error_log($errorMessage); // Loga apenas no log de erros do PHP
     sendJsonResponse(false, $errorMessage, 500);
 }
