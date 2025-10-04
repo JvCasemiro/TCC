@@ -42,7 +42,34 @@ try {
             break;
             
         case 'remover':
-            // Implementar remoção de lâmpada se necessário
+            $id = $_POST['id'] ?? 0;
+            
+            if (empty($id)) {
+                $response['message'] = 'ID da lâmpada não fornecido';
+                break;
+            }
+            
+            // Verifica se a lâmpada pertence ao usuário logado
+            $stmt = $conn->prepare("SELECT ID_Lampada FROM Lampadas WHERE ID_Lampada = ? AND ID_Usuario = ?");
+            $stmt->execute([$id, $_SESSION['user_id']]);
+            
+            if ($stmt->rowCount() === 0) {
+                $response['message'] = 'Lâmpada não encontrada ou você não tem permissão para removê-la';
+                break;
+            }
+            
+            // Remove a lâmpada
+            $stmt = $conn->prepare("DELETE FROM Lampadas WHERE ID_Lampada = ? AND ID_Usuario = ?");
+            $success = $stmt->execute([$id, $_SESSION['user_id']]);
+            
+            if ($success) {
+                $response = [
+                    'success' => true,
+                    'message' => 'Lâmpada removida com sucesso!'
+                ];
+            } else {
+                $response['message'] = 'Erro ao remover lâmpada';
+            }
             break;
             
         default:
