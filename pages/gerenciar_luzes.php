@@ -698,10 +698,21 @@ $noLights = empty($lights);
     </div>
     
     <script>
+        // Variáveis globais para armazenar o ID e o botão da lâmpada atual
+        let currentLightId = null;
+        let currentButton = null;
+        
         // Função para remover uma lâmpada
         function removeLight(lightId, button) {
             currentLightId = lightId;
             currentButton = button;
+            
+            // Define o nome da lâmpada no modal
+            const lightName = button.closest('.light-card').querySelector('h3').textContent;
+            document.getElementById('lightToDelete').textContent = lightName;
+            
+            // Exibe o modal
+            document.getElementById('confirmDeleteModal').style.display = 'flex';
             
             // Exibe o modal de confirmação
             const modal = document.getElementById('confirmDeleteModal');

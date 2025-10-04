@@ -13,12 +13,23 @@
 
 .btn-confirm.btn-remove {
     background: #e74c3c !important;
-    border: none !important;
+    color: white !important;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
 }
 
 .btn-confirm.btn-remove:hover {
     background: #c0392b !important;
     transform: translateY(-2px);
+    color: white !important;
 }
 
 /* Estilo para o modal de confirmação */
@@ -34,6 +45,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
@@ -91,7 +103,7 @@
 .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 15px;
     margin-top: 25px;
 }
 
