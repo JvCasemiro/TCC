@@ -56,15 +56,22 @@ class LightController {
     private function updateDatabase($lightId, $status) {
         try {
             $stmt = $this->conn->prepare(
-                "UPDATE Lampadas SET Status = :status, UltimaAtualizacao = NOW() WHERE ID_Lampada = :id"
+                "UPDATE Lampadas SET `Status` = :status, Data_Atualizacao = NOW() WHERE ID_Lampada = :id"
             );
-            $stmt->execute([
+            $result = $stmt->execute([
                 ':status' => $status,
                 ':id' => $lightId
             ]);
+            
+            if ($result === false) {
+                $error = $stmt->errorInfo();
+                throw new Exception("Erro ao executar a atualização: " . ($error[2] ?? 'Erro desconhecido'));
+            }
+            
+            return $result;
         } catch (PDOException $e) {
             error_log("Erro ao atualizar banco de dados: " . $e->getMessage());
-            throw new Exception("Erro ao atualizar status da lâmpada no banco de dados");
+            throw new Exception("Erro ao atualizar status da lâmpada no banco de dados: " . $e->getMessage());
         }
     }
 
