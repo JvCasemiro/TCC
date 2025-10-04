@@ -655,7 +655,7 @@ $noLights = empty($lights);
                     </div>
                     
                     <div class="light-controls">
-                        <div class="control-group">
+                        <div class="control-group" style="margin-bottom: 15px;">
                             <label>Liga/Desliga</label>
                             <label class="toggle-switch">
                                 <input type="checkbox" <?php echo $light['status'] == 'on' ? 'checked' : ''; ?> 
@@ -663,28 +663,14 @@ $noLights = empty($lights);
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        
-                        <div class="control-group">
-                            <label>Intensidade</label>
-                            <div class="brightness-control">
-                                <input type="range" min="0" max="100" value="<?php echo $light['brightness']; ?>" 
-                                   class="brightness-slider" id="brightness-<?php echo $light['id']; ?>"
-                                   onchange="changeBrightness(<?php echo $light['id']; ?>, this.value)"
-                                   <?php echo $light['status'] == 'off' ? 'disabled' : ''; ?>>
-                            <div class="brightness-value" id="brightness-value-<?php echo $light['id']; ?>">
-                                <?php echo $light['brightness']; ?>%
-                            </div>
-                        </div>
                     </div>
                     
+                    <div class="light-actions">
+                        <button class="btn-action btn-remove" onclick="removeLight(<?php echo $light['id']; ?>, this)">
+                            <i class="fas fa-trash"></i> Remover
+                        </button>
+                    </div>
                 </div>
-                
-                <div class="light-actions">
-                    <button class="btn-action btn-remove" onclick="removeLight(<?php echo $light['id']; ?>, this)">
-                        <i class="fas fa-trash"></i> Remover
-                    </button>
-                </div>
-                
             </div>
             <?php endforeach; ?>
         </div>
@@ -699,7 +685,6 @@ $noLights = empty($lights);
             
             const statusElement = card.querySelector('.light-status');
             const statusText = statusElement ? statusElement.querySelector('span') : null;
-            const brightnessSlider = document.getElementById(`brightness-${lightId}`);
             const toggleSwitch = card.querySelector('input[type="checkbox"]');
             
             // Atualiza as classes
@@ -716,10 +701,7 @@ $noLights = empty($lights);
                 statusText.textContent = isOn ? 'Ligada' : 'Desligada';
             }
             
-            // Habilita/desabilita o controle de brilho
-            if (brightnessSlider) {
-                brightnessSlider.disabled = !isOn;
-            }
+            // Controle de brilho removido
             
             // Atualiza o estado do toggle switch
             if (toggleSwitch) {
@@ -774,7 +756,6 @@ $noLights = empty($lights);
             }
             
             const statusText = statusElement.querySelector('span');
-            const brightnessSlider = document.getElementById(`brightness-${lightId}`);
             const toggleSwitch = card.querySelector('input[type="checkbox"]');
             
             const isOn = card.classList.contains('on');
