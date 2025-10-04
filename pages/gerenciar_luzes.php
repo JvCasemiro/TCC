@@ -680,12 +680,6 @@ $noLights = empty($lights);
                 </div>
                 
                 <div class="light-actions">
-                    <button class="btn-action" onclick="showLightSchedule(<?php echo $light['id']; ?>)">
-                        <i class="far fa-clock"></i> Programar
-                    </button>
-                    <button class="btn-action" onclick="showLightSettings(<?php echo $light['id']; ?>, '<?php echo htmlspecialchars($light['name'], ENT_QUOTES); ?>', '<?php echo htmlspecialchars($light['room'], ENT_QUOTES); ?>')">
-                        <i class="fas fa-cog"></i> Configurações
-                    </button>
                     <button class="btn-action btn-remove" onclick="removeLight(<?php echo $light['id']; ?>, this)">
                         <i class="fas fa-trash"></i> Remover
                     </button>
@@ -912,36 +906,6 @@ $noLights = empty($lights);
             });
         }
         
-        function showLightSettings(lightId, name, room) {
-            const newName = prompt('Editar nome da lâmpada:', name);
-            if (newName === null) return; // Usuário cancelou
-            
-            const newRoom = prompt('Editar cômodo:', room);
-            if (newRoom === null) return; // Usuário cancelou
-            
-            fetch('processar_lampada.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=atualizar&id=${lightId}&nome=${encodeURIComponent(newName)}&comodo=${encodeURIComponent(newRoom)}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('Configurações atualizadas com sucesso!', 'success');
-                    // Recarrega a página para atualizar os dados
-                    window.location.reload();
-                } else {
-                    showMessage('Erro ao atualizar: ' + (data.message || 'Erro desconhecido'), 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                showMessage('Erro ao processar a requisição', 'error');
-            });
-        }
-        
         
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
@@ -1133,23 +1097,25 @@ $noLights = empty($lights);
     </script>
 
     <!-- Modal de Confirmação de Exclusão -->
-    <div id="confirmDeleteModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
-                <span class="close-btn" onclick="cancelDelete()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <p>Tem certeza que deseja remover a lâmpada <strong id="lightToDelete"></strong>?</p>
-                <p class="text-warning"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="cancelDelete()">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn-confirm btn-remove" onclick="confirmDelete()">
-                        <i class="fas fa-trash"></i> Sim, remover
-                    </button>
+    <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
+        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+            <div class="modal-content" style="background: #2c3e50; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3); position: relative; margin: 20px;">
+                <div class="modal-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+                    <span class="close-btn" onclick="cancelDelete()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja remover a lâmpada <strong id="lightToDelete"></strong>?</p>
+                    <p class="text-warning"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="cancelDelete()">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="button" class="btn-confirm btn-remove" onclick="confirmDelete()">
+                            <i class="fas fa-trash"></i> Sim, remover
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1177,6 +1143,75 @@ $noLights = empty($lights);
                 }
             }
         });
+
+        // Variáveis para controle do modal de confirmação
+        let lightToDeleteId = null;
+        let lightToDeleteElement = null;
+        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        const lightToDeleteText = document.getElementById('lightToDelete');
+
+        // Função para exibir o modal de confirmação
+        function removeLight(lightId, element) {
+            lightToDeleteId = lightId;
+            lightToDeleteElement = element.closest('.light-card');
+            const lightNameElement = lightToDeleteElement.querySelector('.light-info h3');
+            if (!lightNameElement) {
+                console.error('Elemento do nome da lâmpada não encontrado');
+                return;
+            }
+            const lightName = lightNameElement.textContent;
+            lightToDeleteText.textContent = `"${lightName}"`;
+            confirmDeleteModal.style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Impede o scroll da página
+        }
+
+        // Função para confirmar a exclusão
+        function confirmDelete() {
+            if (!lightToDeleteId || !lightToDeleteElement) {
+                console.error('ID ou elemento da lâmpada não encontrado');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('light_id', lightToDeleteId);
+
+            fetch('../includes/delete_light.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove o card da lâmpada
+                    lightToDeleteElement.remove();
+                    showMessage('Lâmpada removida com sucesso!', 'success');
+                } else {
+                    showMessage(`Erro ao remover lâmpada: ${data.message || 'Erro desconhecido'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao remover lâmpada:', error);
+                showMessage('Erro ao se conectar ao servidor', 'error');
+            })
+            .finally(() => {
+                cancelDelete();
+            });
+        }
+
+        // Função para cancelar a exclusão
+        function cancelDelete() {
+            lightToDeleteId = null;
+            lightToDeleteElement = null;
+            confirmDeleteModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restaura o scroll da página
+        }
+
+        // Fechar o modal ao clicar fora dele
+        window.onclick = function(event) {
+            if (event.target === confirmDeleteModal) {
+                cancelDelete();
+            }
+        }
     </script>
     </body>
 </html>
