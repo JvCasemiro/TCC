@@ -48,14 +48,9 @@ try {
 
     $lightId = (int)$input['light_id'];
     $status = isset($input['status']) ? strtoupper(trim($input['status'])) : null;
-    $brightness = isset($input['brightness']) ? (int)$input['brightness'] : null;
 
     if ($status !== null && !in_array($status, ['ON', 'OFF'])) {
         throw new Exception('Status inválido. Deve ser ON ou OFF. Recebido: ' . $status);
-    }
-
-    if ($brightness !== null && ($brightness < 0 || $brightness > 100)) {
-        throw new Exception('Brilho inválido. Deve estar entre 0 e 100. Recebido: ' . $brightness);
     }
 
     // Verifica se a lâmpada existe
@@ -68,51 +63,27 @@ try {
     // Cria uma instância do controlador de lâmpadas
     $lightController = new LightController($conn);
     
-    // Atualiza o status da lâmpada se fornecido
+    // Atualiza o status da lâmpada
     if ($status !== null) {
         $lightController->updateLightStatus($lightId, $status);
-        // Se estiver desligando, força o brilho para 0
-        if ($status === 'OFF') {
-            $brightness = 0;
-        }
-    }
-    
-    // Atualiza o brilho da lâmpada se fornecido ou se foi definido como 0 ao desligar
-    if ($brightness !== null) {
-        // Atualiza o brilho no banco de dados
-        $stmt = $conn->prepare("UPDATE Lampadas SET Brilho = ?, Data_Atualizacao = NOW() WHERE ID_Lampada = ?");
-        $stmt->execute([$brightness, $lightId]);
-        
-        // Se o brilho for 0, garante que o status seja 'OFF'
-        if ($brightness === 0) {
-            $status = 'OFF';
-            $lightController->updateLightStatus($lightId, 'OFF');
-        }
     }
     
     // Obtém o status atualizado diretamente do banco de dados para garantir consistência
-    $stmt = $conn->prepare("SELECT Status, Brilho FROM Lampadas WHERE ID_Lampada = ?");
+    $stmt = $conn->prepare("SELECT Status FROM Lampadas WHERE ID_Lampada = ?");
     $stmt->execute([$lightId]);
     $lightData = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    $statusInfo = [
-        'status' => $lightData['Status'],
-        'porcentagem' => (int)$lightData['Brilho']
-    ];
     
     // Prepara a resposta
     $response = [
         'success' => true,
-        'message' => $status !== null ? 
-            "Lâmpada {$lightId} " . strtolower($status) . " (brilho: {$statusInfo['porcentagem']}%)" : 
-            "Brilho da lâmpada {$lightId} ajustado para: {$brightness}%",
-        'status' => $statusInfo['status'],
-        'porcentagem' => $statusInfo['porcentagem']
+        'message' => "Lâmpada {$lightId} " . strtolower($lightData['Status']),
+        'status' => $lightData['Status'],
+        'porcentagem' => $lightData['Status'] === 'ON' ? 100 : 0
     ];
     
     // Log da operação bem-sucedida
-    error_log("Lâmpada {$lightId} atualizada - Status: {$statusInfo['status']}, Brilho: {$statusInfo['porcentagem']}%");
-    
+    error_log("Lâmpada {$lightId} atualizada - Status: {$lightData['Status']}");
+
 } catch (Exception $e) {
     http_response_code(400);
     $response = [

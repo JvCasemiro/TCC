@@ -45,8 +45,7 @@ try {
             'id' => $lampada['ID_Lampada'],
             'name' => $lampada['Nome'],
             'room' => $lampada['Comodo'],
-            'status' => $lampada['Status'] ?? 'off',
-            'brightness' => $lampada['Brilho'] ?? 50
+            'status' => $lampada['Status'] ?? 'off'
         ];
     }
 } catch (PDOException $e) {
@@ -319,41 +318,6 @@ $noLights = empty($lights);
         
         input:checked + .slider:before {
             transform: translateX(26px);
-        }
-        
-        .brightness-control {
-            width: 100%;
-            margin: 10px 0;
-        }
-        
-        .brightness-slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #ddd;
-            outline: none;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        
-        .brightness-slider:hover {
-            opacity: 1;
-        }
-        
-        .brightness-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4a90e2;
-            cursor: pointer;
-        }
-        
-        .brightness-value {
-            text-align: center;
-            color: #666;
-            font-size: 0.9em;
-            margin-top: 5px;
         }
         
         .color-control {
@@ -772,10 +736,6 @@ $noLights = empty($lights);
                 statusText.textContent = newStatus ? 'Ligada' : 'Desligada';
             }
             
-            // Atualiza o estado do slider de brilho
-            if (brightnessSlider) {
-                brightnessSlider.disabled = !newStatus;
-            }
             
             // Atualiza o estado do toggle switch
             if (toggleSwitch) {
@@ -820,7 +780,6 @@ $noLights = empty($lights);
                         statusElement.classList.remove('off');
                         statusElement.classList.add('on');
                         statusText.textContent = 'Ligada';
-                        if (brightnessSlider) brightnessSlider.disabled = false;
                         if (colorPicker) colorPicker.disabled = false;
                     } else {
                         card.classList.remove('on');
@@ -828,7 +787,6 @@ $noLights = empty($lights);
                         statusElement.classList.remove('on');
                         statusElement.classList.add('off');
                         statusText.textContent = 'Desligada';
-                        if (brightnessSlider) brightnessSlider.disabled = true;
                         if (colorPicker) colorPicker.disabled = true;
                     }
                 }
@@ -844,7 +802,6 @@ $noLights = empty($lights);
                     statusElement.classList.remove('off');
                     statusElement.classList.add('on');
                     statusText.textContent = 'Ligada';
-                    brightnessSlider.disabled = false;
                     colorPicker.disabled = false;
                 } else {
                     card.classList.remove('on');
@@ -852,7 +809,6 @@ $noLights = empty($lights);
                     statusElement.classList.remove('on');
                     statusElement.classList.add('off');
                     statusText.textContent = 'Desligada';
-                    brightnessSlider.disabled = true;
                     colorPicker.disabled = true;
                 }
                 showMessage('Erro de conexão', 'error');
@@ -861,32 +817,7 @@ $noLights = empty($lights);
 
         window.addEventListener('beforeunload', function() {
             console.log('Page is being unloaded, but keeping the light controller running');
-        });
-        
-        function changeBrightness(lightId, value) {
-            document.getElementById(`brightness-value-${lightId}`).textContent = value + '%';
-            showMessage(`Intensidade ajustada para ${value}%`, 'info');
-            
-            // Atualiza o brilho no banco de dados
-            fetch('processar_lampada.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=atualizar_brilho&id=${lightId}&brilho=${value}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    showMessage('Erro ao atualizar o brilho: ' + (data.message || 'Erro desconhecido'), 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                showMessage('Erro ao atualizar o brilho', 'error');
-            });
-        }
-        
+        })  
         
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
@@ -940,7 +871,6 @@ $noLights = empty($lights);
             }
             
             const statusText = statusElement.querySelector('span');
-            const brightnessSlider = document.getElementById(`brightness-${lightId}`);
             const toggleSwitch = element || card.querySelector('input[type="checkbox"]');
             
             const isOn = card.classList.contains('on');
@@ -957,10 +887,6 @@ $noLights = empty($lights);
                 statusText.textContent = newStatus ? 'Ligada' : 'Desligada';
             }
             
-            // Atualiza o estado do slider de brilho
-            if (brightnessSlider) {
-                brightnessSlider.disabled = !newStatus;
-            }
             
             // Atualiza o estado do toggle switch
             if (toggleSwitch) {
@@ -1016,9 +942,6 @@ $noLights = empty($lights);
                     if (statusText) {
                         statusText.textContent = !newStatus ? 'Ligada' : 'Desligada';
                     }
-                    if (brightnessSlider) {
-                        brightnessSlider.disabled = newStatus;
-                    }
                     if (toggleSwitch) {
                         toggleSwitch.checked = !newStatus;
                     }
@@ -1048,9 +971,6 @@ $noLights = empty($lights);
                 statusElement.classList.toggle('off', newStatus);
                 if (statusText) {
                     statusText.textContent = !newStatus ? 'Ligada' : 'Desligada';
-                }
-                if (brightnessSlider) {
-                    brightnessSlider.disabled = newStatus;
                 }
                 if (toggleSwitch) {
                     toggleSwitch.checked = !newStatus;
@@ -1113,14 +1033,11 @@ $noLights = empty($lights);
                 if (card) {
                     const statusElement = card.querySelector('.light-status');
                     const statusText = statusElement.querySelector('span');
-                    const brightnessSlider = document.getElementById('brightness-1');
-                    
                     card.classList.remove('off');
                     card.classList.add('on');
                     statusElement.classList.remove('off');
                     statusElement.classList.add('on');
                     statusText.textContent = 'Ligada';
-                    if (brightnessSlider) brightnessSlider.disabled = false;
                 }
             }
         });

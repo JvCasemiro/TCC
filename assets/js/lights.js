@@ -58,11 +58,7 @@ function updateLightsStatus() {
                             toggleBtn.className = `toggle-btn ${status}`;
                         }
                         
-                        // Atualiza o slider de brilho
-                        const brightnessSlider = card.querySelector('.brightness-slider');
-                        if (brightnessSlider) {
-                            brightnessSlider.value = lampada.Brilho || 50;
-                        }
+                        // Slider de brilho removido
                     }
                 });
                 
@@ -135,38 +131,6 @@ function toggleLight(lightId, element = null) {
                 '<i class="far fa-lightbulb"></i>';
             element.className = `toggle-btn ${currentStatus}`;
         }
-        showMessage('Erro ao conectar ao servidor', 'error');
-    });
-}
-
-// Função para ajustar o brilho da lâmpada
-function changeBrightness(lightId, value) {
-    const card = document.querySelector(`[data-light-id="${lightId}"]`);
-    if (!card) return;
-    
-    // Envia a requisição para atualizar o brilho
-    fetch('../includes/update_light.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            light_id: lightId,
-            brightness: parseInt(value)
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.success) {
-            showMessage('Erro ao ajustar o brilho: ' + (data.message || 'Erro desconhecido'), 'error');
-        } else {
-            // Atualiza o status de todas as lâmpadas para garantir consistência
-            updateLightsStatus();
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        showMessage('Erro ao conectar ao servidor', 'error');
     });
 }
 
@@ -233,41 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Função para ajustar o brilho
-function changeBrightness(lightId, value) {
-    const card = getLightCard(lightId);
-    const brightnessValue = document.getElementById(`brightness-value-${lightId}`);
-    
-    if (!card) {
-        console.error(`Card da lâmpada ${lightId} não encontrado`);
-        return;
-    }
-    
-    // Atualiza o valor exibido
-    if (brightnessValue) {
-        brightnessValue.textContent = `${value}%`;
-    }
-    
-    // Envia a requisição para o servidor
-    fetch('processar_lampada.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=ajustar_brilho&id=${lightId}&brilho=${value}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.success) {
-            showMessage('Erro ao ajustar o brilho', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        showMessage('Erro ao conectar ao servidor', 'error');
-    });
-}
-
 // Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializa o estado das lâmpadas
@@ -278,8 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
             card.classList.add('on');
             const statusText = card.querySelector('.light-status span');
             if (statusText) statusText.textContent = 'Ligada';
-            const brightnessSlider = document.getElementById('brightness-1');
-            if (brightnessSlider) brightnessSlider.disabled = false;
         }
     }
     
@@ -448,32 +375,6 @@ function toggleLight(lightId, element) {
         console.error('Erro:', error);
         showMessage('Erro ao processar a requisição', 'error');
     });
-}
-
-// Função para ajustar o brilho
-function changeBrightness(lightId, value) {
-    const lightElement = document.querySelector(`.light-switch[data-light-id="${lightId}"]`);
-    const isOn = lightElement ? lightElement.classList.contains('on') : false;
-    
-    if (isOn) {
-        fetch('processar_lampada.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `action=update_brightness&id=${lightId}&brightness=${value}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                showMessage('Erro ao ajustar o brilho: ' + (data.message || 'Erro desconhecido'), 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Erro:', error);
-            showMessage('Erro ao processar a requisição', 'error');
-        });
-    }
 }
 
 // Inicialização quando o DOM estiver carregado
