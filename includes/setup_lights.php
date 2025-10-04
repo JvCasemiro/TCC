@@ -1,12 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-// Verifica se já existem lâmpadas cadastradas
 $stmt = $conn->query("SELECT COUNT(*) as total FROM Lampadas");
 $result = $stmt->fetch();
 
 if ($result['total'] == 0) {
-    // Array com os nomes das lâmpadas e cômodos
     $lampadas = [
         ['Lâmpada 1', 'Sala'],
         ['Lâmpada 2', 'Quarto 1'],
@@ -22,10 +20,8 @@ if ($result['total'] == 0) {
         ['Lâmpada 12', 'Jardim']
     ];
     
-    // Prepara a query de inserção
     $stmt = $conn->prepare("INSERT INTO Lampadas (Nome, Comodo, Status, Brilho) VALUES (?, ?, 'off', 50)");
     
-    // Insere cada lâmpada
     foreach ($lampadas as $lampada) {
         $stmt->execute([$lampada[0], $lampada[1]]);
     }

@@ -992,12 +992,10 @@ $noLights = empty($lights);
                 }
             });
             
-            // Aqui você pode adicionar a lógica para enviar o comando para a lâmpada
             console.log(`Lâmpada ${lightId} ${isOn ? 'ligada' : 'desligada'}`);
         }
     </script>
 
-    <!-- Modal de Confirmação de Exclusão -->
     <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
         <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
             <div class="modal-content" style="background: #2c3e50; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3); position: relative; margin: 20px;">
@@ -1022,10 +1020,8 @@ $noLights = empty($lights);
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
     <script>
-        // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', function() {
             const initialStatus = '<?php echo $lightStatus; ?>';
             if (initialStatus === 'on') {

@@ -13,17 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 try {
-    // Cria uma instância do controlador de lâmpadas
     $lightController = new LightController($conn);
     
-    // Obtém o status de todas as lâmpadas
     $statusInfo = $lightController->getStatus();
     
-    // Obtém os detalhes das lâmpadas do banco de dados
     $stmt = $conn->query("SELECT ID_Lampada, Nome, Comodo, Status FROM Lampadas ORDER BY ID_Lampada");
     $lampadas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Prepara a resposta
     $response = [
         'success' => true,
         'status' => $statusInfo['status'],
@@ -40,6 +36,5 @@ try {
     error_log('Erro em get_lights_status.php: ' . $e->getMessage());
 }
 
-// Retorna a resposta em formato JSON
 echo json_encode($response, JSON_UNESCAPED_UNICODE);
 ?>

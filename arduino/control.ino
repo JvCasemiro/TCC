@@ -1,14 +1,12 @@
-// Número de LEDs
+#include <Arduino.h>
+
 const int NUM_LEDS = 12;
-// Pino do primeiro LED
 const int FIRST_LED_PIN = 2;
-// Array para armazenar o estado dos LEDs
 bool ledStatus[NUM_LEDS];
 
 void setup() {
   Serial.begin(9600);
   
-  // Configura todos os pinos dos LEDs como saída
   for (int i = 0; i < NUM_LEDS; i++) {
     pinMode(FIRST_LED_PIN + i, OUTPUT);
     digitalWrite(FIRST_LED_PIN + i, LOW);
@@ -24,13 +22,10 @@ void loop() {
     String command = Serial.readStringUntil('\n');
     command.trim();
     
-    // Comandos no formato: LEDX:STATE (ex: LED1:ON, LED3:OFF)
     if (command.startsWith("LED") && command.indexOf(':') != -1) {
-      // Extrai o número do LED (1-12)
       int ledNumber = command.substring(3, command.indexOf(':')).toInt();
       String state = command.substring(command.indexOf(':') + 1);
       
-      // Verifica se o número do LED é válido
       if (ledNumber >= 1 && ledNumber <= NUM_LEDS) {
         int pin = FIRST_LED_PIN + (ledNumber - 1);
         

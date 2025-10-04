@@ -1,41 +1,31 @@
-// lights.js - Gerencia a lógica das lâmpadas
-
-// Variáveis globais
 let currentLightId = null;
 let currentButton = null;
 
-// Verifica se o elemento existe
 function elementExists(selector) {
     return document.querySelector(selector) !== null;
 }
 
-// Obtém o elemento do card da lâmpada
 function getLightCard(lightId) {
     return document.querySelector(`[data-light-id="${lightId}"]`);
 }
 
-// Função para exibir mensagens
 function showMessage(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
     
-    // Adiciona o toast ao corpo do documento
     document.body.appendChild(toast);
     
-    // Remove o toast após 3 segundos
     setTimeout(() => {
         toast.remove();
     }, 3000);
 }
 
-// Função para atualizar o status de todas as lâmpadas
 function updateLightsStatus() {
     fetch('../includes/get_lights_status.php')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Atualiza o status de cada lâmpada
                 data.lampadas.forEach(lampada => {
                     const card = getLightCard(lampada.ID_Lampada);
                     if (card) {
@@ -43,13 +33,11 @@ function updateLightsStatus() {
                         const statusText = statusElement ? statusElement.querySelector('span') : null;
                         const status = lampada.Status === 'on' ? 'on' : 'off';
                         
-                        // Atualiza o visual do card
                         card.setAttribute('data-status', status);
                         if (statusText) {
                             statusText.textContent = status === 'on' ? 'Ligada' : 'Desligada';
                         }
                         
-                        // Atualiza o botão de toggle
                         const toggleBtn = card.querySelector('.toggle-btn');
                         if (toggleBtn) {
                             toggleBtn.innerHTML = status === 'on' ? 
@@ -57,12 +45,9 @@ function updateLightsStatus() {
                                 '<i class="far fa-lightbulb"></i>';
                             toggleBtn.className = `toggle-btn ${status}`;
                         }
-                        
-                        // Slider de brilho removido
                     }
                 });
                 
-                // Atualiza a porcentagem de lâmpadas acesas
                 const percentageElement = document.getElementById('lights-percentage');
                 if (percentageElement) {
                     percentageElement.textContent = `${data.porcentagem}%`;
@@ -74,7 +59,6 @@ function updateLightsStatus() {
         });
 }
 
-// Função para alternar o estado da lâmpada
 function toggleLight(lightId, element = null) {
     const card = document.querySelector(`[data-light-id="${lightId}"]`);
     if (!card) return;
@@ -82,7 +66,6 @@ function toggleLight(lightId, element = null) {
     const currentStatus = card.getAttribute('data-status') || 'off';
     const newStatus = currentStatus === 'on' ? 'off' : 'on';
     
-    // Atualiza o estado visual imediatamente para feedback do usuário
     card.setAttribute('data-status', newStatus);
     
     if (element) {
@@ -92,7 +75,6 @@ function toggleLight(lightId, element = null) {
         element.className = `toggle-btn ${newStatus}`;
     }
     
-    // Envia a requisição para atualizar o status
     fetch('../includes/update_light.php', {
         method: 'POST',
         headers: {
@@ -106,7 +88,6 @@ function toggleLight(lightId, element = null) {
     .then(response => response.json())
     .then(data => {
         if (!data.success) {
-            // Reverte as alterações visuais em caso de erro
             card.setAttribute('data-status', currentStatus);
             if (element) {
                 element.innerHTML = currentStatus === 'on' ? 
@@ -116,14 +97,12 @@ function toggleLight(lightId, element = null) {
             }
             showMessage('Erro ao atualizar a lâmpada: ' + (data.message || 'Erro desconhecido'), 'error');
         } else {
-            // Atualiza o status de todas as lâmpadas para garantir consistência
             updateLightsStatus();
             showMessage(`Lâmpada ${lightId} ${newStatus === 'on' ? 'ligada' : 'desligada'} com sucesso!`, 'success');
         }
     })
     .catch(error => {
         console.error('Erro:', error);
-        // Reverte as alterações visuais em caso de erro
         card.setAttribute('data-status', currentStatus);
         if (element) {
             element.innerHTML = currentStatus === 'on' ? 
@@ -134,9 +113,7 @@ function toggleLight(lightId, element = null) {
     });
 }
 
-// Função para exibir mensagens
 function showMessage(message, type = 'info') {
-    // Remove mensagens existentes
     const existingMessages = document.querySelectorAll('.message');
     existingMessages.forEach(msg => msg.remove());
     
@@ -144,7 +121,6 @@ function showMessage(message, type = 'info') {
     messageDiv.className = `message ${type}`;
     messageDiv.textContent = message;
     
-    // Adiciona o botão de fechar
     const closeButton = document.createElement('button');
     closeButton.className = 'close-message';
     closeButton.innerHTML = '&times;';
@@ -152,13 +128,11 @@ function showMessage(message, type = 'info') {
     
     messageDiv.appendChild(closeButton);
     
-    // Adiciona a mensagem ao container
     const container = document.querySelector('.container');
     if (container) {
         container.insertBefore(messageDiv, container.firstChild);
     }
     
-    // Remove a mensagem após 5 segundos
     setTimeout(() => {
         if (messageDiv.parentNode) {
             messageDiv.remove();
@@ -166,13 +140,10 @@ function showMessage(message, type = 'info') {
     }, 5000);
 }
 
-// Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
-    // Atualiza o status das lâmpadas a cada 5 segundos
     updateLightsStatus();
     setInterval(updateLightsStatus, 5000);
     
-    // Configura os tooltips
     const tooltips = document.querySelectorAll('[data-tooltip]');
     tooltips.forEach(tooltip => {
         tooltip.addEventListener('mouseenter', function() {
@@ -182,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tooltipElement.textContent = tooltipText;
             this.appendChild(tooltipElement);
             
-            // Posiciona o tooltip
             const rect = this.getBoundingClientRect();
             tooltipElement.style.top = `${rect.top - tooltipElement.offsetHeight - 10}px`;
             tooltipElement.style.left = `${rect.left + (this.offsetWidth / 2) - (tooltipElement.offsetWidth / 2)}px`;
@@ -197,9 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializa o estado das lâmpadas
     const initialStatus = document.body.getAttribute('data-initial-status');
     if (initialStatus === 'on') {
         const card = document.querySelector('[data-light-id="1"]');
@@ -210,7 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Inicializa os tooltips
     const tooltips = document.querySelectorAll('[data-tooltip]');
     tooltips.forEach(tooltip => {
         tooltip.addEventListener('mouseenter', function() {
@@ -220,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tooltipElement.textContent = tooltipText;
             this.appendChild(tooltipElement);
             
-            // Posiciona o tooltip
             const rect = this.getBoundingClientRect();
             tooltipElement.style.top = `${rect.top - tooltipElement.offsetHeight - 10}px`;
             tooltipElement.style.left = `${rect.left + (this.offsetWidth / 2) - (tooltipElement.offsetWidth / 2)}px`;
@@ -235,12 +201,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Adiciona um listener para o evento beforeunload
 window.addEventListener('beforeunload', function() {
     console.log('Page is being unloaded, but keeping the light controller running');
 });
 
-// Função para exibir mensagens
 function showMessage(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
@@ -283,13 +247,11 @@ function showMessage(message, type = 'info') {
     
     document.body.appendChild(toast);
     
-    // Anima a entrada
     setTimeout(() => {
         toast.style.opacity = '1';
         toast.style.transform = 'translateY(0)';
     }, 100);
     
-    // Remove após 5 segundos
     setTimeout(() => {
         toast.style.opacity = '0';
         toast.style.transform = 'translateY(-50px)';
@@ -301,9 +263,7 @@ function showMessage(message, type = 'info') {
     }, 5000);
 }
 
-// Função para ligar/desligar a lâmpada
 function toggleLight(lightId, element) {
-    // Tenta encontrar o elemento se não foi fornecido
     if (!element) {
         element = document.querySelector(`[data-light-id="${lightId}"]`);
         if (!element) {
@@ -312,7 +272,6 @@ function toggleLight(lightId, element) {
         }
     }
 
-    // Encontra os elementos necessários
     const card = element.closest('.light-card') || element;
     const icon = element.querySelector('i') || card.querySelector('i');
     const brightnessSlider = document.getElementById(`brightness-${lightId}`);
@@ -320,7 +279,6 @@ function toggleLight(lightId, element) {
     const isCurrentlyOn = card.classList.contains('on');
     const newStatus = !isCurrentlyOn;
     
-    // Atualiza a interface imediatamente para melhor resposta
     if (newStatus) {
         card.classList.add('on');
         if (icon) {
@@ -339,7 +297,6 @@ function toggleLight(lightId, element) {
         if (brightnessSlider) brightnessSlider.disabled = true;
     }
     
-    // Envia a requisição para atualizar o status
     fetch('../includes/update_light.php', {
         method: 'POST',
         headers: {
@@ -354,7 +311,6 @@ function toggleLight(lightId, element) {
     .then(data => {
         if (!data.success) {
             showMessage('Erro ao atualizar a lâmpada: ' + (data.message || 'Erro desconhecido'), 'error');
-            // Reverte a mudança em caso de erro
             card.classList.toggle('on');
             if (icon) {
                 icon.className = isCurrentlyOn ? 'fas fa-lightbulb' : 'far fa-lightbulb';
@@ -377,9 +333,7 @@ function toggleLight(lightId, element) {
     });
 }
 
-// Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializa os tooltips
     const tooltips = document.querySelectorAll('[data-tooltip]');
     tooltips.forEach(tooltip => {
         tooltip.addEventListener('mouseenter', function() {
@@ -389,7 +343,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tooltipElement.textContent = tooltipText;
             this.appendChild(tooltipElement);
             
-            // Posiciona o tooltip
             const rect = this.getBoundingClientRect();
             tooltipElement.style.top = (rect.top - tooltipElement.offsetHeight - 10) + 'px';
             tooltipElement.style.left = (rect.left + (this.offsetWidth / 2) - (tooltipElement.offsetWidth / 2)) + 'px';
@@ -403,7 +356,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Inicializa o status das lâmpadas
     const lightSwitches = document.querySelectorAll('.light-switch');
     lightSwitches.forEach(lightSwitch => {
         const lightId = lightSwitch.getAttribute('data-light-id');

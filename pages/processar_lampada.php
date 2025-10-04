@@ -38,7 +38,6 @@ try {
             break;
             
         case 'atualizar':
-            // Implementar atualização de lâmpada se necessário
             break;
             
         case 'remover':
@@ -49,7 +48,6 @@ try {
                 break;
             }
             
-            // Verifica se a lâmpada pertence ao usuário logado
             $stmt = $conn->prepare("SELECT ID_Lampada FROM Lampadas WHERE ID_Lampada = ? AND ID_Usuario = ?");
             $stmt->execute([$id, $_SESSION['user_id']]);
             
@@ -58,7 +56,6 @@ try {
                 break;
             }
             
-            // Remove a lâmpada
             $stmt = $conn->prepare("DELETE FROM Lampadas WHERE ID_Lampada = ? AND ID_Usuario = ?");
             $success = $stmt->execute([$id, $_SESSION['user_id']]);
             

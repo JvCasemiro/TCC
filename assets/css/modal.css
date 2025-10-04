@@ -1,4 +1,3 @@
-/* Estilos para o modal de confirmação */
 .text-warning {
     color: #f39c12;
     margin: 15px 0;
@@ -32,7 +31,6 @@
     color: white !important;
 }
 
-/* Estilo para as mensagens toast */
 .toast {
     position: fixed;
     top: 20px;
@@ -80,7 +78,6 @@
     }
 }
 
-/* Estilo para o modal de confirmação */
 .modal {
     display: none;
     position: fixed;

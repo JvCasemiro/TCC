@@ -650,7 +650,6 @@ $devices = [
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Estilos específicos para o modal de lâmpada */
         #lampadaModal .modal-content {
             max-width: 500px;
             max-height: 90vh;
@@ -747,7 +746,6 @@ $devices = [
             box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
         }
         
-        /* Responsividade */
         @media (max-width: 768px) {
             #lampadaModal .modal-content {
                 width: 90%;
@@ -966,7 +964,6 @@ $devices = [
     </style>
 
     <script>
-        // Função para abrir o modal de cadastro de lâmpada
         function openLampadaModal(deviceId) {
             const modal = document.getElementById('lampadaModal');
             if (modal) {
@@ -977,7 +974,6 @@ $devices = [
             }
         }
         
-        // Função para fechar o modal
         function closeLampadaModal() {
             const modal = document.getElementById('lampadaModal');
             if (modal) {
@@ -985,7 +981,6 @@ $devices = [
             }
         }
         
-        // Função para registrar um novo dispositivo
         function registerDevice(deviceId) {
             openLampadaModal(deviceId);
         }
@@ -1132,7 +1127,6 @@ $devices = [
                 gap: 10px;
             `;
             
-            // Adiciona ícone baseado no tipo de mensagem
             let icon = '';
             switch(type) {
                 case 'success':
@@ -1152,13 +1146,11 @@ $devices = [
             
             document.body.appendChild(toast);
             
-            // Anima a entrada
             setTimeout(() => {
                 toast.style.opacity = '1';
                 toast.style.transform = 'translateY(0)';
             }, 100);
             
-            // Remove após 3 segundos
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transform = 'translateY(-50px)';
@@ -1212,11 +1204,9 @@ $devices = [
             }
         }
         
-        // Inicialização quando o DOM estiver pronto
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Página de Dispositivos IoT carregada');
             
-            // Elementos do modal
             const lampadaModal = document.getElementById('lampadaModal');
             const closeModal = document.querySelector('.close-lampada');
             const lampadaForm = document.getElementById('lampadaForm');
@@ -1226,13 +1216,11 @@ $devices = [
                 return;
             }
 
-            // Fechar modal ao clicar no X
             closeModal.onclick = function() {
                 lampadaModal.style.display = 'none';
                 lampadaForm.reset();
             };
 
-            // Fechar modal ao clicar fora dele
             window.onclick = function(event) {
                 if (event.target === lampadaModal) {
                     lampadaModal.style.display = 'none';
@@ -1240,7 +1228,6 @@ $devices = [
                 }
             };
 
-            // Enviar formulário
             lampadaForm.onsubmit = function(e) {
                 e.preventDefault();
                 const nome = document.getElementById('lampadaNome').value.trim();
@@ -1251,7 +1238,6 @@ $devices = [
                     return false;
                 }
                 
-                // Envia os dados para o servidor
                 fetch('processar_lampada.php', {
                     method: 'POST',
                     headers: {
@@ -1280,7 +1266,6 @@ $devices = [
         });
     </script>
     
-    <!-- Modal de Cadastro de Lâmpada -->
     <div id="lampadaModal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
