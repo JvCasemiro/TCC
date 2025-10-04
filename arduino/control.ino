@@ -1,19 +1,22 @@
-// Pinos dos LEDs (2 a 13)
+// Número de LEDs
 const int NUM_LEDS = 12;
+// Pino do primeiro LED
 const int FIRST_LED_PIN = 2;
-
-// Status dos LEDs (0-11 correspondendo aos pinos 2-13)
-bool ledStatus[NUM_LEDS] = {false};
+// Array para armazenar o estado dos LEDs
+bool ledStatus[NUM_LEDS];
 
 void setup() {
-  // Inicializa a comunicação serial
   Serial.begin(9600);
   
   // Configura todos os pinos dos LEDs como saída
   for (int i = 0; i < NUM_LEDS; i++) {
     pinMode(FIRST_LED_PIN + i, OUTPUT);
     digitalWrite(FIRST_LED_PIN + i, LOW);
+    ledStatus[i] = false;
   }
+  
+  Serial.println("Sistema de Controle de LEDs Iniciado");
+  Serial.println("Comandos aceitos: LEDX:ON ou LEDX:OFF (onde X é o número do LED 1-12)");
 }
 
 void loop() {
@@ -34,32 +37,20 @@ void loop() {
         if (state == "ON") {
           digitalWrite(pin, HIGH);
           ledStatus[ledNumber-1] = true;
+          Serial.print("LED");
+          Serial.print(ledNumber);
+          Serial.println(": LIGADO");
         } 
         else if (state == "OFF") {
           digitalWrite(pin, LOW);
           ledStatus[ledNumber-1] = false;
+          Serial.print("LED");
+          Serial.print(ledNumber);
+          Serial.println(": DESLIGADO");
         }
-        
-        // Atualiza o arquivo de status
-        updateStatusFile();
+      } else {
+        Serial.println("ERRO: Número do LED inválido. Use um valor entre 1 e 12.");
       }
     }
-    // Comando para ler o status atual
-    else if (command == "STATUS") {
-      updateStatusFile();
-    }
   }
-  delay(100);
-}
-
-// Função para atualizar o arquivo de status
-void updateStatusFile() {
-  String statusString = "";
-  for (int i = 0; i < NUM_LEDS; i++) {
-    statusString += ledStatus[i] ? "1" : "0";
-  }
-  
-  // Envia o status para o computador via Serial
-  Serial.print("STATUS:");
-  Serial.println(statusString);
 }
