@@ -758,7 +758,7 @@ $noLights = empty($lights);
                 console.log('Resposta recebida, status:', response.status);
                 setTimeout(() => {
                     window.location.reload();
-                }, 2000);
+                }, 3000);
                 if (!response.ok) {
                     return response.text().then(text => {
                         console.error('Erro na resposta:', text);
@@ -928,7 +928,7 @@ $noLights = empty($lights);
                 console.log('Resposta recebida, status:', response.status);
                 setTimeout(() => {
                     window.location.reload();
-                }, 2000);
+                }, 3000);
                 if (!response.ok) {
                     return response.text().then(text => {
                         console.error('Erro na resposta:', text);
