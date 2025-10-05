@@ -509,6 +509,9 @@ $devices = [
                 <a href="menu.php" class="nav-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem; border-radius: 25px; background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: white; font-size: 14px; transition: all 0.4s ease-in-out; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);">
                     <i class="fas fa-home"></i> Menu Principal
                 </a>
+                <button onclick="openMonitoringModal()" class="nav-btn" style="border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem; border-radius: 25px; background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white; font-size: 14px; transition: all 0.4s ease-in-out; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);">
+                    <i class="fas fa-chart-line"></i> Monitorar Lâmpadas
+                </button>
                 <form action="../auth/logout.php" method="post" style="display: inline;">
                     <button type="submit" class="nav-btn" style="border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem; border-radius: 25px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; font-size: 14px; transition: all 0.4s ease-in-out; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);">
                         <i class="fas fa-sign-out-alt"></i> Sair
@@ -588,25 +591,54 @@ $devices = [
     </div>
     
     <div id="monitoringModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h2><i class="fas fa-tachometer-alt"></i> Monitoramento em Tempo Real</h2>
+                <h2><i class="fas fa-tachometer-alt"></i> Monitoramento de Lâmpadas</h2>
                 <span class="close-btn" onclick="closeMonitoringModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="status-summary">
-                    <div class="status-card">
-                        <h3>Monitoramento do Dispositivo</h3>
-                        <div class="status-indicator" id="lightStatusIndicator">
-                            <div class="status-light" id="lightStatusLight"></div>
-                            <span id="lightStatusText">Carregando...</span>
-                        </div>
-                        <div class="status-percentage">
-                            <div class="percentage-circle" id="percentageCircle">
-                                <span id="percentageValue">0%</span>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-muted">Total de Lâmpadas</h6>
+                                    <h2 class="display-4" id="total-lights">0</h2>
+                                </div>
                             </div>
-                            <p>Status atual</p>
                         </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-muted">Lâmpadas Acesas</h6>
+                                    <h2 class="display-4" id="lights-on">0</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-subtitle mb-2 text-muted">Porcentagem Acesa</h6>
+                                    <h2 class="display-4" id="percentage-on">0%</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="padding-right: 50px;">Lâmpada</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lights-table-body">
+                                <tr>
+                                    <td colspan="2" class="text-center">Carregando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="device-info" style="margin-bottom: 20px; text-align: center;">
@@ -964,6 +996,131 @@ $devices = [
     </style>
 
     <script>
+        function openMonitoringModal() {
+            const modal = document.getElementById('monitoringModal');
+            if (modal) {
+                modal.style.display = 'block';
+                
+                // Inicializa a atualização automática
+                startMonitoringUpdates();
+            }
+        }
+        
+        function updateLightsTable(lights) {
+            const tbody = document.getElementById('lights-table-body');
+            if (!tbody) {
+                console.error('Elemento tbody não encontrado');
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            if (!lights || lights.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="2" class="text-center">Nenhuma lâmpada encontrada</td>';
+                tbody.appendChild(row);
+                return;
+            }
+            
+            let lightsOn = 0;
+            let hasActiveLights = false;
+            
+            try {
+                // Filtra apenas as lâmpadas acesas
+                const activeLights = lights.filter(light => {
+                    const status = light.Status ? light.Status.toLowerCase() : 'off';
+                    return status === 'on';
+                });
+                
+                if (activeLights.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="2" class="text-center">Nenhuma lâmpada acesa no momento</td>';
+                    tbody.appendChild(row);
+                } else {
+                    activeLights.forEach(light => {
+                        const row = document.createElement('tr');
+                        const statusClass = 'bg-success';
+                        
+                        row.innerHTML = `
+                            <td style="padding-right: 50px;">${light.Nome || 'Lâmpada não identificada'}</td>
+                            <td><span class="badge ${statusClass}">Ligada</span></td>
+                        `;
+                        tbody.appendChild(row);
+                        lightsOn++;
+                    });
+                    hasActiveLights = true;
+                }
+                
+                // Atualiza os contadores apenas se os elementos existirem
+                const totalLightsEl = document.getElementById('total-lights');
+                const lightsOnEl = document.getElementById('lights-on');
+                const percentageEl = document.getElementById('percentage-on');
+                const lastUpdatedEl = document.getElementById('last-updated');
+                
+                if (totalLightsEl) totalLightsEl.textContent = lights.length;
+                if (lightsOnEl) lightsOnEl.textContent = lightsOn;
+                
+                const percentage = lights.length > 0 ? Math.round((lightsOn / lights.length) * 100) : 0;
+                if (percentageEl) percentageEl.textContent = `${percentage}%`;
+                if (lastUpdatedEl) lastUpdatedEl.textContent = `Atualizado em: ${new Date().toLocaleTimeString()}`;
+                
+            } catch (error) {
+                console.error('Erro ao atualizar tabela de lâmpadas:', error);
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" class="text-center text-danger">Erro ao carregar dados das lâmpadas</td>';
+                tbody.appendChild(row);
+            }
+        }
+        
+        function startMonitoringUpdates() {
+            // Função para carregar os dados
+            const loadData = () => {
+                fetch('../includes/monitor_lights.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.lights) {
+                            updateLightsTable(data.lights);
+                        } else {
+                            console.error('Erro ao carregar dados:', data.message || 'Erro desconhecido');
+                            // Atualiza a tabela com mensagem de erro
+                            const tbody = document.getElementById('lights-table-body');
+                            if (tbody) {
+                                tbody.innerHTML = '<tr><td colspan="5" class="text-center">Erro ao carregar dados. Tente novamente.</td></tr>';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar dados:', error);
+                        // Atualiza a tabela com mensagem de erro
+                        const tbody = document.getElementById('lights-table-body');
+                        if (tbody) {
+                            tbody.innerHTML = '<tr><td colspan="5" class="text-center">Erro de conexão. Verifique sua internet.</td></tr>';
+                        }
+                    });
+            };
+            
+            // Carrega os dados imediatamente
+            loadData();
+            
+            // Configura a atualização automática a cada 5 segundos
+            if (window.monitoringInterval) {
+                clearInterval(window.monitoringInterval);
+            }
+            
+            window.monitoringInterval = setInterval(loadData, 5000);
+        }
+        
+        function closeMonitoringModal() {
+            const modal = document.getElementById('monitoringModal');
+            if (modal) {
+                modal.style.display = 'none';
+                // Limpa o intervalo quando o modal é fechado
+                if (window.monitoringInterval) {
+                    clearInterval(window.monitoringInterval);
+                }
+            }
+        }
+        
         function openLampadaModal(deviceId) {
             const modal = document.getElementById('lampadaModal');
             if (modal) {
@@ -986,19 +1143,8 @@ $devices = [
         }
         
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
-            const modal = document.getElementById('monitoringModal');
-            modal.dataset.deviceId = deviceId;
-            
-            document.getElementById('deviceName').textContent = deviceName;
-            document.getElementById('deviceLocation').textContent = deviceLocation;
-            
-            modal.style.display = 'block';
-            
-            updateLightStatus(deviceId, deviceCategory);
-            
-            const intervalId = setInterval(() => updateLightStatus(deviceId, deviceCategory), 5000);
-            
-            modal.dataset.intervalId = intervalId;
+            // Usa a função openMonitoringModal para garantir consistência
+            openMonitoringModal();
         }
 
         function closeMonitoringModal() {
