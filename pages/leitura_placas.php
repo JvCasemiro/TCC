@@ -700,10 +700,34 @@ try {
         <div class="card">
             <h3><i class="fas fa-video"></i> Câmera de Entrada</h3>
             <div class="camera-feed">
-                <div class="camera-placeholder">
-                    <i class="fas fa-video" style="font-size: 48px; margin-right: 15px;"></i>
-                    Feed da Câmera - Portão Principal
-                </div>
+                <?php
+                $output_dir = __DIR__ . '/../python/output/';
+                $latest_image = '';
+                $latest_mtime = 0;
+                
+                if (is_dir($output_dir)) {
+                    $files = glob($output_dir . 'placa_*.png');
+                    foreach ($files as $file) {
+                        if (is_file($file) && filemtime($file) > $latest_mtime) {
+                            $latest_mtime = filemtime($file);
+                            $latest_image = $file;
+                        }
+                    }
+                }
+                
+                if (!empty($latest_image)) {
+                    // Obtém apenas o nome do arquivo
+                    $image_name = basename($latest_image);
+                    // Cria o caminho relativo ao servidor web
+                    $image_url = '../python/output/' . $image_name;
+                    echo '<img src="' . htmlspecialchars($image_url) . '" alt="Última placa detectada" style="max-width: 100%; max-height: 300px; border-radius: 8px; display: block; margin: 0 auto;">';
+                } else {
+                    echo '<div class="camera-placeholder">';
+                    echo '    <i class="fas fa-video" style="font-size: 48px; margin-right: 15px;"></i>';
+                    echo '    Feed da Câmera - Portão Principal';
+                    echo '</div>';
+                }
+                ?>
             </div>
             <div class="camera-controls">
                 <button class="control-btn" id="btnIniciar">
