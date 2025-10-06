@@ -44,10 +44,12 @@ def validar_placa(placa):
         return None
 
 def verificar_acesso(numero_placa):
-    numero_placa = validar_placa(numero_placa)
     if not numero_placa:
-        return False, "Formato de placa inválido"
-        
+        return False, "Placa inválida"
+    
+    # Remove qualquer formatação da placa (hífens, espaços)
+    placa_limpa = re.sub(r'[^A-Z0-9]', '', numero_placa.upper())
+    
     conn = None
     try:
         conn = conectar_banco()
@@ -56,19 +58,21 @@ def verificar_acesso(numero_placa):
             
         cursor = conn.cursor(dictionary=True)
         
-        placa_formatada = f"{numero_placa[:3]}-{numero_placa[3:7]}" if len(numero_placa) == 7 else numero_placa
+        # Busca todas as placas do banco de dados
+        cursor.execute("SELECT ID_Placa, Numeracao FROM Placas")
+        placas = cursor.fetchall()
         
-        query = "SELECT * FROM Placas WHERE Numeracao = %s"
-        cursor.execute(query, (placa_formatada,))
-        placa = cursor.fetchone()
-        
-        if placa:
-            update_query = "UPDATE Placas SET Ultimo_Acesso = NOW() WHERE ID_Placa = %s"
-            cursor.execute(update_query, (placa['ID_Placa'],))
-            conn.commit()
-            return True, "Acesso autorizado"
-        else:
-            return False, "Placa não autorizada"
+        # Remove formatação das placas do banco e compara exatamente
+        for placa in placas:
+            placa_banco_limpa = re.sub(r'[^A-Z0-9]', '', placa['Numeracao'].upper())
+            if placa_banco_limpa == placa_limpa:
+                # Atualiza o último acesso
+                update_query = "UPDATE Placas SET Ultimo_Acesso = NOW() WHERE ID_Placa = %s"
+                cursor.execute(update_query, (placa['ID_Placa'],))
+                conn.commit()
+                return True, "Acesso autorizado"
+                
+        return False, "Placa não autorizada"
             
     except Exception as e:
         print(f"Erro ao verificar acesso: {e}")
@@ -87,7 +91,6 @@ def processar_placa(img_roi, frame):
     img_contraste = clahe.apply(img_cinza)
 
     _, img_bin = cv2.threshold(img_contraste, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
     img_median = cv2.medianBlur(img_bin, 3)
 
     kernel = np.ones((3, 3), np.uint8)
@@ -95,32 +98,22 @@ def processar_placa(img_roi, frame):
 
     config = r'-c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 --psm 6'
     saida = pytesseract.image_to_string(img_morph, lang='eng', config=config).strip()
-
     saida = re.sub(r'\s+', '', saida)
     placa_detectada = saida.upper()
 
-    regex_numero_placa = re.compile(r'''
-    (?:(?:[A-Z]{3}\d[A-Z]\d{2})| 
-    (?:[A-Z]{3}-?\d{4})|
-    (?:[A-Z]{2}\d[A-Z]\d{2})|
-    (?:[A-Z]{2}-?\d{4})|
-    (?:[A-Z]{3}\d{4})|
-    (?:[A-Z]{2}\d{3}\d))
-''', re.VERBOSE | re.MULTILINE)
-    match = re.search(regex_numero_placa, placa_detectada)
+    # Verifica se a placa detectada tem o formato correto
+    if not validar_placa(placa_detectada):
+        print(f"Placa detectada em formato inválido: {placa_detectada}")
+        return None
 
-    if match:
-        placa_detectada = match.group(0)
-        print(f"Placa detectada: {placa_detectada}")
-    else:
-        placa_detectada = None
-        print("Não foi possível detectar a numeração da placa.")
-
-    if placa_detectada:
-        acesso_permitido, mensagem = verificar_acesso(placa_detectada)
-        print(f"Placa: {placa_detectada} - {mensagem}")
-        if acesso_permitido:
-            return placa_detectada
+    print(f"Placa detectada: {placa_detectada}")
+    
+    # Verifica se a placa está autorizada
+    acesso_permitido, mensagem = verificar_acesso(placa_detectada)
+    print(f"Verificação de acesso: {placa_detectada} - {mensagem}")
+    
+    if acesso_permitido:
+        return placa_detectada
     return None
 
 def verificar_parada():
