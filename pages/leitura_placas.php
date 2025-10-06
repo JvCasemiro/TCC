@@ -1071,6 +1071,24 @@ try {
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    // Função para atualizar a página
+    function atualizarConteudo() {
+        // Atualiza a seção de detecções recentes
+        $.get('leitura_placas.php', function(data) {
+            // Extrai apenas a parte do HTML que contém as detecções recentes
+            var recentDetections = $(data).find('#recent-detections').html();
+            $('#recent-detections').html(recentDetections);
+            
+            // Extrai a imagem mais recente
+            var latestImage = $(data).find('.camera-feed').html();
+            $('.camera-feed').html(latestImage);
+        });
+    }
+
+    // Atualiza a cada 5 segundos
+    setInterval(atualizarConteudo, 5000);
+    </script>
     <script src="../assets/js/script.js"></script>
 </body>
 </html>
