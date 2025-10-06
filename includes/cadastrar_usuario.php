@@ -21,11 +21,24 @@ $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
 $password = $_POST['password'];
 $confirm_password = $_POST['confirm_password'];
 $tipo_usuario = filter_input(INPUT_POST, 'tipo_usuario', FILTER_SANITIZE_STRING);
+$id_casa = filter_input(INPUT_POST, 'id_casa', FILTER_VALIDATE_INT);
 
 if (empty($username) || empty($email) || empty($password) || empty($confirm_password) || empty($tipo_usuario)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Todos os campos são obrigatórios']);
     exit;
+}
+
+// Se for usuário comum, é obrigatório ter uma casa
+if ($tipo_usuario === 'user' && empty($id_casa)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Usuários comuns devem estar vinculados a uma casa']);
+    exit;
+}
+
+// Se for admin, não precisa de casa
+if ($tipo_usuario === 'admin') {
+    $id_casa = null;
 }
 
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -84,18 +97,30 @@ try {
     
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-    $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario) VALUES (:username, :email, :password, :tipo_usuario)");
-    $stmt->bindParam(':username', $username);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':password', $hashed_password);
-    $stmt->bindParam(':tipo_usuario', $tipo_usuario);
-    
-    if ($stmt->execute()) {
+    try {
+        if ($id_casa) {
+            // Verifica se a casa existe
+            $stmt = $conn->prepare("SELECT ID_Casa FROM Casas WHERE ID_Casa = ? AND Ativo = 1");
+            $stmt->execute([$id_casa]);
+            if (!$stmt->fetch()) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Casa inválida']);
+                exit;
+            }
+            
+            $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario, ID_Casa) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$username, $email, $hashed_password, $tipo_usuario, $id_casa]);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$username, $email, $hashed_password, $tipo_usuario]);
+        }
+        
         echo json_encode([
             'success' => true, 
             'message' => 'Usuário cadastrado com sucesso!'
         ]);
-    } else {
+    } catch (PDOException $e) {
+        error_log("Erro ao cadastrar usuário: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['success' => false, 'message' => 'Erro ao cadastrar usuário']);
     }

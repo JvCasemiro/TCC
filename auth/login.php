@@ -44,16 +44,19 @@ try {
         $user = $stmt->fetch();
         
         if (password_verify($password, $user['password'])) {
+            // Atualiza o último acesso
+            $update_stmt = $conn->prepare("UPDATE Usuarios SET Ultimo_Acesso = NOW() WHERE ID_Usuario = :id");
+            $update_stmt->bindParam(':id', $user['id']);
+            $update_stmt->execute();
+            
+            // Define as variáveis de sessão
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['Tipo_Usuario'] = $user['user_type'];
             $_SESSION['email'] = $user['email'];
             
-            $update_stmt = $conn->prepare("UPDATE Usuarios SET Ultimo_Acesso = NOW() WHERE ID_Usuario = :id");
-            $update_stmt->bindParam(':id', $user['id']);
-            $update_stmt->execute();
-            
-            header('Location: ../pages/menu.php');
+            // Redireciona para o dashboard após login bem-sucedido
+            header('Location: ../pages/dashboard.php');
             exit;
         } else {
             header('Location: login_error.php');

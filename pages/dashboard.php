@@ -445,6 +445,20 @@ if ($conn === null) {
         </div>
         
         <div class="dashboard-grid">
+            <?php if ($user['user_type'] === 'admin'): ?>
+            <div class="card">
+                <div class="icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3>Gerenciar Casas</h3>
+                <p>Cadastre e gerencie as casas do sistema.</p>
+                <button class="control-btn" onclick="window.location.href='gerenciar_casas.php'">
+                    <i class="fas fa-cog"></i>
+                    Gerenciar
+                </button>
+            </div>
+            <?php endif; ?>
+            
             <div class="card">
                 <div class="icon">
                     <i class="fas fa-lightbulb"></i>
