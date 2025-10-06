@@ -7,6 +7,37 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../config/database.php';
 
+// Função para gerenciar o número de imagens na pasta de saída
+function gerenciarImagensOutput() {
+    $output_dir = __DIR__ . '/../python/output/';
+    
+    if (!is_dir($output_dir)) {
+        return;
+    }
+    
+    // Obtém todos os arquivos .png na pasta de saída
+    $files = glob($output_dir . 'placa_*.png');
+    
+    // Se houver mais de 5 imagens, remove as mais antigas
+    if (count($files) > 5) {
+        // Ordena os arquivos por data de modificação (mais recentes primeiro)
+        usort($files, function($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+        
+        // Mantém as 5 imagens mais recentes e remove as demais
+        $files_to_keep = array_slice($files, 0, 1);
+        foreach (array_diff($files, $files_to_keep) as $file) {
+            if (is_file($file)) {
+                @unlink($file);
+            }
+        }
+    }
+}
+
+// Executa a função de gerenciamento de imagens
+gerenciarImagensOutput();
+
 
 $user = [
     'id' => $_SESSION['user_id'],
