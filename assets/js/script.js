@@ -28,7 +28,6 @@ function iniciarDetecao() {
 
     const loadingMessage = document.createElement('div');
     loadingMessage.className = 'loading-message';
-    loadingMessage.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div> Iniciando detecção de placas...';
     cameraFeed.appendChild(loadingMessage);
 
     fetch('../python/executar_detecao.php')
@@ -45,11 +44,6 @@ function iniciarDetecao() {
                 console.error('Resposta não é JSON:', text);
                 throw new Error('A resposta não está no formato JSON esperado');
             }
-
-            return response.json().catch(error => {
-                console.error('Erro ao fazer parse do JSON:', error);
-                throw new Error('Erro ao processar a resposta do servidor');
-            });
         })
         .then(data => {
             const loadingMessage = cameraFeed.querySelector('.loading-message');
@@ -57,7 +51,7 @@ function iniciarDetecao() {
                 loadingMessage.remove();
             }
 
-            if (data.success) {
+            if (data) {
                 const successMessage = document.createElement('div');
                 successMessage.className = 'alert alert-success mt-3';
                 successMessage.textContent = 'Detecção concluída com sucesso!';
@@ -74,7 +68,6 @@ function iniciarDetecao() {
             } else {
                 const errorMessage = document.createElement('div');
                 errorMessage.className = 'alert alert-danger mt-3';
-                errorMessage.textContent = data.output ? data.output.join('\n') : 'Erro desconhecido ao executar a detecção';
                 cameraFeed.appendChild(errorMessage);
             }
         })
@@ -97,7 +90,7 @@ function iniciarDetecao() {
             } else if (error.message.includes('JSON')) {
                 errorText = 'Erro ao processar a resposta do servidor. O formato dos dados é inválido.';
             } else {
-                errorText = `Erro: ${error.message}`;
+                errorText = ``;
             }
 
             errorMessage.textContent = errorText;
