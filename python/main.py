@@ -113,6 +113,19 @@ def processar_placa(img_roi, frame):
     print(f"Verificação de acesso: {placa_detectada} - {mensagem}")
     
     if acesso_permitido:
+        # Cria o diretório de saída se não existir
+        output_dir = os.path.join(os.path.dirname(__file__), 'output')
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Define o nome do arquivo com timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"placa_{placa_detectada}_{timestamp}.png"
+        output_path = os.path.join(output_dir, filename)
+        
+        # Salva a imagem da placa
+        cv2.imwrite(output_path, img_roi)
+        print(f"Imagem da placa salva em: {output_path}")
+        
         return placa_detectada
     return None
 
