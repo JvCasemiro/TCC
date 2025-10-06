@@ -751,7 +751,9 @@ try {
                     $image_name = basename($latest_image);
                     // Cria o caminho relativo ao servidor web
                     $image_url = '../python/output/' . $image_name;
-                    echo '<img src="' . htmlspecialchars($image_url) . '" alt="Última placa detectada" style="max-width: 100%; max-height: 300px; border-radius: 8px; display: block; margin: 0 auto;">';
+                    echo '<div style="width: 100%; height: 100%; overflow: hidden; display: flex; align-items: center; justify-content: center; border-radius: 8px;">';
+                    echo '    <img src="' . htmlspecialchars($image_url) . '" alt="Última placa detectada" style="width: 100%; height: 100%; object-fit: cover;">';
+                    echo '</div>';
                 } else {
                     echo '<div class="camera-placeholder">';
                     echo '    <i class="fas fa-video" style="font-size: 48px; margin-right: 15px;"></i>';
