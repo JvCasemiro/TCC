@@ -33,22 +33,21 @@ if (file_exists($lightStatusFile)) {
     $lightStatus = (strtoupper($status) === 'ON') ? 'on' : 'off';
 }
 
-// Busca as lâmpadas cadastradas no banco de dados
 $lights = [];
 try {
     $stmt = $conn->prepare("SELECT * FROM Lampadas WHERE ID_Usuario = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $lights_db = $stmt->fetchAll();
-    
+        
     foreach ($lights_db as $lampada) {
-        $lights[] = [
-            'id' => $lampada['ID_Lampada'],
-            'name' => $lampada['Nome'],
-            'room' => $lampada['Comodo'],
-            'status' => $lampada['Status'] ?? 'off'
-        ];
-    }
-} catch (PDOException $e) {
+            $lights[] = [
+                'id' => $lampada['ID_Lampada'],
+                'name' => $lampada['Nome'],
+                'room' => $lampada['Comodo'],
+                'status' => $lampada['Status'] ?? 'off'
+            ];
+        }
+    } catch (PDOException $e) {
     // Em caso de erro, usa uma lista vazia
     $lights = [];
 }
@@ -80,7 +79,7 @@ $noLights = empty($lights);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -212,9 +211,10 @@ $noLights = empty($lights);
         
         .lights-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
             margin-top: 30px;
+            padding: 0 10px;
         }
         
         .light-card {
@@ -225,6 +225,10 @@ $noLights = empty($lights);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         
         .light-card:hover {
@@ -237,6 +241,25 @@ $noLights = empty($lights);
         }
         .light-card.off {
             border-left: 5px solid #e74c3c;
+        }
+
+        .light-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .light-info h3 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .light-info .room {
+            color: #7f8c8d;
+            font-size: 0.9em;
         }
         
         .light-name {
@@ -540,9 +563,18 @@ $noLights = empty($lights);
             left: 100%;
         }
 
+        @media (max-width: 1200px) {
+            .lights-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+            }
+        }
+
         @media (max-width: 768px) {
             .lights-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 0 5px;
             }
             
             .header-content {
@@ -552,6 +584,18 @@ $noLights = empty($lights);
             
             .user-menu {
                 margin-top: 10px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .lights-grid {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 1200px;
+                margin: 30px auto 0;
             }
         }
     </style>
@@ -635,9 +679,8 @@ $noLights = empty($lights);
                         </button>
                     </div>
                 </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
-        </div>
         <?php endif; ?>
     </div>
     

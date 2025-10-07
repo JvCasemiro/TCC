@@ -974,24 +974,24 @@ $events = [
         
         <div class="security-controls">
             <h2 class="section-title">
-                <i class="fas fa-shield-alt"></i>
-                Controles de Segurança
+                <i class="fas fa-video"></i>
+                Controles de Gravação
             </h2>
             <div class="controls-grid">
                 <div class="control-card" onclick="armSystem()">
                     <div class="control-icon">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-video"></i>
                     </div>
-                    <div class="control-title">Armar Sistema</div>
-                    <div class="control-description">Ativar monitoramento completo</div>
+                    <div class="control-title">Iniciar Gravação</div>
+                    <div class="control-description">Começar a gravar monitoramento</div>
                 </div>
                 
                 <div class="control-card" onclick="disarmSystem()">
                     <div class="control-icon">
-                        <i class="fas fa-shield"></i>
+                        <i class="fas fa-stop-circle"></i>
                     </div>
-                    <div class="control-title">Desarmar Sistema</div>
-                    <div class="control-description">Desativar alarmes</div>
+                    <div class="control-title">Parar Gravação</div>
+                    <div class="control-description">Interromper gravação ativa</div>
                 </div>
                 
                 <div class="control-card" onclick="viewRecordings()">
@@ -1213,8 +1213,8 @@ $events = [
                     throw new Error('Módulo de gravação não carregado');
                 }
                 
-                const armBtn = document.querySelector('.fa-shield-alt').closest('.control-card');
-                const disarmBtn = document.querySelector('.fa-shield').closest('.control-card');
+                const armBtn = document.querySelector('.fa-video').closest('.control-card');
+                const disarmBtn = document.querySelector('.fa-stop-circle').closest('.control-card');
                 
                 if (armBtn) armBtn.classList.add('active');
                 if (disarmBtn) disarmBtn.classList.remove('active');
@@ -1233,8 +1233,8 @@ $events = [
                     await window.ScreenRecorder.stop();
                 }
                 
-                const armBtn = document.querySelector('.fa-shield-alt').closest('.control-card');
-                const disarmBtn = document.querySelector('.fa-shield').closest('.control-card');
+                const armBtn = document.querySelector('.fa-video').closest('.control-card');
+                const disarmBtn = document.querySelector('.fa-stop-circle').closest('.control-card');
                 
                 if (armBtn) armBtn.classList.remove('active');
                 if (disarmBtn) disarmBtn.classList.add('active');

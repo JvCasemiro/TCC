@@ -1301,7 +1301,7 @@
                 <div id="contato" class="footer-contact">
                     <h3>Contato</h3>
                     <ul>
-                        <li><i class="fas fa-phone"></i> (14) 91962216</li>
+                        <li><i class="fas fa-phone"></i> (14) 991962216</li>
                         <li><i class="fas fa-envelope"></i> contato@domx.com.br</li>
                     </ul>
                 </div>

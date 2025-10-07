@@ -2,7 +2,7 @@
 session_start();
 require_once '../config/database.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['tipo_usuario'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || $_SESSION['Tipo_Usuario'] !== 'admin') {
     header('Location: ../index.php');
     exit;
 }
@@ -12,13 +12,15 @@ $user = [
     'email' => $_SESSION['email'],
     'user_type' => 'Administrador'
 ];
+$created_at = new DateTime();
+$updated_at = new DateTime();
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Casas - Automação Residencial</title>
+    <title>Gerenciar Casas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="../assets/img/logo_domx_sem_nome.png" type="image/x-icon">
     <style>
@@ -31,11 +33,11 @@ $user = [
         
         body {
             background: linear-gradient(135deg, #0a0f2c 0%, #0a0f2c 100%);
-            color: #ffffff;
+            color: #000;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -44,80 +46,204 @@ $user = [
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             color: #333;
-            padding: 15px 0;
+            padding: 0;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
+            height: 70px;
         }
         
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
             padding: 0 20px;
+            height: 100%;
         }
         
         .logo {
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo img {
-            height: 40px;
-            margin-right: 10px;
-        }
-        
-        .user-info {
+            font-size: 24px;
+            font-weight: bold;
             display: flex;
             align-items: center;
             gap: 15px;
         }
         
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #4a90e2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
+        .logo img {
+            height: 50px;
+            width: auto;
         }
         
-        .user-details {
-            text-align: right;
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            height: 40px;
+        }
+        
+        .user-menu form {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+        
+        .user-menu > * {
+            display: flex;
+            align-items: center;
+            height: 40px;
+        }
+        
+        .user-menu a {
+            color: black;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .user-menu a:hover {
+            text-decoration: underline;
+        }
+        
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
         }
         
         .user-name {
-            font-weight: 600;
-            color: #333;
+            cursor: pointer;
+            padding: 0 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            line-height: 1;
+            font-size: 14px;
+            white-space: nowrap;
         }
         
-        .user-role {
-            font-size: 0.8rem;
-            color: #666;
+        .user-name:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            z-index: 1000;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+        }
+        
+        .user-info {
+            padding: 15px;
+            border-bottom: 1px solid #2c3e50;
+            min-width: 250px;
+        }
+        
+        .user-info h4 {
+            margin: 0 0 10px 0;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info p {
+            margin: 8px 0;
+            font-size: 0.9em;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info i {
+            width: 18px;
+            text-align: center;
+            color: #000;
         }
         
         .welcome {
-            margin: 30px 0;
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin: 15px 0;
             text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
         .welcome h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #4a90e2, #8e44ad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #2f3640;
+            margin-bottom: 5px;
         }
         
         .welcome p {
-            color: #aaa;
-            font-size: 1.1rem;
+            color: #666;
+        }
+        
+        .config-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 0 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            height: 40px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        
+        .config-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .logout-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 0 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            height: 40px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
         
         .card {
@@ -141,7 +267,9 @@ $user = [
         
         .card-header h2 {
             font-size: 1.5rem;
-            color: #4a90e2;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
         }
         
         .btn {
@@ -190,13 +318,19 @@ $user = [
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
+        td {
+            color: #ffffff;
+            font-weight: 500;
+        }
+        
         th {
-            background-color: rgba(74, 144, 226, 0.2);
-            color: #4a90e2;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
             font-weight: 600;
             text-transform: uppercase;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             letter-spacing: 1px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
         tr:hover {
@@ -385,13 +519,15 @@ $user = [
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
-                gap: 15px;
-                text-align: center;
+                gap: 10px;
             }
             
-            .user-info {
+            .user-menu {
                 margin-top: 10px;
-                justify-content: center;
+            }
+            
+            .container {
+                padding: 10px;
             }
             
             .welcome h1 {
@@ -403,6 +539,10 @@ $user = [
                 width: 95%;
                 padding: 20px;
             }
+            
+            .table-container {
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
@@ -411,24 +551,37 @@ $user = [
         <div class="header-content">
             <div class="logo">
                 <img src="../assets/img/logo.png" alt="Logo">
+                DOMX - Automação Residencial
             </div>
-            <div class="user-info">
-                <div class="user-details">
-                    <div class="user-name"><?php echo htmlspecialchars($user['username']); ?></div>
-                    <div class="user-role"><?php echo htmlspecialchars($user['user_type']); ?></div>
+            <div class="user-menu">
+                <div class="user-dropdown">
+                    <span class="user-name" onclick="toggleDropdown()">
+                        <i class="fas fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
+                        <i class="fas fa-chevron-down" style="margin-left: 5px; font-size: 12px;"></i>
+                    </span>
+                    <div class="dropdown-content" id="userDropdown">
+                        <div class="user-info">
+                            <h4><i class="fas fa-user"></i> <?php echo htmlspecialchars($user['username']); ?></h4>
+                            <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?></p>
+                            <p><i class="fas fa-user-tag"></i> <?php echo htmlspecialchars($user['user_type']); ?></p>
+                            <p><i class="far fa-calendar-plus"></i> Criado em: <?php echo $created_at->format('d/m/Y'); ?></p>
+                            <p><i class="fas fa-sync-alt"></i> Atualizado: <?php echo $updated_at->format('d/m/Y H:i'); ?></p>
+                        </div>
+                    </div>
                 </div>
-                <div class="user-avatar">
-                    <?php echo strtoupper(substr($user['username'], 0, 1)); ?>
-                </div>
+                <button class="config-btn" onclick="window.location.href='dashboard.php'">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+                <form action="../auth/logout.php" method="post">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </form>
             </div>
         </div>
     </header>
 
-    <div class="container">
-        <a href="dashboard.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Voltar ao Painel
-        </a>
-        
+    <div class="container">        
         <div class="welcome">
             <h1>Gerenciamento de Casas</h1>
             <p>Visualize, adicione e gerencie todas as casas do sistema.</p>
@@ -803,9 +956,26 @@ $user = [
             return date.toLocaleDateString('pt-BR');
         }
         
+        // Função para toggle do dropdown do usuário
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        // Fechar dropdown ao clicar fora
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-name') && !event.target.closest('.user-name')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+        
         // Adicionar funções ao escopo global para acesso via HTML
         window.editHouse = editHouse;
         window.confirmDelete = confirmDelete;
+        window.toggleDropdown = toggleDropdown;
     </script>
 </body>
 </html>
