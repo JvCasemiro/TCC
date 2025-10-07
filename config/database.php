@@ -78,7 +78,7 @@ function criarTabelas($conn) {
             $stmt = $conn->prepare("
                 INSERT INTO Usuarios 
                 (Nome_Usuario, Email, Senha, Tipo_Usuario, Data_Criacao, Data_Atualizacao, Ativo) 
-                VALUES (?, ?, ?, 'master', NOW(), NOW(), 1)
+                VALUES (?, ?, ?, 'admin', NOW(), NOW(), 1)
             ");
             $stmt->execute(['admin', 'admin@sistema.com', $admin_password]);
         }
