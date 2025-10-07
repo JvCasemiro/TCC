@@ -40,7 +40,7 @@ function criarTabelas($conn) {
             Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             Ultimo_Acesso TIMESTAMP NULL,
-            Ativo BOOLEAN DEFAULT TRUE,
+            Ativo BOOLEAN DEFAULT TRUE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $sql_lampadas = "
@@ -52,7 +52,7 @@ function criarTabelas($conn) {
             ID_Usuario INT,
             Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario) ON DELETE SET NULL,
+            FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $sql_placas = "
@@ -78,7 +78,7 @@ function criarTabelas($conn) {
             $stmt = $conn->prepare("
                 INSERT INTO Usuarios 
                 (Nome_Usuario, Email, Senha, Tipo_Usuario, Data_Criacao, Data_Atualizacao, Ativo) 
-                VALUES (?, ?, ?, 'admin', NOW(), NOW(), 1)
+                VALUES (?, ?, ?, 'master', NOW(), NOW(), 1)
             ");
             $stmt->execute(['admin', 'admin@sistema.com', $admin_password]);
         }
