@@ -28,17 +28,7 @@ try {
 }
 
 function criarTabelas($conn) {
-    try {
-        $sql_casas = "
-        CREATE TABLE IF NOT EXISTS Casas (
-            ID_Casa INT AUTO_INCREMENT PRIMARY KEY,
-            Nome VARCHAR(100) NOT NULL,
-            Endereco TEXT NOT NULL,
-            Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            Ativo BOOLEAN DEFAULT TRUE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
+    try {        
         $sql_usuarios = "
         CREATE TABLE IF NOT EXISTS Usuarios (
             ID_Usuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,13 +36,11 @@ function criarTabelas($conn) {
             Email VARCHAR(100) NOT NULL UNIQUE,
             Senha VARCHAR(255) NOT NULL,
             Tipo_Usuario VARCHAR(20) DEFAULT 'user',
-            ID_Casa INT NULL,
             Data_Cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             Ultimo_Acesso TIMESTAMP NULL,
             Ativo BOOLEAN DEFAULT TRUE,
-            FOREIGN KEY (ID_Casa) REFERENCES Casas(ID_Casa) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $sql_lampadas = "
@@ -62,11 +50,9 @@ function criarTabelas($conn) {
             Comodo VARCHAR(50) NOT NULL,
             Status VARCHAR(10) DEFAULT 'off',
             ID_Usuario INT,
-            ID_Casa INT NOT NULL,
             Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario) ON DELETE SET NULL,
-            FOREIGN KEY (ID_Casa) REFERENCES Casas(ID_Casa) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $sql_placas = "
@@ -95,37 +81,6 @@ function criarTabelas($conn) {
                 VALUES (?, ?, ?, 'admin', NOW(), NOW(), 1)
             ");
             $stmt->execute(['admin', 'admin@sistema.com', $admin_password]);
-            
-            // Log das credenciais iniciais (apenas para desenvolvimento)
-            error_log("Usuário admin padrão criado:");
-            error_log("Usuário: admin");
-            error_log("Senha: Admin@123");
-            
-            // Cria uma casa padrão e associa o usuário admin a ela
-            try {
-                // Cria a casa padrão
-                $stmt = $conn->prepare("
-                    INSERT INTO Casas 
-                    (Nome, Endereco, Data_Criacao, Data_Atualizacao, Ativo) 
-                    VALUES (?, ?, NOW(), NOW(), 1)
-                ");
-                $casa_nome = 'Casa Principal';
-                $casa_endereco = 'Endereço da Casa Principal';
-                $stmt->execute([$casa_nome, $casa_endereco]);
-                $casa_id = $conn->lastInsertId();
-                
-                // Atualiza o usuário admin para associá-lo à casa criada
-                $stmt = $conn->prepare("
-                    UPDATE Usuarios 
-                    SET ID_Casa = ? 
-                    WHERE Nome_Usuario = ?
-                ");
-                $stmt->execute([$casa_id, 'admin']);
-                
-                error_log("Casa padrão criada e associada ao usuário admin (ID: $casa_id)");
-            } catch (Exception $e) {
-                error_log("Erro ao criar casa padrão: " . $e->getMessage());
-            }
         }
         
         return true;
