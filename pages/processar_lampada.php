@@ -23,8 +23,15 @@ try {
                 break;
             }
             
-            $stmt = $conn->prepare("INSERT INTO Lampadas (Nome, Comodo, ID_Usuario) VALUES (?, ?, ?)");
-            $success = $stmt->execute([$nome, $comodo, $_SESSION['user_id']]);
+            // Get the user's codigo_casa
+            $stmt = $conn->prepare("SELECT Codigo_Casa FROM Usuarios WHERE ID_Usuario = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $codigo_casa = $user['Codigo_Casa'] ?? 1; // Default to 1 if not found
+            
+            // Insert lamp with user's codigo_casa
+            $stmt = $conn->prepare("INSERT INTO Lampadas (Nome, Comodo, ID_Usuario, codigo_casa) VALUES (?, ?, ?, ?)");
+            $success = $stmt->execute([$nome, $comodo, $_SESSION['user_id'], $codigo_casa]);
             
             if ($success) {
                 $response = [
