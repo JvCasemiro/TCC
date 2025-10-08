@@ -57,19 +57,21 @@ try {
     }
 
     $lightId = (int)$input['light_id'];
-    $status = isset($input['status']) ? strtoupper($input['status']) : null;
-
-    if ($status === null || !in_array($status, ['ON', 'OFF'])) {
+    $status = isset($input['status']) ? strtoupper(trim($input['status'])) : '';
+    
+    if (!in_array($status, ['ON', 'OFF'])) {
+        error_log("Status inválido recebido: " . json_encode($input));
         throw new Exception('Status inválido. Deve ser ON ou OFF. Recebido: ' . $status);
     }
 
     $lightController = new LightController($conn);
     
-    $stmt = $conn->prepare("UPDATE Lampadas SET Status = ? WHERE ID_Lampada = ? AND ID_Usuario = ?");
-    $stmt->execute([$status, $lightId, $_SESSION['user_id']]);
+    // Atualiza o status da lâmpada sem verificar permissões
+    $stmt = $conn->prepare("UPDATE Lampadas SET Status = ? WHERE ID_Lampada = ?");
+    $stmt->execute([$status, $lightId]);
     
     if ($stmt->rowCount() === 0) {
-        throw new Exception('Lâmpada não encontrada ou você não tem permissão para alterá-la');
+        throw new Exception('Lâmpada não encontrada');
     }
     
     $lightController->updateLightStatus($lightId, $status);
