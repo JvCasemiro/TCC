@@ -33,23 +33,44 @@ if (file_exists($lightStatusFile)) {
     $lightStatus = (strtoupper($status) === 'ON') ? 'on' : 'off';
 }
 
-$lights = [];
+// Get user's codigo_casa and type
+$user_codigo_casa = 1; // Default value
+$user_type = 'user'; // Default to standard user
+
 try {
-    $stmt = $conn->prepare("SELECT * FROM Lampadas WHERE ID_Usuario = ?");
+    $stmt = $conn->prepare("SELECT Codigo_Casa, Tipo_Usuario FROM Usuarios WHERE ID_Usuario = ?");
     $stmt->execute([$_SESSION['user_id']]);
+    $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($user_data) {
+        $user_codigo_casa = $user_data['Codigo_Casa'] ?? 1;
+        $user_type = strtolower($user_data['Tipo_Usuario'] ?? 'user');
+    }
+    
+    // For admin users, show all lights
+    // For standard users, only show lights with matching codigo_casa
+    if ($user_type === 'admin') {
+        $stmt = $conn->query("SELECT * FROM Lampadas");
+    } else {
+        $stmt = $conn->prepare("SELECT * FROM Lampadas WHERE codigo_casa = ?");
+        $stmt->execute([$user_codigo_casa]);
+    }
+    
     $lights_db = $stmt->fetchAll();
-        
-    foreach ($lights_db as $lampada) {
-            $lights[] = [
-                'id' => $lampada['ID_Lampada'],
-                'name' => $lampada['Nome'],
-                'room' => $lampada['Comodo'],
-                'status' => $lampada['Status'] ?? 'off'
-            ];
-        }
-    } catch (PDOException $e) {
-    // Em caso de erro, usa uma lista vazia
     $lights = [];
+    
+    foreach ($lights_db as $lampada) {
+        $lights[] = [
+            'id' => $lampada['ID_Lampada'],
+            'name' => $lampada['Nome'],
+            'room' => $lampada['Comodo'],
+            'status' => $lampada['Status'] ?? 'off'
+        ];
+    }
+} catch (PDOException $e) {
+    // In case of error, use an empty list
+    $lights = [];
+    error_log("Database error in gerenciar_luzes.php: " . $e->getMessage());
 }
 
 // Se não houver lâmpadas cadastradas, exibe uma mensagem
