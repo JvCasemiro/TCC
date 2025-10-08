@@ -491,6 +491,10 @@ if ($conn === null) {
                     <i class="fas fa-search"></i>
                     Monitorar
                 </button>
+                <button class="control-btn" onclick="window.location.href='controle_portao.php'">
+                    <i class="fas fa-door-open"></i>
+                    Controlar
+                </button>
             </div>
         </div>
     </div>
