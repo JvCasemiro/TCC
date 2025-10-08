@@ -73,8 +73,8 @@ if ($conn === null) {
         }
         
         .container {
-            max-width: 1200px;
-            margin: 6.5rem auto;
+            max-width: 500px;
+            margin: 1rem auto 0;
             padding: 20px;
         }
         
@@ -193,12 +193,14 @@ if ($conn === null) {
         
         .card {
             background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 500px;
-            margin: 50px auto;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            margin: 0 auto;
             text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            min-height: auto;
         }
         
         .card h1 {
@@ -257,9 +259,83 @@ if ($conn === null) {
             left: 100%;
         }
         
-        .back-btn {
-            background-color: #4a90e2;
+        .gate-control {
+            margin: 10px 0 0 0;
+            padding: 0;
+        }
+        
+        .gate-icon {
+            font-size: 100px;
+            color: #2c3e50;
+            margin: 10px 0 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .gate-status {
+            font-size: 24px;
+            color:rgb(0, 0, 0);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .control-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0 10px 0;
+            width: 100%;
+        }
+        
+        .btn i {
+            font-size: 24px;
+        }
+        
+        .btn {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 280px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-open {
+            background-color: #2ecc71;
             color: white;
+            font-size: 18px;
+            padding: 18px 30px;
+        }
+        
+        .btn-close {
+            background-color: #e74c3c;
+            color: white;
+            font-size: 18px;
+            padding: 18px 30px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        
+        .btn i {
+            font-size: 18px;
+        }
+        
+        /* Removed back button styles */
             border: none;
             padding: 0.6rem 1.5rem;
             border-radius: 25px;
@@ -301,6 +377,24 @@ if ($conn === null) {
         .back-btn:hover::before {
             left: 100%;
         }
+        
+        .back-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 10px;
+            text-decoration: none;
         
         .control-btn {
             background: #4a90e2;
@@ -381,16 +475,61 @@ if ($conn === null) {
     </header>
     <div class="container">
         <div class="card">
-            <h1>Controle de Portão</h1>
-            <p>Gerencie seu portão com facilidade e segurança.</p>
-            <a href="controle_portao.php" class="control-btn">
-                <i class="fas fa-lock"></i> Abrir/Fechar Portão
-            </a>
+            <h2>Controle do Portão</h2>
+            <div class="gate-control">
+                <div class="gate-status" id="gateStatus">STATUS: FECHADO</div>
+                <div class="control-buttons">
+                    <button class="btn btn-open" id="openGate">
+                        <i class="fas fa-lock-open"></i> Abrir Portão
+                    </button>
+                    <button class="btn btn-close" id="closeGate">
+                        <i class="fas fa-lock"></i> Fechar Portão
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+    
     <script>
-        function toggleDropdown() {
-            var dropdown = document.getElementById("userDropdown");
+        document.addEventListener('DOMContentLoaded', function() {
+            const openBtn = document.getElementById('openGate');
+            const closeBtn = document.getElementById('closeGate');
+            const gateStatus = document.getElementById('gateStatus');
+            const gateIcon = document.getElementById('gateIcon');
+            
+            // Simulação de controle do portão
+            function updateGateStatus(isOpen) {
+                if (isOpen) {
+                    gateStatus.textContent = 'Portão: Aberto';
+                    gateStatus.style.color = '#2ecc71';
+                    gateIcon.style.color = '#2ecc71';
+                    gateIcon.className = 'fas fa-garage-open';
+                } else {
+                    gateStatus.textContent = 'Portão: Fechado';
+                    gateStatus.style.color = '#7f8c8d';
+                    gateIcon.style.color = '#2c3e50';
+                    gateIcon.className = 'fas fa-garage';
+                }
+            }
+            
+            openBtn.addEventListener('click', function() {
+                // Aqui você pode adicionar a lógica para abrir o portão
+                updateGateStatus(true);
+                
+                // Simulação de atraso para fechamento automático após 5 segundos
+                setTimeout(() => {
+                    updateGateStatus(false);
+                }, 5000);
+            });
+            
+            closeBtn.addEventListener('click', function() {
+                // Aqui você pode adicionar a lógica para fechar o portão
+                updateGateStatus(false);
+            });
+            
+            // Inicializa o status do portão como fechado
+            updateGateStatus(false);
+        });
             dropdown.classList.toggle("show");
         }
     </script>
