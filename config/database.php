@@ -40,8 +40,11 @@ function criarTabelas($conn) {
             Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             Ultimo_Acesso TIMESTAMP NULL,
-            Ativo BOOLEAN DEFAULT TRUE
+            Ativo BOOLEAN DEFAULT TRUE,
+            Codigo_Casa INT DEFAULT 1
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        
+        $conn->exec($sql_usuarios);
         
         $sql_lampadas = "
         CREATE TABLE IF NOT EXISTS Lampadas (
@@ -77,8 +80,9 @@ function criarTabelas($conn) {
             $admin_password = password_hash('Admin@123', PASSWORD_DEFAULT);
             $stmt = $conn->prepare("
                 INSERT INTO Usuarios 
-                (Nome_Usuario, Email, Senha, Tipo_Usuario, Data_Criacao, Data_Atualizacao, Ativo) 
-                VALUES (?, ?, ?, 'admin', NOW(), NOW(), 1)
+                (Nome_Usuario, Email, Senha, Tipo_Usuario, Data_Criacao, Data_Atualizacao, Ativo, Codigo_Casa) 
+                VALUES (?, ?, ?, 'admin', NOW(), NOW(), 1, 1)
+            
             ");
             $stmt->execute(['admin', 'admin@sistema.com', $admin_password]);
         }

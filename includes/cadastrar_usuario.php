@@ -29,14 +29,7 @@ if (empty($username) || empty($email) || empty($password) || empty($confirm_pass
     exit;
 }
 
-// Se for usuário comum, é obrigatório ter uma casa
-if ($tipo_usuario === 'user' && empty($id_casa)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Usuários comuns devem estar vinculados a uma casa']);
-    exit;
-}
-
-// Se for admin, não precisa de casa
+// Se for admin, não precisa de id_casa
 if ($tipo_usuario === 'admin') {
     $id_casa = null;
 }
@@ -98,22 +91,32 @@ try {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
     try {
-        if ($id_casa) {
-            // Verifica se a casa existe
-            $stmt = $conn->prepare("SELECT ID_Casa FROM Casas WHERE ID_Casa = ? AND Ativo = 1");
-            $stmt->execute([$id_casa]);
-            if (!$stmt->fetch()) {
-                http_response_code(400);
-                echo json_encode(['success' => false, 'message' => 'Casa inválida']);
-                exit;
-            }
-            
-            $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario, ID_Casa) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$username, $email, $hashed_password, $tipo_usuario, $id_casa]);
-        } else {
-            $stmt = $conn->prepare("INSERT INTO Usuarios (Nome_Usuario, Email, Senha, Tipo_Usuario) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$username, $email, $hashed_password, $tipo_usuario]);
+        // Busca o Codigo_Casa do admin
+        $stmt = $conn->prepare("SELECT Codigo_Casa FROM Usuarios WHERE Tipo_Usuario = 'admin' LIMIT 1");
+        $stmt->execute();
+        $admin_casa = $stmt->fetch(PDO::FETCH_ASSOC);
+        $codigo_casa = $admin_casa ? $admin_casa['Codigo_Casa'] : 1; // Usa 1 como fallback se não encontrar admin
+        
+        // Prepara os campos para a inserção
+        $fields = [
+            'Nome_Usuario' => $username,
+            'Email' => $email,
+            'Senha' => $hashed_password,
+            'Tipo_Usuario' => $tipo_usuario,
+            'Codigo_Casa' => $codigo_casa
+        ];
+        
+        // Adiciona ID_Casa apenas se for fornecido
+        if ($id_casa !== null) {
+            $fields['ID_Casa'] = $id_casa;
         }
+        
+        // Prepara a query dinamicamente
+        $columns = implode(', ', array_keys($fields));
+        $placeholders = implode(', ', array_fill(0, count($fields), '?'));
+        
+        $stmt = $conn->prepare("INSERT INTO Usuarios ($columns) VALUES ($placeholders)");
+        $stmt->execute(array_values($fields));
         
         echo json_encode([
             'success' => true, 
