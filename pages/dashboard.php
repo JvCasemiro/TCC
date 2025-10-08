@@ -246,21 +246,9 @@ if ($conn === null) {
             margin-bottom: 15px;
         }
         
-        .logout-btn {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.4s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        .button-container {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            gap: 10px;
         }
         
         .logout-btn:hover {
@@ -487,14 +475,16 @@ if ($conn === null) {
                 </div>
                 <h3>Leitura de Placas</h3>
                 <p>Gerencie o acesso de veículos com reconhecimento automático.</p>
-                <button class="control-btn" onclick="window.location.href='leitura_placas.php'">
-                    <i class="fas fa-search"></i>
-                    Monitorar
-                </button>
-                <button class="control-btn" onclick="window.location.href='controle_portao.php'">
-                    <i class="fas fa-door-open"></i>
-                    Controlar
-                </button>
+                <div class="button-container">
+                    <button class="control-btn" onclick="window.location.href='leitura_placas.php'">
+                        <i class="fas fa-search"></i>
+                        Monitorar
+                    </button>
+                    <button class="control-btn" onclick="window.location.href='controle_portao.php'">
+                        <i class="fas fa-door-open"></i>
+                        Controlar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
