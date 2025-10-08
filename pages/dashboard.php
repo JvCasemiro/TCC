@@ -249,6 +249,15 @@ if ($conn === null) {
         .button-container {
             display: flex;
             gap: 10px;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .button-container .control-btn {
+            width: 48%;
+            padding: 10px 5px;
+            font-size: 13px;
+            white-space: nowrap;
         }
 
         .logout-btn {
@@ -360,7 +369,7 @@ if ($conn === null) {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 0rem;
         }
         
         .control-btn:hover {

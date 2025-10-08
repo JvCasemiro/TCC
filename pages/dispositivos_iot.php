@@ -622,21 +622,6 @@ $devices = [
                         </div>
                     </div>
                     
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th style="padding-right: 50px;">Lâmpada</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="lights-table-body">
-                                <tr>
-                                    <td colspan="2" class="text-center">Carregando...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
                 <div class="device-info" style="margin-bottom: 20px; text-align: center;">
                     <h3 id="deviceName" style="margin: 0; color: #fff;"></h3>
