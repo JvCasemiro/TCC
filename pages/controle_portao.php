@@ -527,11 +527,6 @@ if ($conn === null) {
                 if (!gateState) { // Só executa se o portão não estiver aberto
                     // Aqui você pode adicionar a lógica para abrir o portão
                     updateGateStatus(true);
-                    
-                    // Simulação de atraso para fechamento automático após 5 segundos
-                    setTimeout(() => {
-                        updateGateStatus(false);
-                    }, 5000);
                 }
             });
             
