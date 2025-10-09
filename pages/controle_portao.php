@@ -335,28 +335,22 @@ if ($conn === null) {
             font-size: 18px;
         }
         
-        /* Removed back button styles */
+        .back-btn {
+            background-color: #6c757d;
+            color: white;
             border: none;
             padding: 0.6rem 1.5rem;
             border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.4s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-            display: flex;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             margin-right: 10px;
-            text-decoration: none;
         }
         
-        .back-btn:hover {
-            background-color: #5a6268;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
-        }
         
         .back-btn:active {
             transform: translateY(0);
@@ -395,6 +389,7 @@ if ($conn === null) {
             gap: 0.5rem;
             margin-right: 10px;
             text-decoration: none;
+        }
         
         .control-btn {
             background: #4a90e2;
