@@ -621,9 +621,10 @@ $devices = [
                             </div>
                         </div>
                     </div>
-                    
                 </div>
-                <div class="device-info" style="margin-bottom: 20px; text-align: center;">
+                
+                <!-- Seção de informações do dispositivo -->
+                <div class="device-info" style="margin: 20px 0; text-align: center;">
                     <h3 id="deviceName" style="margin: 0; color: #fff;"></h3>
                     <p id="deviceLocation" style="margin: 5px 0 0; color: #aaa;"></p>
                 </div>
@@ -978,80 +979,41 @@ $devices = [
     </style>
 
     <script>
-        function openMonitoringModal() {
-            const modal = document.getElementById('monitoringModal');
-            if (modal) {
-                modal.style.display = 'block';
-                
-                startMonitoringUpdates();
-            }
-        }
-        
         function updateLightsTable(lights) {
-            const tbody = document.getElementById('lights-table-body');
-            if (!tbody) {
-                console.error('Elemento tbody não encontrado');
+            if (!lights) {
+                console.error('Dados de lâmpadas não fornecidos');
                 return;
             }
-            
-            tbody.innerHTML = '';
-            
-            if (!lights || lights.length === 0) {
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="2" class="text-center">Nenhuma lâmpada encontrada</td>';
-                tbody.appendChild(row);
-                return;
-            }
-            
-            let lightsOn = 0;
-            let hasActiveLights = false;
             
             try {
-                const activeLights = lights.filter(light => {
+                const lightsOn = lights.filter(light => {
                     const status = light.Status ? light.Status.toLowerCase() : 'off';
                     return status === 'on';
-                });
-                
-                if (activeLights.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = '<td colspan="2" class="text-center">Nenhuma lâmpada acesa no momento</td>';
-                    tbody.appendChild(row);
-                } else {
-                    activeLights.forEach(light => {
-                        const row = document.createElement('tr');
-                        const statusClass = 'bg-success';
-                        
-                        row.innerHTML = `
-                            <td style="padding-right: 50px;">${light.Nome || 'Lâmpada não identificada'}</td>
-                            <td><span class="badge ${statusClass}">Ligada</span></td>
-                        `;
-                        tbody.appendChild(row);
-                        lightsOn++;
-                    });
-                    hasActiveLights = true;
-                }
+                }).length;
                 
                 const totalLightsEl = document.getElementById('total-lights');
                 const lightsOnEl = document.getElementById('lights-on');
                 const percentageEl = document.getElementById('percentage-on');
-                const lastUpdatedEl = document.getElementById('last-updated');
                 
                 if (totalLightsEl) totalLightsEl.textContent = lights.length;
                 if (lightsOnEl) lightsOnEl.textContent = lightsOn;
                 
                 const percentage = lights.length > 0 ? Math.round((lightsOn / lights.length) * 100) : 0;
                 if (percentageEl) percentageEl.textContent = `${percentage}%`;
-                if (lastUpdatedEl) lastUpdatedEl.textContent = `Atualizado em: ${new Date().toLocaleTimeString()}`;
+                
+                console.log(`Atualizado: ${lightsOn} de ${lights.length} lâmpadas acesas (${percentage}%)`);
                 
             } catch (error) {
-                console.error('Erro ao atualizar tabela de lâmpadas:', error);
-                const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="5" class="text-center text-danger">Erro ao carregar dados das lâmpadas</td>';
-                tbody.appendChild(row);
+                console.error('Erro ao atualizar contadores de lâmpadas:', error);
             }
         }
-        
-        function startMonitoringUpdates() {
+
+        function openMonitoringModal() {
+            const modal = document.getElementById('monitoringModal');
+            if (!modal) return;
+
+            modal.style.display = 'block';
+            
             const loadData = () => {
                 fetch('../includes/monitor_lights.php')
                     .then(response => response.json())
@@ -1059,19 +1021,11 @@ $devices = [
                         if (data.success && data.lights) {
                             updateLightsTable(data.lights);
                         } else {
-                            console.error('Erro ao carregar dados:', data.message || 'Erro desconhecido');
-                            const tbody = document.getElementById('lights-table-body');
-                            if (tbody) {
-                                tbody.innerHTML = '<tr><td colspan="5" class="text-center">Erro ao carregar dados. Tente novamente.</td></tr>';
-                            }
+                            console.error('Erro ao carregar dados:', data?.message || 'Erro desconhecido');
                         }
                     })
                     .catch(error => {
                         console.error('Erro ao buscar dados:', error);
-                        const tbody = document.getElementById('lights-table-body');
-                        if (tbody) {
-                            tbody.innerHTML = '<tr><td colspan="5" class="text-center">Erro de conexão. Verifique sua internet.</td></tr>';
-                        }
                     });
             };
             
