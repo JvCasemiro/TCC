@@ -29,7 +29,6 @@ if (empty($username) || empty($email) || empty($password) || empty($confirm_pass
     exit;
 }
 
-// Se for admin, não precisa de id_casa
 if ($tipo_usuario === 'admin') {
     $id_casa = null;
 }
@@ -91,13 +90,11 @@ try {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
     try {
-        // Busca o Codigo_Casa do admin
         $stmt = $conn->prepare("SELECT Codigo_Casa FROM Usuarios WHERE Tipo_Usuario = 'admin' LIMIT 1");
         $stmt->execute();
         $admin_casa = $stmt->fetch(PDO::FETCH_ASSOC);
-        $codigo_casa = $admin_casa ? $admin_casa['Codigo_Casa'] : 1; // Usa 1 como fallback se não encontrar admin
+        $codigo_casa = $admin_casa ? $admin_casa['Codigo_Casa'] : 1;
         
-        // Prepara os campos para a inserção
         $fields = [
             'Nome_Usuario' => $username,
             'Email' => $email,
@@ -106,12 +103,10 @@ try {
             'Codigo_Casa' => $codigo_casa
         ];
         
-        // Adiciona ID_Casa apenas se for fornecido
         if ($id_casa !== null) {
             $fields['ID_Casa'] = $id_casa;
         }
         
-        // Prepara a query dinamicamente
         $columns = implode(', ', array_keys($fields));
         $placeholders = implode(', ', array_fill(0, count($fields), '?'));
         

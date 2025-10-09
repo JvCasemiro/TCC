@@ -71,13 +71,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Atualizar totais
                     document.getElementById('total-lights').textContent = data.total_lights;
                     document.getElementById('lights-on').textContent = data.lights_on;
                     document.getElementById('percentage-on').textContent = data.percentage_on + '%';
                     document.getElementById('last-updated').textContent = 'Atualizado em: ' + new Date().toLocaleTimeString();
                     
-                    // Atualizar tabela
                     const tbody = document.getElementById('lights-table-body');
                     tbody.innerHTML = '';
                     
@@ -103,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
     
-    // Atualizar a cada 5 segundos
     updateMonitorData();
     setInterval(updateMonitorData, 5000);
 });

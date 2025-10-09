@@ -71,13 +71,10 @@ function criarTabelas($conn) {
         $conn->exec($sql_lampadas);
         $conn->exec($sql_placas);
         
-        // Verifica se já existem usuários no sistema
         $stmt = $conn->query("SELECT COUNT(*) as total FROM Usuarios");
         $userCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
-        // Se não houver usuários, cria o usuário mestre
         if ($userCount == 0) {
-            // Cria um usuário admin padrão
             $admin_password = password_hash('Admin@123', PASSWORD_DEFAULT);
             $stmt = $conn->prepare("
                 INSERT INTO Usuarios 

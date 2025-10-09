@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once '../config/database.php';
 
-// Função para gerenciar o número de imagens na pasta de saída
 function gerenciarImagensOutput() {
     $output_dir = __DIR__ . '/../python/output/';
     
@@ -15,17 +14,16 @@ function gerenciarImagensOutput() {
         return;
     }
     
-    // Obtém todos os arquivos .png na pasta de saída
     $files = glob($output_dir . 'placa_*.png');
     
-    // Se houver mais de 5 imagens, remove as mais antigas
     if (count($files) > 5) {
-        // Ordena os arquivos por data de modificação (mais recentes primeiro)
+        usort($files, function($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
         usort($files, function($a, $b) {
             return filemtime($b) - filemtime($a);
         });
         
-        // Mantém as 5 imagens mais recentes e remove as demais
         $files_to_keep = array_slice($files, 0, 1);
         foreach (array_diff($files, $files_to_keep) as $file) {
             if (is_file($file)) {
@@ -35,7 +33,6 @@ function gerenciarImagensOutput() {
     }
 }
 
-// Executa a função de gerenciamento de imagens
 gerenciarImagensOutput();
 
 
@@ -747,9 +744,7 @@ try {
                 }
                 
                 if (!empty($latest_image)) {
-                    // Obtém apenas o nome do arquivo
                     $image_name = basename($latest_image);
-                    // Cria o caminho relativo ao servidor web
                     $image_url = '../python/output/' . $image_name;
                     echo '<div style="position: relative; width: 100%; height: 100%; min-height: 300px; background-color: #f5f5f5; border-radius: 8px; overflow: hidden;">';
                     echo '    <img src="' . htmlspecialchars($image_url) . '" alt="Última placa detectada" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -35%); width: 100%; height: auto;">';
@@ -1105,21 +1100,16 @@ try {
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-    // Função para atualizar a página
     function atualizarConteudo() {
-        // Atualiza a seção de detecções recentes
         $.get('leitura_placas.php', function(data) {
-            // Extrai apenas a parte do HTML que contém as detecções recentes
             var recentDetections = $(data).find('#recent-detections').html();
             $('#recent-detections').html(recentDetections);
             
-            // Extrai a imagem mais recente
             var latestImage = $(data).find('.camera-feed').html();
             $('.camera-feed').html(latestImage);
         });
     }
 
-    // Atualiza a cada 5 segundos
     setInterval(atualizarConteudo, 5000);
     </script>
     <script src="../assets/js/script.js"></script>

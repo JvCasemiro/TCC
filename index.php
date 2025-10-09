@@ -1448,7 +1448,7 @@
                 if (e) e.preventDefault();
                 const startPosition = window.pageYOffset;
                 const distance = -startPosition;
-                const duration = 5000; // 5 segundos para rolar até o topo
+                const duration = 5000;
                 let start = null;
                 
                 function step(timestamp) {
@@ -1496,7 +1496,6 @@
                 });
 
                 window.addEventListener('scroll', () => {
-                    // Show button when user is within 100px of the bottom of the page
                     const scrollPosition = window.innerHeight + window.scrollY;
                     const bottomPosition = document.documentElement.scrollHeight - 100;
                     

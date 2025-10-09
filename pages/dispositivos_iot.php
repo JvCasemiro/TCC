@@ -983,7 +983,6 @@ $devices = [
             if (modal) {
                 modal.style.display = 'block';
                 
-                // Inicializa a atualização automática
                 startMonitoringUpdates();
             }
         }
@@ -1008,7 +1007,6 @@ $devices = [
             let hasActiveLights = false;
             
             try {
-                // Filtra apenas as lâmpadas acesas
                 const activeLights = lights.filter(light => {
                     const status = light.Status ? light.Status.toLowerCase() : 'off';
                     return status === 'on';
@@ -1033,7 +1031,6 @@ $devices = [
                     hasActiveLights = true;
                 }
                 
-                // Atualiza os contadores apenas se os elementos existirem
                 const totalLightsEl = document.getElementById('total-lights');
                 const lightsOnEl = document.getElementById('lights-on');
                 const percentageEl = document.getElementById('percentage-on');
@@ -1055,7 +1052,6 @@ $devices = [
         }
         
         function startMonitoringUpdates() {
-            // Função para carregar os dados
             const loadData = () => {
                 fetch('../includes/monitor_lights.php')
                     .then(response => response.json())
@@ -1064,7 +1060,6 @@ $devices = [
                             updateLightsTable(data.lights);
                         } else {
                             console.error('Erro ao carregar dados:', data.message || 'Erro desconhecido');
-                            // Atualiza a tabela com mensagem de erro
                             const tbody = document.getElementById('lights-table-body');
                             if (tbody) {
                                 tbody.innerHTML = '<tr><td colspan="5" class="text-center">Erro ao carregar dados. Tente novamente.</td></tr>';
@@ -1073,7 +1068,6 @@ $devices = [
                     })
                     .catch(error => {
                         console.error('Erro ao buscar dados:', error);
-                        // Atualiza a tabela com mensagem de erro
                         const tbody = document.getElementById('lights-table-body');
                         if (tbody) {
                             tbody.innerHTML = '<tr><td colspan="5" class="text-center">Erro de conexão. Verifique sua internet.</td></tr>';
@@ -1081,10 +1075,8 @@ $devices = [
                     });
             };
             
-            // Carrega os dados imediatamente
             loadData();
             
-            // Configura a atualização automática a cada 5 segundos
             if (window.monitoringInterval) {
                 clearInterval(window.monitoringInterval);
             }
@@ -1096,7 +1088,6 @@ $devices = [
             const modal = document.getElementById('monitoringModal');
             if (modal) {
                 modal.style.display = 'none';
-                // Limpa o intervalo quando o modal é fechado
                 if (window.monitoringInterval) {
                     clearInterval(window.monitoringInterval);
                 }
@@ -1125,7 +1116,6 @@ $devices = [
         }
         
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
-            // Usa a função openMonitoringModal para garantir consistência
             openMonitoringModal();
         }
 

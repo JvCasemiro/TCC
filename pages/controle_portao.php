@@ -490,21 +490,17 @@ if ($conn === null) {
             const openBtn = document.getElementById('openGate');
             const closeBtn = document.getElementById('closeGate');
             const gateStatus = document.getElementById('gateStatus');
-            let gateState = false; // false = fechado, true = aberto
+            let gateState = false;
             
-            // Função para atualizar o estado dos botões
             function updateButtonStates() {
-                openBtn.disabled = gateState; // Desabilita o botão de abrir se já estiver aberto
-                closeBtn.disabled = !gateState; // Desabilita o botão de fechar se já estiver fechado
-                
-                // Estilização dos botões
+                openBtn.disabled = gateState;
+                closeBtn.disabled = !gateState;
                 openBtn.style.opacity = gateState ? '0.6' : '1';
                 closeBtn.style.opacity = gateState ? '1' : '0.6';
                 openBtn.style.cursor = gateState ? 'not-allowed' : 'pointer';
                 closeBtn.style.cursor = gateState ? 'pointer' : 'not-allowed';
             }
             
-            // Atualiza o status do portão
             function updateGateStatus(isOpen) {
                 gateState = isOpen;
                 if (isOpen) {
@@ -517,27 +513,21 @@ if ($conn === null) {
                 updateButtonStates();
             }
             
-            // Evento de clique no botão de abrir
             openBtn.addEventListener('click', function() {
-                if (!gateState) { // Só executa se o portão não estiver aberto
-                    // Aqui você pode adicionar a lógica para abrir o portão
+                if (!gateState) { 
                     updateGateStatus(true);
                 }
             });
             
-            // Evento de clique no botão de fechar
             closeBtn.addEventListener('click', function() {
-                if (gateState) { // Só executa se o portão não estiver fechado
-                    // Aqui você pode adicionar a lógica para fechar o portão
+                if (gateState) { 
                     updateGateStatus(false);
                 }
             });
             
-            // Inicializa o status do portão como fechado
             updateGateStatus(false);
         });
         
-        // Função para o dropdown do menu do usuário
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             if (dropdown) {

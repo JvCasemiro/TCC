@@ -66,7 +66,6 @@ try {
 
     $lightController = new LightController($conn);
     
-    // Atualiza o status da lâmpada sem verificar permissões
     $stmt = $conn->prepare("UPDATE Lampadas SET Status = ? WHERE ID_Lampada = ?");
     $stmt->execute([$status, $lightId]);
     

@@ -48,7 +48,6 @@ try {
     $conn = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Buscar todas as lâmpadas
     $stmt = $conn->query("SELECT ID_Lampada, Nome, Status FROM Lampadas");
     $lampadas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
@@ -56,7 +55,6 @@ try {
     $lightsOn = 0;
     $now = time();
     
-    // Processar cada lâmpada
     foreach ($lampadas as &$lampada) {
         $statusInfo = getLightStatusFromFile($lampada['Nome']);
         

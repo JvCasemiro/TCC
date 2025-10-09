@@ -33,9 +33,8 @@ if (file_exists($lightStatusFile)) {
     $lightStatus = (strtoupper($status) === 'ON') ? 'on' : 'off';
 }
 
-// Get user's codigo_casa and type
-$user_codigo_casa = 1; // Default value
-$user_type = 'user'; // Default to standard user
+$user_codigo_casa = 1;
+$user_type = 'user';
 
 try {
     $stmt = $conn->prepare("SELECT Codigo_Casa, Tipo_Usuario FROM Usuarios WHERE ID_Usuario = ?");
@@ -47,8 +46,6 @@ try {
         $user_type = strtolower($user_data['Tipo_Usuario'] ?? 'user');
     }
     
-    // For admin users, show all lights
-    // For standard users, only show lights with matching codigo_casa
     if ($user_type === 'admin') {
         $stmt = $conn->query("SELECT * FROM Lampadas");
     } else {
@@ -68,12 +65,9 @@ try {
         ];
     }
 } catch (PDOException $e) {
-    // In case of error, use an empty list
     $lights = [];
     error_log("Database error in gerenciar_luzes.php: " . $e->getMessage());
 }
-
-// Se não houver lâmpadas cadastradas, exibe uma mensagem
 $noLights = empty($lights);
 ?>
 <html lang="pt-BR">
@@ -706,7 +700,6 @@ $noLights = empty($lights);
     </div>
     
     <script>
-        // Função para atualizar o estado de uma lâmpada
         function updateLightState(lightId, isOn) {
             const card = document.querySelector(`[data-light-id="${lightId}"]`);
             if (!card) return;
@@ -715,7 +708,6 @@ $noLights = empty($lights);
             const statusText = statusElement ? statusElement.querySelector('span') : null;
             const toggleSwitch = card.querySelector('input[type="checkbox"]');
             
-            // Atualiza as classes
             card.classList.toggle('on', isOn);
             card.classList.toggle('off', !isOn);
             
@@ -724,20 +716,15 @@ $noLights = empty($lights);
                 statusElement.classList.toggle('off', !isOn);
             }
             
-            // Atualiza o texto do status
             if (statusText) {
                 statusText.textContent = isOn ? 'Ligada' : 'Desligada';
             }
             
-            // Controle de brilho removido
-            
-            // Atualiza o estado do toggle switch
             if (toggleSwitch) {
                 toggleSwitch.checked = isOn;
             }
         }
         
-        // Função para carregar o status das lâmpadas
         function loadLightsStatus() {
             fetch('../includes/get_lights_status.php')
                 .then(response => {
@@ -748,7 +735,6 @@ $noLights = empty($lights);
                 })
                 .then(data => {
                     if (data.success && data.status) {
-                        // Atualiza o estado de cada lâmpada com base no status retornado
                         for (let i = 0; i < data.status.length; i++) {
                             const lightId = i + 1;
                             const isOn = data.status[i] === '1';
@@ -761,12 +747,8 @@ $noLights = empty($lights);
                 });
         }
         
-        // Inicialização quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', function() {
-            // Carrega o status inicial das lâmpadas
             loadLightsStatus();
-            
-            // Atualiza o status a cada 5 segundos
             setInterval(loadLightsStatus, 5000);
         });
 
@@ -789,19 +771,15 @@ $noLights = empty($lights);
             const isOn = card.classList.contains('on');
             const newStatus = !isOn;
             
-            // Atualiza as classes e o estado visual
             card.classList.toggle('on', newStatus);
             card.classList.toggle('off', !newStatus);
             statusElement.classList.toggle('on', newStatus);
             statusElement.classList.toggle('off', !newStatus);
             
-            // Atualiza o texto do status
             if (statusText) {
                 statusText.textContent = newStatus ? 'Ligada' : 'Desligada';
             }
             
-            
-            // Atualiza o estado do toggle switch
             if (toggleSwitch) {
                 toggleSwitch.checked = newStatus;
             }
@@ -840,7 +818,6 @@ $noLights = empty($lights);
                     console.error('Erro na resposta da API:', errorMessage);
                     showMessage(`Erro: ${errorMessage}`, 'error');
                     
-                    // Reverte a UI para o estado anterior
                     if (isOn) {
                         card.classList.remove('off');
                         card.classList.add('on');
@@ -862,7 +839,6 @@ $noLights = empty($lights);
                 console.error('Erro na requisição:', error);
                 showMessage(`Erro ao atualizar o status da luz: ${error.message}`, 'error');
                 
-                // Reverte a UI para o estado anterior
                 if (isOn) {
                     card.classList.remove('off');
                     card.classList.add('on');
@@ -923,7 +899,6 @@ $noLights = empty($lights);
             }, 5000);
         }
 
-        // Função para alternar o estado da lâmpada
         function toggleLight(lightId, element) {
             const card = document.querySelector(`[data-light-id="${lightId}"]`);
             if (!card) {
@@ -943,24 +918,20 @@ $noLights = empty($lights);
             const isOn = card.classList.contains('on');
             const newStatus = !isOn;
             
-            // Atualiza as classes e o estado visual
             card.classList.toggle('on', newStatus);
             card.classList.toggle('off', !newStatus);
             statusElement.classList.toggle('on', newStatus);
             statusElement.classList.toggle('off', !newStatus);
             
-            // Atualiza o texto do status
             if (statusText) {
                 statusText.textContent = newStatus ? 'Ligada' : 'Desligada';
             }
             
             
-            // Atualiza o estado do toggle switch
             if (toggleSwitch) {
                 toggleSwitch.checked = newStatus;
             }
             
-            // Atualiza o estilo do elemento se fornecido
             if (element) {
                 const icon = element.querySelector('i');
                 if (icon) {
@@ -1004,7 +975,6 @@ $noLights = empty($lights);
             .then(data => {
                 if (!data.success) {
                     console.error('Erro ao atualizar status da luz:', data.message);
-                    // Reverte as alterações visuais em caso de erro
                     card.classList.toggle('on', !newStatus);
                     card.classList.toggle('off', newStatus);
                     statusElement.classList.toggle('on', !newStatus);
@@ -1015,7 +985,6 @@ $noLights = empty($lights);
                     if (toggleSwitch) {
                         toggleSwitch.checked = !newStatus;
                     }
-                    // Reverte o estilo do elemento se fornecido
                     if (element) {
                         const icon = element.querySelector('i');
                         if (icon) {
@@ -1034,7 +1003,6 @@ $noLights = empty($lights);
             })
             .catch(error => {
                 console.error('Erro na requisição:', error);
-                // Reverte as alterações visuais em caso de erro
                 card.classList.toggle('on', !newStatus);
                 card.classList.toggle('off', newStatus);
                 statusElement.classList.toggle('on', !newStatus);
@@ -1045,7 +1013,6 @@ $noLights = empty($lights);
                 if (toggleSwitch) {
                     toggleSwitch.checked = !newStatus;
                 }
-                // Reverte o estilo do elemento se fornecido
                 if (element) {
                     const icon = element.querySelector('i');
                     if (icon) {
@@ -1108,13 +1075,10 @@ $noLights = empty($lights);
             }
         });
 
-        // Variáveis para controle do modal de confirmação
         let lightToDeleteId = null;
         let lightToDeleteElement = null;
         const confirmDeleteModal = document.getElementById('confirmDeleteModal');
         const lightToDeleteText = document.getElementById('lightToDelete');
-
-        // Função para exibir o modal de confirmação
         function removeLight(lightId, element) {
             lightToDeleteId = lightId;
             lightToDeleteElement = element.closest('.light-card');
@@ -1126,10 +1090,9 @@ $noLights = empty($lights);
             const lightName = lightNameElement.textContent;
             lightToDeleteText.textContent = `"${lightName}"`;
             confirmDeleteModal.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Impede o scroll da página
+            document.body.style.overflow = 'hidden';
         }
 
-        // Função para confirmar a exclusão
         function confirmDelete() {
             if (!lightToDeleteId || !lightToDeleteElement) {
                 console.error('ID ou elemento da lâmpada não encontrado');
@@ -1146,7 +1109,6 @@ $noLights = empty($lights);
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Remove o card da lâmpada
                     lightToDeleteElement.remove();
                     showMessage('Lâmpada removida com sucesso!', 'success');
                 } else {
@@ -1162,15 +1124,13 @@ $noLights = empty($lights);
             });
         }
 
-        // Função para cancelar a exclusão
         function cancelDelete() {
             lightToDeleteId = null;
             lightToDeleteElement = null;
             confirmDeleteModal.style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restaura o scroll da página
+            document.body.style.overflow = 'auto';
         }
 
-        // Fechar o modal ao clicar fora dele
         window.onclick = function(event) {
             if (event.target === confirmDeleteModal) {
                 cancelDelete();
