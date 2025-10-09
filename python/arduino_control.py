@@ -15,7 +15,7 @@ class ArduinoController:
     _light_cache = {}
     _last_light_status = None
     _last_light_status_time = 0
-    CACHE_TTL = 5  # segundos
+    CACHE_TTL = 5
 
     def __new__(cls):
         if cls._instance is None:
@@ -56,25 +56,20 @@ class ArduinoController:
             for port in ports:
                 print(f"Verificando porta: {port.device} - {port.description}")
                 try:
-                    # Tenta abrir a porta com configurações padrão
                     ser = serial.Serial(
                         port=port.device,
                         baudrate=9600,
                         timeout=1,
                         write_timeout=1
                     )
-                    # Aguarda um pouco para o Arduino reiniciar
                     time.sleep(2)
-                    # Limpa buffers
                     ser.reset_input_buffer()
                     ser.reset_output_buffer()
                     
-                    # Tenta enviar um comando de teste
                     test_command = "LED1:ON\n"
                     ser.write(test_command.encode())
                     time.sleep(0.5)
                     
-                    # Tenta ler a resposta
                     if ser.in_waiting > 0:
                         response = ser.readline().decode().strip()
                         print(f"Resposta do Arduino: {response}")
@@ -82,7 +77,6 @@ class ArduinoController:
                             ser.close()
                             return port.device
                     
-                    # Se não houver resposta, tenta desligar o LED e fecha a porta
                     ser.write(b"LED1:OFF\n")
                     ser.close()
                     
@@ -118,9 +112,7 @@ class ArduinoController:
                 timeout=1,
                 write_timeout=1
             )
-            # Aguarda o Arduino reiniciar após a conexão
             time.sleep(2)
-            # Limpa buffers
             self.serial_connection.reset_input_buffer()
             self.serial_connection.reset_output_buffer()
             print("Conexão com o Arduino estabelecida com sucesso")
@@ -175,19 +167,15 @@ class ArduinoController:
                 print("Erro: Não foi possível conectar ao Arduino")
                 return False
             
-            # Limpa o buffer de entrada
             self.serial_connection.reset_input_buffer()
             
-            # Envia o comando
             command = f"LED{light_id}:{'ON' if light_status == '1' else 'OFF'}\n"
             print(f"Enviando comando: {command.strip()}")
             self.serial_connection.write(command.encode())
-            self.serial_connection.flush()  # Garante que o comando foi enviado
+            self.serial_connection.flush()
             
-            # Aguarda um pouco para o Arduino processar
             time.sleep(0.5)
             
-            # Tenta ler a resposta
             if self.serial_connection.in_waiting > 0:
                 response = self.serial_connection.readline().decode().strip()
                 print(f"Resposta do Arduino: {response}")
@@ -215,7 +203,6 @@ def update_light_status(controller, light_name, status):
             f.write(''.join(status_list))
             f.truncate()
             
-        # Invalida o cache de status
         controller._last_light_status = None
         return True
         

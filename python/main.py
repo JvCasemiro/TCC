@@ -47,7 +47,6 @@ def verificar_acesso(numero_placa):
     if not numero_placa:
         return False, "Placa inválida"
     
-    # Remove qualquer formatação da placa (hífens, espaços)
     placa_limpa = re.sub(r'[^A-Z0-9]', '', numero_placa.upper())
     
     conn = None
@@ -58,15 +57,12 @@ def verificar_acesso(numero_placa):
             
         cursor = conn.cursor(dictionary=True)
         
-        # Busca todas as placas do banco de dados
         cursor.execute("SELECT ID_Placa, Numeracao FROM Placas")
         placas = cursor.fetchall()
         
-        # Remove formatação das placas do banco e compara exatamente
         for placa in placas:
             placa_banco_limpa = re.sub(r'[^A-Z0-9]', '', placa['Numeracao'].upper())
             if placa_banco_limpa == placa_limpa:
-                # Atualiza o último acesso
                 update_query = "UPDATE Placas SET Ultimo_Acesso = NOW() WHERE ID_Placa = %s"
                 cursor.execute(update_query, (placa['ID_Placa'],))
                 conn.commit()
@@ -101,28 +97,23 @@ def processar_placa(img_roi, frame):
     saida = re.sub(r'\s+', '', saida)
     placa_detectada = saida.upper()
 
-    # Verifica se a placa detectada tem o formato correto
     if not validar_placa(placa_detectada):
         print(f"Placa detectada em formato inválido: {placa_detectada}")
         return None
 
     print(f"Placa detectada: {placa_detectada}")
     
-    # Verifica se a placa está autorizada
     acesso_permitido, mensagem = verificar_acesso(placa_detectada)
     print(f"Verificação de acesso: {placa_detectada} - {mensagem}")
     
     if acesso_permitido:
-        # Cria o diretório de saída se não existir
         output_dir = os.path.join(os.path.dirname(__file__), 'output')
         os.makedirs(output_dir, exist_ok=True)
         
-        # Define o nome do arquivo com timestamp
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"placa_{placa_detectada}_{timestamp}.png"
         output_path = os.path.join(output_dir, filename)
         
-        # Salva a imagem da placa
         cv2.imwrite(output_path, img_roi)
         print(f"Imagem da placa salva em: {output_path}")
         
