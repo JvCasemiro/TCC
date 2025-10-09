@@ -494,8 +494,8 @@ if ($conn === null) {
                 <div class="icon">
                     <i class="fas fa-car"></i>
                 </div>
-                <h3>Leitura de Placas</h3>
-                <p>Gerencie o acesso de veículos com reconhecimento automático.</p>
+                <h3>Controle de Acesso</h3>
+                <p>Controle o portão por leitura de placas ou acionamento manual.</p>
                 <div class="button-container">
                     <button class="control-btn" onclick="window.location.href='leitura_placas.php'">
                         <i class="fas fa-search"></i>
