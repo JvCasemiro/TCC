@@ -495,42 +495,64 @@ if ($conn === null) {
             const openBtn = document.getElementById('openGate');
             const closeBtn = document.getElementById('closeGate');
             const gateStatus = document.getElementById('gateStatus');
-            const gateIcon = document.getElementById('gateIcon');
+            let gateState = false; // false = fechado, true = aberto
             
-            // Simulação de controle do portão
-            function updateGateStatus(isOpen) {
-                if (isOpen) {
-                    gateStatus.textContent = 'Portão: Aberto';
-                    gateStatus.style.color = '#2ecc71';
-                    gateIcon.style.color = '#2ecc71';
-                    gateIcon.className = 'fas fa-garage-open';
-                } else {
-                    gateStatus.textContent = 'Portão: Fechado';
-                    gateStatus.style.color = '#7f8c8d';
-                    gateIcon.style.color = '#2c3e50';
-                    gateIcon.className = 'fas fa-garage';
-                }
+            // Função para atualizar o estado dos botões
+            function updateButtonStates() {
+                openBtn.disabled = gateState; // Desabilita o botão de abrir se já estiver aberto
+                closeBtn.disabled = !gateState; // Desabilita o botão de fechar se já estiver fechado
+                
+                // Estilização dos botões
+                openBtn.style.opacity = gateState ? '0.6' : '1';
+                closeBtn.style.opacity = gateState ? '1' : '0.6';
+                openBtn.style.cursor = gateState ? 'not-allowed' : 'pointer';
+                closeBtn.style.cursor = gateState ? 'pointer' : 'not-allowed';
             }
             
+            // Atualiza o status do portão
+            function updateGateStatus(isOpen) {
+                gateState = isOpen;
+                if (isOpen) {
+                    gateStatus.textContent = 'STATUS: ABERTO';
+                    gateStatus.style.color = '#2ecc71';
+                } else {
+                    gateStatus.textContent = 'STATUS: FECHADO';
+                    gateStatus.style.color = '#e74c3c';
+                }
+                updateButtonStates();
+            }
+            
+            // Evento de clique no botão de abrir
             openBtn.addEventListener('click', function() {
-                // Aqui você pode adicionar a lógica para abrir o portão
-                updateGateStatus(true);
-                
-                // Simulação de atraso para fechamento automático após 5 segundos
-                setTimeout(() => {
-                    updateGateStatus(false);
-                }, 5000);
+                if (!gateState) { // Só executa se o portão não estiver aberto
+                    // Aqui você pode adicionar a lógica para abrir o portão
+                    updateGateStatus(true);
+                    
+                    // Simulação de atraso para fechamento automático após 5 segundos
+                    setTimeout(() => {
+                        updateGateStatus(false);
+                    }, 5000);
+                }
             });
             
+            // Evento de clique no botão de fechar
             closeBtn.addEventListener('click', function() {
-                // Aqui você pode adicionar a lógica para fechar o portão
-                updateGateStatus(false);
+                if (gateState) { // Só executa se o portão não estiver fechado
+                    // Aqui você pode adicionar a lógica para fechar o portão
+                    updateGateStatus(false);
+                }
             });
             
             // Inicializa o status do portão como fechado
             updateGateStatus(false);
         });
-            dropdown.classList.toggle("show");
+        
+        // Função para o dropdown do menu do usuário
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle("show");
+            }
         }
     </script>
     </body>
