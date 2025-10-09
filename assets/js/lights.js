@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 window.addEventListener('beforeunload', function() {
-    console.log('Page is being unloaded, but keeping the light controller running');
+    return;
 });
 
 function showMessage(message, type = 'info') {

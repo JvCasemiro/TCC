@@ -108,7 +108,6 @@ function iniciarDetecao() {
 }
 
 function atualizarDetecoesRecentes() {
-    console.log('Atualizando lista de detecções recentes...');
     window.location.reload();
 }
 
@@ -338,7 +337,6 @@ const botaoParar = document.querySelector('.control-btn .fa-stop')?.parentElemen
 if (botaoParar) {
     botaoParar.addEventListener('click', function (e) {
         e.preventDefault();
-        console.log('Detecção interrompida pelo usuário');
         window.location.reload();
     });
 }

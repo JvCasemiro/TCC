@@ -1323,7 +1323,6 @@ $devices = [
         }
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Página de Dispositivos IoT carregada');
             
             const lampadaModal = document.getElementById('lampadaModal');
             const closeModal = document.querySelector('.close-lampada');

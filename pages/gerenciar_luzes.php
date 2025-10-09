@@ -784,8 +784,6 @@ $noLights = empty($lights);
                 toggleSwitch.checked = newStatus;
             }
             
-            console.log('Enviando requisição para atualizar status da luz:', { lightId, status: newStatus ? 'ON' : 'OFF' });
-            
             fetch('../includes/update_light.php', {
                 method: 'POST',
                 headers: {
@@ -797,7 +795,6 @@ $noLights = empty($lights);
                 })
             })
             .then(response => {
-                console.log('Resposta recebida, status:', response.status);
                 setTimeout(() => {
                     window.location.reload();
                 }, 3000);
@@ -810,12 +807,10 @@ $noLights = empty($lights);
                 return response.json();
             })
             .then(data => {
-                console.log('Dados da resposta:', data);
                 if (data && data.success) {
                     showMessage(`Luz ${newStatus ? 'ligada' : 'desligada'} com sucesso!`, 'success');
                 } else {
                     const errorMessage = data && data.error ? data.error : 'Erro desconhecido ao atualizar o status da luz';
-                    console.error('Erro na resposta da API:', errorMessage);
                     showMessage(`Erro: ${errorMessage}`, 'error');
                     
                     if (isOn) {
@@ -836,7 +831,6 @@ $noLights = empty($lights);
                 }
             })
             .catch(error => {
-                console.error('Erro na requisição:', error);
                 showMessage(`Erro ao atualizar o status da luz: ${error.message}`, 'error');
                 
                 if (isOn) {
@@ -859,7 +853,7 @@ $noLights = empty($lights);
         }
 
         window.addEventListener('beforeunload', function() {
-            console.log('Page is being unloaded, but keeping the light controller running');
+            return;
         })  
         
         function toggleDropdown() {
@@ -947,8 +941,6 @@ $noLights = empty($lights);
                 }
             }
             
-            console.log('Enviando requisição para atualizar status da luz:', { lightId, status: newStatus ? 'ON' : 'OFF' });
-            
             fetch('../includes/update_light.php', {
                 method: 'POST',
                 headers: {
@@ -960,13 +952,11 @@ $noLights = empty($lights);
                 })
             })
             .then(response => {
-                console.log('Resposta recebida, status:', response.status);
                 setTimeout(() => {
                     window.location.reload();
                 }, 3000);
                 if (!response.ok) {
                     return response.text().then(text => {
-                        console.error('Erro na resposta:', text);
                         throw new Error(`Erro HTTP! status: ${response.status}, resposta: ${text}`);
                     });
                 }
@@ -974,7 +964,6 @@ $noLights = empty($lights);
             })
             .then(data => {
                 if (!data.success) {
-                    console.error('Erro ao atualizar status da luz:', data.message);
                     card.classList.toggle('on', !newStatus);
                     card.classList.toggle('off', newStatus);
                     statusElement.classList.toggle('on', !newStatus);
@@ -1002,7 +991,6 @@ $noLights = empty($lights);
                 }
             })
             .catch(error => {
-                console.error('Erro na requisição:', error);
                 card.classList.toggle('on', !newStatus);
                 card.classList.toggle('off', newStatus);
                 statusElement.classList.toggle('on', !newStatus);
@@ -1028,8 +1016,6 @@ $noLights = empty($lights);
                     }
                 }
             });
-            
-            console.log(`Lâmpada ${lightId} ${isOn ? 'ligada' : 'desligada'}`);
         }
     </script>
 
