@@ -1476,7 +1476,11 @@
                 button.addEventListener('click', this.scrollToTop);
 
                 window.addEventListener('scroll', () => {
-                    if (window.scrollY > 300) {
+                    // Show button when user is within 100px of the bottom of the page
+                    const scrollPosition = window.innerHeight + window.scrollY;
+                    const bottomPosition = document.documentElement.scrollHeight - 100;
+                    
+                    if (scrollPosition >= bottomPosition) {
                         button.style.opacity = '1';
                         button.style.visibility = 'visible';
                     } else {
