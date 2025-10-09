@@ -457,8 +457,8 @@ if ($conn === null) {
                         </div>
                     </div>
                 </div>
-                <a href="menu.php" class="back-btn" style="text-decoration: none; display: inline-block; color: white;">
-                    <i class="fas fa-arrow-left"></i> Voltar ao Menu
+                <a href="dashboard.php" class="back-btn" style="text-decoration: none; display: inline-block; color: white;">
+                    <i class="fas fa-arrow-left"></i> Voltar
                 </a>
                 <form action="../auth/logout.php" method="post" style="display: inline;">
                     <button type="submit" class="logout-btn">
