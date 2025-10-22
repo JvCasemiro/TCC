@@ -53,7 +53,7 @@ try {
             $_SESSION['Tipo_Usuario'] = $user['user_type'];
             $_SESSION['email'] = $user['email'];
             
-            header('Location: ../pages/dashboard.php');
+            header('Location: ../pages/menu.php');
             exit;
         } else {
             header('Location: login_error.php');
