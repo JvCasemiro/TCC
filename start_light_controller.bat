@@ -1,3 +1,13 @@
 @echo off
-title light_controller
-python python/arduino_control.py
+title Arduino Daemon Controller
+cd /d "%~dp0"
+
+REM Verificar se já está rodando
+if exist "arduino_daemon.pid" (
+    echo Daemon ja esta rodando!
+    pause
+    exit /b 0
+)
+
+echo Iniciando Arduino Daemon...
+python python\arduino_daemon.py

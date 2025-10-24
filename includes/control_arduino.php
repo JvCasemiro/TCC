@@ -9,7 +9,11 @@ header('Access-Control-Allow-Headers: Content-Type');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
-$pythonScript = __DIR__ . '/../python/arduino_control.py';
+$queueFile = __DIR__ . '/../arduino_queue.json';
+$daemonPidFile = __DIR__ . '/../arduino_daemon.pid';
+
+// Importar função de garantir daemon rodando
+require_once __DIR__ . '/ensure_daemon_running.php';
 
 function sendJsonResponse($success, $message, $httpCode = 200) {
     http_response_code($httpCode);
@@ -54,25 +58,43 @@ try {
         throw new Exception('Lâmpada não encontrada no banco de dados');
     }
     
-    
-    if (!file_exists($pythonScript)) {
-        throw new Exception("Arquivo do script Python não encontrado: " . $pythonScript);
+    // Garantir que o daemon está rodando (inicia automaticamente se necessário)
+    if (!ensureDaemonRunning()) {
+        throw new Exception('Não foi possível iniciar o daemon do Arduino automaticamente. Execute start_arduino_daemon.bat manualmente.');
     }
     
-    $command = sprintf('python "%s" --light-name "%s" --status "%s" 2>&1', 
-        $pythonScript,
-        addslashes($light['Nome']),
-        $status
-    );
+    // Adicionar comando à fila
+    $queueData = [];
+    if (file_exists($queueFile)) {
+        $content = file_get_contents($queueFile);
+        $queueData = json_decode($content, true) ?: [];
+    }
     
-    $output = [];
-    $return_var = 0;
-    exec($command, $output, $return_var);
+    // Adicionar novo comando
+    $queueData[] = [
+        'light_id' => $lightId,
+        'status' => $status,
+        'timestamp' => time()
+    ];
     
-    $outputStr = implode("\n", $output);
+    // Salvar fila atualizada
+    if (file_put_contents($queueFile, json_encode($queueData, JSON_UNESCAPED_UNICODE)) === false) {
+        throw new Exception('Erro ao adicionar comando à fila');
+    }
     
-    if ($return_var !== 0) {
-        throw new Exception("Erro ao executar o script Python (código $return_var): $outputStr");
+    // Aguardar processamento (máximo 2 segundos)
+    $maxWait = 20; // 20 * 0.1s = 2 segundos
+    $waited = 0;
+    while ($waited < $maxWait) {
+        usleep(100000); // 0.1 segundo
+        $waited++;
+        
+        if (file_exists($queueFile)) {
+            $currentQueue = json_decode(file_get_contents($queueFile), true) ?: [];
+            if (empty($currentQueue)) {
+                break; // Fila foi processada
+            }
+        }
     }
     
     $stmt = $conn->prepare("UPDATE Lampadas SET Status = ? WHERE ID_Lampada = ?");
