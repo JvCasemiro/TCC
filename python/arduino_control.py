@@ -161,14 +161,13 @@ class ArduinoController:
                 print("Erro: Não foi possível ler o status das lâmpadas")
                 return False
                 
-            light_status = status_str[light_id-1] if (light_id-1) < len(status_str) else '0'
-            
             if not self.connect_to_arduino():
                 print("Erro: Não foi possível conectar ao Arduino")
                 return False
             
             self.serial_connection.reset_input_buffer()
             
+            light_status = status_str[light_id-1] if (light_id-1) < len(status_str) else '0'
             command = f"LED{light_id}:{'ON' if light_status == '1' else 'OFF'}\n"
             print(f"Enviando comando: {command.strip()}")
             self.serial_connection.write(command.encode())
@@ -179,10 +178,18 @@ class ArduinoController:
             if self.serial_connection.in_waiting > 0:
                 response = self.serial_connection.readline().decode().strip()
                 print(f"Resposta do Arduino: {response}")
-                return 'LIGADO' in response or 'DESLIGADO' in response
             
-            print("Aviso: Nenhuma resposta do Arduino")
-            return False
+            for i in range(len(status_str)):
+                led_num = i + 1
+                if led_num != light_id:
+                    led_status = status_str[i] if i < len(status_str) else '0'
+                    command = f"LED{led_num}:{'ON' if led_status == '1' else 'OFF'}\n"
+                    print(f"Atualizando LED {led_num}: {'LIGADO' if led_status == '1' else 'DESLIGADO'}")
+                    self.serial_connection.write(command.encode())
+                    self.serial_connection.flush()
+                    time.sleep(0.1)  
+            
+            return True
             
         except (serial.SerialException, OSError, IOError):
             self.serial_connection = None
