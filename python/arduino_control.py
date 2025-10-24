@@ -116,11 +116,33 @@ class ArduinoController:
             self.serial_connection.reset_input_buffer()
             self.serial_connection.reset_output_buffer()
             print("Conexão com o Arduino estabelecida com sucesso")
+            
+            self._sync_all_lights()
+            
             return True
         except (serial.SerialException, OSError) as e:
             print(f"Erro ao conectar ao Arduino: {str(e)}")
             self.serial_connection = None
             return False
+    
+    def _sync_all_lights(self):
+        """Sincroniza o estado de todas as lâmpadas com o Arduino ao conectar"""
+        try:
+            status_str = self.read_light_status()
+            if status_str is None:
+                return
+            
+            print("Sincronizando estado de todas as lâmpadas...")
+            for i in range(len(status_str)):
+                led_num = i + 1
+                led_status = status_str[i] if i < len(status_str) else '0'
+                command = f"LED{led_num}:{'ON' if led_status == '1' else 'OFF'}\n"
+                self.serial_connection.write(command.encode())
+                self.serial_connection.flush()
+                time.sleep(0.1)
+            print("Sincronização concluída")
+        except Exception as e:
+            print(f"Erro ao sincronizar lâmpadas: {str(e)}")
     
     @lru_cache(maxsize=32)
     def get_light_id_by_name(self, light_name):
@@ -178,16 +200,6 @@ class ArduinoController:
             if self.serial_connection.in_waiting > 0:
                 response = self.serial_connection.readline().decode().strip()
                 print(f"Resposta do Arduino: {response}")
-            
-            for i in range(len(status_str)):
-                led_num = i + 1
-                if led_num != light_id:
-                    led_status = status_str[i] if i < len(status_str) else '0'
-                    command = f"LED{led_num}:{'ON' if led_status == '1' else 'OFF'}\n"
-                    print(f"Atualizando LED {led_num}: {'LIGADO' if led_status == '1' else 'DESLIGADO'}")
-                    self.serial_connection.write(command.encode())
-                    self.serial_connection.flush()
-                    time.sleep(0.1)  
             
             return True
             
