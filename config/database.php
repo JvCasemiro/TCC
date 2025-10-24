@@ -75,14 +75,14 @@ function criarTabelas($conn) {
         $userCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
         if ($userCount == 0) {
-            $admin_password = password_hash('Admin@123', PASSWORD_DEFAULT);
+            $admin_password = password_hash('Domx@2025', PASSWORD_DEFAULT);
             $stmt = $conn->prepare("
                 INSERT INTO Usuarios 
                 (Nome_Usuario, Email, Senha, Tipo_Usuario, Data_Criacao, Data_Atualizacao, Ativo, Codigo_Casa) 
                 VALUES (?, ?, ?, 'admin', NOW(), NOW(), 1, 1)
             
             ");
-            $stmt->execute(['admin', 'admin@sistema.com', $admin_password]);
+            $stmt->execute(['admin', 'admin@domx.com', $admin_password]);
         }
         
         return true;
