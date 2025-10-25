@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <DHT.h>
 
 const int NUM_LEDS = 12;
 const int FIRST_LED_PIN = 2;
@@ -6,6 +7,15 @@ bool ledStatus[NUM_LEDS];
 
 // Pino do motor DC (portão)
 const int MOTOR_CONTROL_PIN = 13;  // Pino único para controle do portão
+
+// Configuração do sensor DHT11
+#define DHTPIN A1        // Pino de dados do DHT11 conectado ao A1
+#define DHTTYPE DHT11    // Tipo do sensor DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+// Variáveis para controle de tempo de leitura
+unsigned long lastSensorRead = 0;
+const long sensorInterval = 2000;  // Intervalo de leitura: 2 segundos
 
 void setup() {
   Serial.begin(9600);
@@ -21,10 +31,14 @@ void setup() {
   pinMode(MOTOR_CONTROL_PIN, OUTPUT);
   digitalWrite(MOTOR_CONTROL_PIN, LOW);
   
-  Serial.println("Sistema de Controle de LEDs e Portao Iniciado");
+  // Inicializar sensor DHT11
+  dht.begin();
+  
+  Serial.println("Sistema de Controle de LEDs, Portao e Sensor DHT11 Iniciado");
   Serial.println("Comandos aceitos:");
   Serial.println("- LEDX:ON ou LEDX:OFF (onde X é o número do LED 1-12)");
   Serial.println("- GATE:OPEN ou GATE:CLOSE");
+  Serial.println("- Leitura automática de temperatura e umidade a cada 2s");
 }
 
 void loop() {
@@ -84,6 +98,27 @@ void loop() {
       else {
         Serial.println("ERRO: Comando de portão inválido. Use GATE:OPEN ou GATE:CLOSE");
       }
+    }
+  }
+  
+  // Leitura periódica do sensor DHT11
+  unsigned long currentMillis = millis();
+  if (currentMillis - lastSensorRead >= sensorInterval) {
+    lastSensorRead = currentMillis;
+    
+    // Ler temperatura e umidade
+    float humidity = dht.readHumidity();
+    float temperature = dht.readTemperature();
+    
+    // Verificar se a leitura foi bem-sucedida
+    if (isnan(humidity) || isnan(temperature)) {
+      Serial.println("DHT:ERROR");
+    } else {
+      // Enviar dados no formato: DHT:TEMP:XX.XX:HUMIDITY:XX.XX
+      Serial.print("DHT:TEMP:");
+      Serial.print(temperature, 2);
+      Serial.print(":HUMIDITY:");
+      Serial.println(humidity, 2);
     }
   }
 }

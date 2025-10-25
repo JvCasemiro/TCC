@@ -14,11 +14,21 @@ class ArduinoDaemon:
         self.queue_file = self.base_dir / 'arduino_queue.json'
         self.status_file = self.base_dir / 'light_status.txt'
         self.pid_file = self.base_dir / 'arduino_daemon.pid'
+        self.temperature_file = self.base_dir / 'temperature_data.json'
         self.running = True
         
         # Criar arquivo de fila se não existir
         if not self.queue_file.exists():
             self.queue_file.write_text('[]')
+        
+        # Criar arquivo de temperatura se não existir
+        if not self.temperature_file.exists():
+            self.temperature_file.write_text(json.dumps({
+                'temperature': 0,
+                'humidity': 0,
+                'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'status': 'waiting'
+            }))
         
         # Salvar PID do processo
         self.pid_file.write_text(str(os.getpid()))
@@ -229,6 +239,44 @@ class ArduinoDaemon:
             print(f"Erro ao processar comando de portão: {str(e)}")
             return False
     
+    def process_sensor_data(self, data):
+        """Processa dados do sensor DHT11"""
+        try:
+            # Formato esperado: DHT:TEMP:XX.XX:HUMIDITY:XX.XX
+            if data.startswith('DHT:'):
+                parts = data.split(':')
+                
+                if len(parts) >= 5 and parts[1] == 'TEMP' and parts[3] == 'HUMIDITY':
+                    temperature = float(parts[2])
+                    humidity = float(parts[4])
+                    
+                    sensor_data = {
+                        'temperature': temperature,
+                        'humidity': humidity,
+                        'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'status': 'online'
+                    }
+                    
+                    # Salvar dados no arquivo
+                    self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
+                    print(f"Temperatura: {temperature}°C | Umidade: {humidity}%")
+                    return True
+                elif 'ERROR' in data:
+                    sensor_data = {
+                        'temperature': 0,
+                        'humidity': 0,
+                        'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'status': 'error'
+                    }
+                    self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
+                    print("Erro na leitura do sensor DHT11")
+            
+            return False
+            
+        except Exception as e:
+            print(f"Erro ao processar dados do sensor: {str(e)}")
+            return False
+    
     def run(self):
         """Loop principal do daemon"""
         print("=" * 50)
@@ -262,6 +310,15 @@ class ArduinoDaemon:
                     if processed_commands:
                         self.write_queue([])
                         print(f"Processados {len(processed_commands)} comando(s)")
+                
+                # Verificar se há dados do sensor disponíveis
+                if self.serial_connection and self.serial_connection.in_waiting > 0:
+                    try:
+                        sensor_data = self.serial_connection.readline().decode().strip()
+                        if sensor_data:
+                            self.process_sensor_data(sensor_data)
+                    except Exception as e:
+                        print(f"Erro ao ler dados do sensor: {str(e)}")
                 
                 # Pequeno delay para não sobrecarregar a CPU
                 time.sleep(0.1)

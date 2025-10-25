@@ -284,6 +284,38 @@ $devices = [
             font-weight: 600;
         }
         
+        .sensor-data {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sensor-reading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .sensor-reading i {
+            font-size: 1.5rem;
+        }
+        
+        .sensor-reading .label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .sensor-reading .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
         .device-actions {
             margin-top: 15px;
         }
@@ -565,10 +597,31 @@ $devices = [
                     <h3><?php echo htmlspecialchars($device['name']); ?></h3>
                 </div>
                 
+                <?php if ($device['category'] === 'temperature'): ?>
+                <div class="sensor-data" id="sensorData">
+                    <div class="sensor-reading">
+                        <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
+                        <div>
+                            <div class="label">Temperatura</div>
+                            <div class="value" id="tempValue">--°C</div>
+                        </div>
+                    </div>
+                    <div class="sensor-reading">
+                        <i class="fas fa-tint" style="color: #4ecdc4;"></i>
+                        <div>
+                            <div class="label">Umidade</div>
+                            <div class="value" id="humValue">--%</div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+                
                 <div class="device-actions">
+                    <?php if ($device['category'] !== 'temperature'): ?>
                     <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
                         <i class="fas fa-chart-line"></i> Monitorar
                     </a>
+                    <?php endif; ?>
                     <?php if ($device['category'] === 'lighting'): ?>
                     <a href="#" class="btn-register" onclick="event.stopPropagation(); registerDevice(<?php echo $device['id']; ?>)">
                         <i class="fas fa-plus-circle"></i> Cadastrar
@@ -1335,6 +1388,39 @@ $devices = [
                 return false;
             };
         });
+        
+        // Atualizar dados do sensor DHT11 em tempo real
+        function updateSensorData() {
+            fetch('../get_temperature.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Dados recebidos:', data); // Debug
+                    const tempValue = document.getElementById('tempValue');
+                    const humValue = document.getElementById('humValue');
+                    
+                    if (tempValue && humValue) {
+                        if (data.status === 'online') {
+                            tempValue.textContent = data.temperature.toFixed(1) + '°C';
+                            humValue.textContent = data.humidity.toFixed(1) + '%';
+                        } else if (data.status === 'error') {
+                            tempValue.textContent = 'Erro';
+                            humValue.textContent = 'Erro';
+                        } else {
+                            tempValue.textContent = '--°C';
+                            humValue.textContent = '--%';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar dados do sensor:', error);
+                });
+        }
+        
+        // Iniciar atualização automática do sensor
+        if (document.getElementById('sensorData')) {
+            updateSensorData(); // Atualizar imediatamente
+            setInterval(updateSensorData, 2000); // Atualizar a cada 2 segundos
+        }
     </script>
     
     <div id="lampadaModal" class="modal">
