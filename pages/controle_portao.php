@@ -513,15 +513,47 @@ if ($conn === null) {
                 updateButtonStates();
             }
             
+            function sendGateCommand(action) {
+                fetch('../control_gate.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: action })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (action === 'OPEN') {
+                            updateGateStatus(true);
+                            setTimeout(() => {
+                                updateGateStatus(true);
+                            }, 5000);
+                        } else if (action === 'CLOSE') {
+                            updateGateStatus(false);
+                            setTimeout(() => {
+                                updateGateStatus(false);
+                            }, 5000);
+                        }
+                    } else {
+                        alert('Erro ao enviar comando: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao comunicar com o servidor');
+                });
+            }
+            
             openBtn.addEventListener('click', function() {
                 if (!gateState) { 
-                    updateGateStatus(true);
+                    sendGateCommand('OPEN');
                 }
             });
             
             closeBtn.addEventListener('click', function() {
                 if (gateState) { 
-                    updateGateStatus(false);
+                    sendGateCommand('CLOSE');
                 }
             });
             

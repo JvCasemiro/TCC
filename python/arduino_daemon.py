@@ -144,6 +144,11 @@ class ArduinoDaemon:
     def process_command(self, command):
         """Processa um comando individual"""
         try:
+            # Verificar se é comando de portão
+            if command.get('type') == 'gate':
+                return self.process_gate_command(command)
+            
+            # Processar comando de luz
             light_id = command.get('light_id')
             status = command.get('status')
             
@@ -183,6 +188,45 @@ class ArduinoDaemon:
             
         except Exception as e:
             print(f"Erro ao processar comando: {str(e)}")
+            return False
+    
+    def process_gate_command(self, command):
+        """Processa comando do portão"""
+        try:
+            action = command.get('action')
+            
+            if action not in ['OPEN', 'CLOSE']:
+                print(f"Ação de portão inválida: {action}")
+                return False
+            
+            # Enviar comando para Arduino
+            arduino_command = f"GATE:{action}\n"
+            print(f"Enviando comando de portão: {arduino_command.strip()}")
+            
+            self.serial_connection.reset_input_buffer()
+            self.serial_connection.write(arduino_command.encode())
+            self.serial_connection.flush()
+            
+            # Aguardar resposta inicial
+            time.sleep(0.3)
+            if self.serial_connection.in_waiting > 0:
+                response = self.serial_connection.readline().decode().strip()
+                print(f"Resposta do Arduino: {response}")
+            
+            # Aguardar operação do portão (5 segundos conforme Arduino)
+            print("Aguardando operação do portão...")
+            time.sleep(5.5)
+            
+            # Ler resposta final
+            if self.serial_connection.in_waiting > 0:
+                response = self.serial_connection.readline().decode().strip()
+                print(f"Resposta do Arduino: {response}")
+            
+            print(f"Comando de portão {action} concluído")
+            return True
+            
+        except Exception as e:
+            print(f"Erro ao processar comando de portão: {str(e)}")
             return False
     
     def run(self):
