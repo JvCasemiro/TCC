@@ -6,6 +6,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $username = $_SESSION['username'];
+
+// Inclui e executa os arquivos .bat necessários
+require_once __DIR__ . '/../includes/executar_bats.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
