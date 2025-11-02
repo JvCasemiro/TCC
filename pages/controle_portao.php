@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 if ($conn === null) {
     $user = [
         'username' => $_SESSION['username'] ?? 'admin',
-        'email' => $_SESSION['email'] ?? 'admin@exemplo.com',
+        'email' => $_SESSION['email'] ?? 'admin@domx.com',
         'created_at' => '2024-01-01 00:00:00',
         'updated_at' => date('Y-m-d H:i:s'),
         'user_type' => 'admin'

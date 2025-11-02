@@ -23,7 +23,7 @@ if ($conn === null) {
     if ($username === 'admin' && $password === 'admin123') {
         $_SESSION['user_id'] = 1;
         $_SESSION['username'] = $username;
-        $_SESSION['email'] = 'admin@exemplo.com';
+        $_SESSION['email'] = 'admin@domx.com';
         $_SESSION['Tipo_Usuario'] = 'admin';
         
         header('Location: ../pages/menu.php');
