@@ -676,7 +676,6 @@ $devices = [
                     </div>
                 </div>
                 
-                <!-- Seção de informações do dispositivo -->
                 <div class="device-info" style="margin: 20px 0; text-align: center;">
                     <h3 id="deviceName" style="margin: 0; color: #fff;"></h3>
                     <p id="deviceLocation" style="margin: 5px 0 0; color: #aaa;"></p>
@@ -1389,12 +1388,11 @@ $devices = [
             };
         });
         
-        // Atualizar dados do sensor DHT11 em tempo real
         function updateSensorData() {
             fetch('../get_temperature.php')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Dados recebidos:', data); // Debug
+                    console.log('Dados recebidos:', data);
                     const tempValue = document.getElementById('tempValue');
                     const humValue = document.getElementById('humValue');
                     
@@ -1416,10 +1414,9 @@ $devices = [
                 });
         }
         
-        // Iniciar atualização automática do sensor
         if (document.getElementById('sensorData')) {
-            updateSensorData(); // Atualizar imediatamente
-            setInterval(updateSensorData, 2000); // Atualizar a cada 2 segundos
+            updateSensorData();
+            setInterval(updateSensorData, 2000);
         }
     </script>
     

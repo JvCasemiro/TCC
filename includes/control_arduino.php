@@ -12,7 +12,6 @@ ini_set('log_errors', 1);
 $queueFile = __DIR__ . '/../arduino_queue.json';
 $daemonPidFile = __DIR__ . '/../arduino_daemon.pid';
 
-// Importar função de garantir daemon rodando
 require_once __DIR__ . '/ensure_daemon_running.php';
 
 function sendJsonResponse($success, $message, $httpCode = 200) {
@@ -58,41 +57,36 @@ try {
         throw new Exception('Lâmpada não encontrada no banco de dados');
     }
     
-    // Garantir que o daemon está rodando (inicia automaticamente se necessário)
     if (!ensureDaemonRunning()) {
         throw new Exception('Não foi possível iniciar o daemon do Arduino automaticamente. Execute start_arduino_daemon.bat manualmente.');
     }
     
-    // Adicionar comando à fila
     $queueData = [];
     if (file_exists($queueFile)) {
         $content = file_get_contents($queueFile);
         $queueData = json_decode($content, true) ?: [];
     }
     
-    // Adicionar novo comando
     $queueData[] = [
         'light_id' => $lightId,
         'status' => $status,
         'timestamp' => time()
     ];
     
-    // Salvar fila atualizada
     if (file_put_contents($queueFile, json_encode($queueData, JSON_UNESCAPED_UNICODE)) === false) {
         throw new Exception('Erro ao adicionar comando à fila');
     }
     
-    // Aguardar processamento (máximo 2 segundos)
-    $maxWait = 20; // 20 * 0.1s = 2 segundos
+    $maxWait = 20;
     $waited = 0;
     while ($waited < $maxWait) {
-        usleep(100000); // 0.1 segundo
+        usleep(100000);
         $waited++;
         
         if (file_exists($queueFile)) {
             $currentQueue = json_decode(file_get_contents($queueFile), true) ?: [];
             if (empty($currentQueue)) {
-                break; // Fila foi processada
+                break;
             }
         }
     }

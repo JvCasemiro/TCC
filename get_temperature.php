@@ -1,5 +1,4 @@
 <?php
-// Arquivo para retornar dados de temperatura em JSON
 header('Content-Type: application/json');
 
 $temperature_file = 'temperature_data.json';

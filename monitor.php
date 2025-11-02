@@ -96,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Erro ao atualizar monitoramento:', error);
                 document.getElementById('last-updated').textContent = 'Erro ao atualizar';
             });
     }

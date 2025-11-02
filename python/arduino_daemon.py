@@ -17,11 +17,9 @@ class ArduinoDaemon:
         self.temperature_file = self.base_dir / 'temperature_data.json'
         self.running = True
         
-        # Criar arquivo de fila se não existir
         if not self.queue_file.exists():
             self.queue_file.write_text('[]')
         
-        # Criar arquivo de temperatura se não existir
         if not self.temperature_file.exists():
             self.temperature_file.write_text(json.dumps({
                 'temperature': 0,
@@ -30,7 +28,6 @@ class ArduinoDaemon:
                 'status': 'waiting'
             }))
         
-        # Salvar PID do processo
         self.pid_file.write_text(str(os.getpid()))
         
     def find_arduino(self):
@@ -51,7 +48,6 @@ class ArduinoDaemon:
                 ser.reset_input_buffer()
                 ser.reset_output_buffer()
                 
-                # Testar se é Arduino
                 test_command = "LED1:ON\n"
                 ser.write(test_command.encode())
                 time.sleep(0.5)
@@ -96,14 +92,12 @@ class ArduinoDaemon:
                 timeout=1,
                 write_timeout=1
             )
-            # Prevenir reset do Arduino
             self.serial_connection.dtr = False
             time.sleep(2)
             self.serial_connection.reset_input_buffer()
             self.serial_connection.reset_output_buffer()
             print("Conexão com o Arduino estabelecida com sucesso")
             
-            # Sincronizar todos os LEDs com o estado atual
             self._sync_all_lights()
             
             return True
@@ -154,11 +148,9 @@ class ArduinoDaemon:
     def process_command(self, command):
         """Processa um comando individual"""
         try:
-            # Verificar se é comando de portão
             if command.get('type') == 'gate':
                 return self.process_gate_command(command)
             
-            # Processar comando de luz
             light_id = command.get('light_id')
             status = command.get('status')
             
@@ -166,20 +158,16 @@ class ArduinoDaemon:
                 print(f"Comando inválido: {command}")
                 return False
             
-            # Ler status atual
             status_str = self.status_file.read_text().strip() if self.status_file.exists() else ''
             status_list = list(status_str)
             
-            # Garantir que a lista tenha o tamanho adequado
             if len(status_list) < light_id:
                 status_list.extend(['0'] * (light_id - len(status_list)))
             
-            # Atualizar status
             status_list[light_id - 1] = '1' if status == 'ON' else '0'
             new_status = ''.join(status_list)
             self.status_file.write_text(new_status)
             
-            # Enviar comando para Arduino
             arduino_command = f"LED{light_id}:{'ON' if status == 'ON' else 'OFF'}\n"
             print(f"Enviando comando: {arduino_command.strip()}")
             
@@ -189,7 +177,6 @@ class ArduinoDaemon:
             
             time.sleep(0.3)
             
-            # Ler resposta
             if self.serial_connection.in_waiting > 0:
                 response = self.serial_connection.readline().decode().strip()
                 print(f"Resposta do Arduino: {response}")
@@ -209,7 +196,6 @@ class ArduinoDaemon:
                 print(f"Ação de portão inválida: {action}")
                 return False
             
-            # Enviar comando para Arduino
             arduino_command = f"GATE:{action}\n"
             print(f"Enviando comando de portão: {arduino_command.strip()}")
             
@@ -217,17 +203,14 @@ class ArduinoDaemon:
             self.serial_connection.write(arduino_command.encode())
             self.serial_connection.flush()
             
-            # Aguardar resposta inicial
             time.sleep(0.3)
             if self.serial_connection.in_waiting > 0:
                 response = self.serial_connection.readline().decode().strip()
                 print(f"Resposta do Arduino: {response}")
             
-            # Aguardar operação do portão (5 segundos conforme Arduino)
             print("Aguardando operação do portão...")
             time.sleep(5.5)
             
-            # Ler resposta final
             if self.serial_connection.in_waiting > 0:
                 response = self.serial_connection.readline().decode().strip()
                 print(f"Resposta do Arduino: {response}")
@@ -242,7 +225,6 @@ class ArduinoDaemon:
     def process_sensor_data(self, data):
         """Processa dados do sensor DHT11"""
         try:
-            # Formato esperado: DHT:TEMP:XX.XX:HUMIDITY:XX.XX
             if data.startswith('DHT:'):
                 parts = data.split(':')
                 
@@ -257,7 +239,6 @@ class ArduinoDaemon:
                         'status': 'online'
                     }
                     
-                    # Salvar dados no arquivo
                     self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
                     print(f"Temperatura: {temperature}°C | Umidade: {humidity}%")
                     return True
@@ -283,7 +264,6 @@ class ArduinoDaemon:
         print("Arduino Daemon iniciado")
         print("=" * 50)
         
-        # Conectar ao Arduino
         if not self.connect_to_arduino():
             print("Falha ao conectar ao Arduino. Encerrando...")
             return
@@ -294,24 +274,20 @@ class ArduinoDaemon:
         
         try:
             while self.running:
-                # Verificar se há comandos na fila
                 queue = self.read_queue()
                 
                 if queue:
                     print(f"\n{len(queue)} comando(s) na fila")
                     
-                    # Processar todos os comandos
                     processed_commands = []
                     for command in queue:
                         if self.process_command(command):
                             processed_commands.append(command)
                     
-                    # Limpar fila
                     if processed_commands:
                         self.write_queue([])
                         print(f"Processados {len(processed_commands)} comando(s)")
                 
-                # Verificar se há dados do sensor disponíveis
                 if self.serial_connection and self.serial_connection.in_waiting > 0:
                     try:
                         sensor_data = self.serial_connection.readline().decode().strip()
@@ -320,7 +296,6 @@ class ArduinoDaemon:
                     except Exception as e:
                         print(f"Erro ao ler dados do sensor: {str(e)}")
                 
-                # Pequeno delay para não sobrecarregar a CPU
                 time.sleep(0.1)
                 
         except KeyboardInterrupt:

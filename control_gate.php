@@ -19,21 +19,18 @@ if (!in_array($action, ['OPEN', 'CLOSE'])) {
 $queueFile = __DIR__ . '/arduino_queue.json';
 
 try {
-    // Ler fila atual
     $queue = [];
     if (file_exists($queueFile)) {
         $content = file_get_contents($queueFile);
         $queue = json_decode($content, true) ?? [];
     }
     
-    // Adicionar comando à fila
     $queue[] = [
         'type' => 'gate',
         'action' => $action,
         'timestamp' => date('Y-m-d H:i:s')
     ];
     
-    // Salvar fila atualizada
     file_put_contents($queueFile, json_encode($queue, JSON_PRETTY_PRINT));
     
     echo json_encode([
