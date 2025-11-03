@@ -660,7 +660,7 @@ $devices = [
                         <div class="col-md-4">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
-                                    <h6 class="card-subtitle mb-2 text-muted">Lâmpadas Acesas</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">Lâmpadas Acessas</h6>
                                     <h2 class="display-4" id="lights-on">0</h2>
                                 </div>
                             </div>
@@ -1053,7 +1053,7 @@ $devices = [
                 const percentage = lights.length > 0 ? Math.round((lightsOn / lights.length) * 100) : 0;
                 if (percentageEl) percentageEl.textContent = `${percentage}%`;
                 
-                console.log(`Atualizado: ${lightsOn} de ${lights.length} lâmpadas acesas (${percentage}%)`);
+                console.log(`Atualizado: ${lightsOn} de ${lights.length} lâmpadas acessas (${percentage}%)`);
                 
             } catch (error) {
                 console.error('Erro ao atualizar contadores de lâmpadas:', error);

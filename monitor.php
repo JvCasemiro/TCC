@@ -25,7 +25,7 @@ require_once 'includes/header.php';
                         <div class="col-md-4">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
-                                    <h6 class="card-subtitle mb-2 text-muted">Lâmpadas Acesas</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">Lâmpadas Acessas</h6>
                                     <h2 class="display-4" id="lights-on">0</h2>
                                 </div>
                             </div>
