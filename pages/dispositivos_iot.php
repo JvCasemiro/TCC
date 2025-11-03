@@ -318,56 +318,63 @@ $devices = [
         
         .device-actions {
             margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
         }
         
         .btn-monitor {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
             background: rgba(52, 152, 219, 0.2);
             color: #3498db;
-            border: 1px solid #3498db;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
         .btn-monitor:hover {
-            background: #3498db;
-            color: white;
-        }
-        
-        .btn-monitor i {
-            margin-right: 5px;
-        }
-        
-        .btn-register {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            margin-left: 15px;
-        }
-        
-        .btn-register:hover {
-            background: #4CAF50;
-            color: white;
+            background: rgba(52, 152, 219, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
-        .btn-register i {
-            margin-right: 5px;
+        .btn-monitor:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Estilo específico para o botão de cadastrar termostato */
+        .device-card[data-category="climate"] .btn-monitor {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(25, 118, 210, 0.2) 100%);
+            color: #2196F3;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+        
+        .device-card[data-category="climate"] .btn-monitor:hover {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.3) 0%, rgba(25, 118, 210, 0.3) 100%);
+        }
+        
+        /* Estilo específico para o botão de cadastrar lâmpada */
+        .device-card[data-category="lighting"] .btn-monitor {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 152, 0, 0.2) 100%);
+            color: #FFC107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        .device-card[data-category="lighting"] .btn-monitor:hover {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.3) 0%, rgba(255, 152, 0, 0.3) 100%);
         }
         
         .loading-overlay {
@@ -483,21 +490,44 @@ $devices = [
             margin-top: 30px;
         }
         
-        .btn-save {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn-confirm {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 24px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .btn-confirm:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-confirm:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .btn-cancel {
-            background: rgba(108, 117, 125, 0.2);
-            color: #6c757d;
+            background: rgba(108, 117, 125, 0.1);
+            color: #f8f9fa;
             border: 1px solid #6c757d;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
         }
@@ -578,7 +608,7 @@ $devices = [
         
         <div class="devices-grid" id="devicesGrid">
             <?php foreach ($devices as $device): ?>
-            <div class="device-card">
+            <div class="device-card" data-category="<?php echo $device['category']; ?>">
                 <div class="device-icon icon-<?php echo $device['category']; ?>">
                     <?php
                     $icons = [
@@ -617,15 +647,24 @@ $devices = [
                 <?php endif; ?>
                 
                 <div class="device-actions">
-                    <?php if ($device['category'] !== 'temperature'): ?>
-                    <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
-                        <i class="fas fa-chart-line"></i> Monitorar
-                    </a>
-                    <?php endif; ?>
                     <?php if ($device['category'] === 'lighting'): ?>
-                    <a href="#" class="btn-register" onclick="event.stopPropagation(); registerDevice(<?php echo $device['id']; ?>)">
-                        <i class="fas fa-plus-circle"></i> Cadastrar
-                    </a>
+                        <button type="button" class="btn-monitor" onclick="event.stopPropagation(); document.getElementById('lampadaModal').style.display='block'">
+                            <i class="fas fa-plus-circle"></i> Cadastrar Lâmpada
+                        </button>
+                        <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
+                            <i class="fas fa-chart-line"></i> Monitorar
+                        </a>
+                    <?php elseif ($device['category'] === 'climate'): ?>
+                        <button type="button" class="btn-monitor" onclick="event.stopPropagation(); document.getElementById('termostatoModal').style.display='block'">
+                            <i class="fas fa-thermometer-half"></i> Cadastrar Termostato
+                        </button>
+                        <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
+                            <i class="fas fa-chart-line"></i> Monitorar
+                        </a>
+                    <?php elseif ($device['category'] !== 'temperature'): ?>
+                        <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
+                            <i class="fas fa-chart-line"></i> Monitorar
+                        </a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -640,11 +679,13 @@ $devices = [
         </div>
     </div>
     
-    <div id="monitoringModal" class="modal">
-        <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow-y: auto;">
-            <div class="modal-header">
-                <h2><i class="fas fa-tachometer-alt"></i> Monitoramento de Lâmpadas</h2>
-                <span class="close-btn" onclick="closeMonitoringModal()">&times;</span>
+    <div id="monitoringModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; overflow: auto;">
+        <div class="modal-content" style="background: #2c3e50; margin: 5% auto; padding: 0; width: 80%; max-width: 800px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative;">
+            <div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="margin: 0; font-size: 1.5rem; color: white;"><i class="fas fa-tachometer-alt"></i> Monitoramento de Dispositivos</h2>
+                <button type="button" onclick="document.getElementById('monitoringModal').style.display='none'; if(window.monitoringInterval) { clearInterval(window.monitoringInterval); }" style="background: none; border: none; color: white; font-size: 28px; font-weight: bold; cursor: pointer; padding: 0 10px; line-height: 1;">
+                    &times;
+                </button>
             </div>
             <div class="modal-body">
                 <div class="status-summary">
@@ -743,6 +784,10 @@ $devices = [
             flex: 1;
             overflow-y: auto;
         }
+
+        #lampadaModal .close-lampada {
+            cursor: pointer;
+        }
         
         #lampadaForm .form-group {
             margin-bottom: 20px;
@@ -760,10 +805,13 @@ $devices = [
             padding: 12px 15px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            color: #fff;
-            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         #lampadaForm input[type="text"]:focus {
@@ -781,8 +829,19 @@ $devices = [
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        #lampadaForm .btn-cancel,
-        #lampadaForm .btn-confirm {
+        /* Estilo para os botões de formulário */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Estilo base para todos os botões */
+        .btn-cancel,
+        .btn-confirm {
             padding: 10px 24px;
             border: none;
             border-radius: 6px;
@@ -790,44 +849,94 @@ $devices = [
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            text-align: center;
+            font-size: 0.95rem;
         }
         
-        #lampadaForm .btn-cancel {
-            background: rgba(255, 255, 255, 0.1);
+        /* Estilo específico para o botão de cancelar */
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.08);
             color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
-        #lampadaForm .btn-cancel:hover {
+        .btn-cancel:hover {
             background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
         
-        #lampadaForm .btn-confirm {
+        .btn-cancel:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        
+        /* Estilo específico para o botão de confirmar */
+        .btn-confirm {
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
-        #lampadaForm .btn-confirm:hover {
+        .btn-confirm:hover {
+            background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
         }
         
+        .btn-confirm:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Estilo para o ícone dentro dos botões */
+        .btn-cancel i,
+        .btn-confirm i {
+            font-size: 0.9em;
+        }
+        
+        /* Estilos responsivos */
         @media (max-width: 768px) {
-            #lampadaModal .modal-content {
-                width: 90%;
-                margin: 20px auto;
+            .modal-content {
+                width: 90% !important;
+                margin: 20px auto !important;
             }
             
-            #lampadaForm .form-actions {
+            .form-actions {
                 flex-direction: column;
+                gap: 10px;
             }
             
-            #lampadaForm .btn-cancel,
-            #lampadaForm .btn-confirm {
+            .btn-cancel,
+            .btn-confirm {
                 width: 100%;
-                justify-content: center;
+                padding: 12px 24px;
             }
+        }
+        
+        /* Estilo específico para o modal de termostato */
+        #termostatoModal .modal-header {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            padding: 15px 20px;
+        }
+        
+        #termostatoModal .modal-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #termostatoModal .modal-body {
+            padding: 25px;
         }
 
         .modal-header {
@@ -1064,7 +1173,15 @@ $devices = [
             const modal = document.getElementById('monitoringModal');
             if (!modal) return;
 
+            // Reseta o estilo antes de mostrar
             modal.style.display = 'block';
+            modal.style.opacity = '0';
+            
+            // Força o navegador a processar o display: block antes da animação
+            setTimeout(() => {
+                modal.style.transition = 'opacity 0.3s';
+                modal.style.opacity = '1';
+            }, 10);
             
             const loadData = () => {
                 fetch('../includes/monitor_lights.php')
@@ -1096,6 +1213,7 @@ $devices = [
                 modal.style.display = 'none';
                 if (window.monitoringInterval) {
                     clearInterval(window.monitoringInterval);
+                    window.monitoringInterval = null;
                 }
             }
         }
@@ -1123,14 +1241,6 @@ $devices = [
         
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
             openMonitoringModal();
-        }
-
-        function closeMonitoringModal() {
-            const modal = document.getElementById('monitoringModal');
-            if (modal.dataset.intervalId) {
-                clearInterval(parseInt(modal.dataset.intervalId));
-            }
-            modal.style.display = 'none';
         }
 
         async function updateLightStatus(deviceId, deviceCategory) {
@@ -1221,6 +1331,7 @@ $devices = [
             }
         }
 
+        // Fechar modal ao clicar fora
         window.onclick = function(event) {
             const modal = document.getElementById('monitoringModal');
             if (event.target === modal) {
@@ -1328,64 +1439,125 @@ $devices = [
             }
         }
         
-        document.addEventListener('DOMContentLoaded', function() {
+        // Função para fechar modais ao clicar fora deles
+        function setupModal(modalId, closeBtnClass) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
             
+            const closeBtn = document.querySelector(closeBtnClass);
+            
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    modal.style.display = 'none';
+                };
+            }
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuração do modal de lâmpada
             const lampadaModal = document.getElementById('lampadaModal');
-            const closeModal = document.querySelector('.close-lampada');
             const lampadaForm = document.getElementById('lampadaForm');
             
-            if (!lampadaModal || !closeModal || !lampadaForm) {
-                console.error('Elementos do modal não encontrados');
-                return;
+            // Configuração do modal de termostato
+            const termostatoModal = document.getElementById('termostatoModal');
+            const termostatoForm = document.getElementById('termostatoForm');
+            
+            // Configurar fechamento dos modais
+            setupModal('lampadaModal', '.close-lampada');
+            setupModal('termostatoModal', '.close-btn');
+            
+            if (!lampadaModal || !lampadaForm) {
+                console.error('Elementos do modal de lâmpada não encontrados');
             }
 
-            closeModal.onclick = function() {
-                lampadaModal.style.display = 'none';
-                lampadaForm.reset();
-            };
-
-            window.onclick = function(event) {
-                if (event.target === lampadaModal) {
-                    lampadaModal.style.display = 'none';
+            // Resetar formulário ao fechar o modal de lâmpada
+            lampadaModal.addEventListener('click', function(event) {
+                if (event.target === lampadaModal || event.target.classList.contains('close-lampada')) {
                     lampadaForm.reset();
                 }
-            };
-
-            lampadaForm.onsubmit = function(e) {
-                e.preventDefault();
-                const nome = document.getElementById('lampadaNome').value.trim();
-                const comodo = document.getElementById('lampadaComodo').value.trim();
-                
-                if (!nome || !comodo) {
-                    showMessage('Por favor, preencha todos os campos.', 'warning');
-                    return false;
-                }
-                
-                fetch('processar_lampada.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `action=adicionar&nome=${encodeURIComponent(nome)}&comodo=${encodeURIComponent(comodo)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showMessage('Lâmpada cadastrada com sucesso!', 'success');
-                        lampadaModal.style.display = 'none';
-                        lampadaForm.reset();
-                        window.location.reload();
-                    } else {
-                        throw new Error(data.message || 'Erro ao cadastrar lâmpada');
+            });
+            
+            // Resetar formulário ao fechar o modal de termostato
+            if (termostatoModal) {
+                termostatoModal.addEventListener('click', function(event) {
+                    if (event.target === termostatoModal || event.target.classList.contains('close-btn')) {
+                        termostatoForm.reset();
                     }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    showMessage(error.message || 'Erro ao processar a requisição', 'error');
                 });
-                
-                return false;
-            };
+            }
+
+            // Envio do formulário de lâmpada
+            if (lampadaForm) {
+                lampadaForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    const nome = document.getElementById('lampadaNome').value.trim();
+                    const comodo = document.getElementById('lampadaComodo').value.trim();
+                    
+                    if (!nome || !comodo) {
+                        showMessage('Por favor, preencha todos os campos.', 'warning');
+                        return false;
+                    }
+                    
+                    fetch('processar_lampada.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `action=adicionar&nome=${encodeURIComponent(nome)}&comodo=${encodeURIComponent(comodo)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showMessage('Lâmpada cadastrada com sucesso!', 'success');
+                            lampadaModal.style.display = 'none';
+                            lampadaForm.reset();
+                            window.location.reload();
+                        } else {
+                            throw new Error(data.message || 'Erro ao cadastrar lâmpada');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        showMessage(error.message || 'Erro ao processar a requisição', 'error');
+                    });
+                    
+                    return false;
+                };
+            }
+            
+            // Envio do formulário de termostato
+            if (termostatoForm) {
+                termostatoForm.onsubmit = function(e) {
+                    e.preventDefault();
+                    const nome = document.getElementById('termostatoNome').value.trim();
+                    const comodo = document.getElementById('termostatoComodo').value.trim();
+                    const temperatura = document.getElementById('termostatoTemperatura').value;
+                    
+                    if (!nome || !comodo || !temperatura) {
+                        showMessage('Por favor, preencha todos os campos.', 'warning');
+                        return false;
+                    }
+                    
+                    // Aqui você pode adicionar a lógica para enviar os dados do termostato
+                    // Por enquanto, apenas mostramos uma mensagem de sucesso
+                    showMessage('Termostato cadastrado com sucesso!', 'success');
+                    termostatoModal.style.display = 'none';
+                    termostatoForm.reset();
+                    
+                    // Atualiza a página após 1 segundo para mostrar a mensagem
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                    
+                    return false;
+                };
+            }
         });
         
         function updateSensorData() {
@@ -1438,6 +1610,40 @@ $devices = [
                     </div>
                     <div class="form-actions" style="margin-top: 20px; text-align: right;">
                         <button type="button" class="btn-cancel" onclick="document.getElementById('lampadaModal').style.display='none'">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-confirm">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Cadastro de Termostato -->
+    <div id="termostatoModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-thermometer-half"></i> Cadastrar Novo Termostato</h2>
+                <span class="close-btn" onclick="document.getElementById('termostatoModal').style.display='none';">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="termostatoForm">
+                    <div class="form-group">
+                        <label for="termostatoNome">Nome do Termostato</label>
+                        <input type="text" id="termostatoNome" placeholder="Ex: Termostato da Sala" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="termostatoComodo">Cômodo</label>
+                        <input type="text" id="termostatoComodo" placeholder="Ex: Sala, Quarto, Cozinha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="termostatoTemperatura">Temperatura Inicial (°C)</label>
+                        <input type="number" id="termostatoTemperatura" min="10" max="40" value="22" step="0.5" required>
+                    </div>
+                    <div class="form-actions" style="margin-top: 20px; text-align: right;">
+                        <button type="button" class="btn-cancel" onclick="document.getElementById('termostatoModal').style.display='none'">
                             Cancelar
                         </button>
                         <button type="submit" class="btn-confirm">
