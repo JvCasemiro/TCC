@@ -67,9 +67,23 @@ function criarTabelas($conn) {
             Data_Cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             Ultimo_Acesso TIMESTAMP NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+        $sql_temperaturas = "
+        CREATE TABLE IF NOT EXISTS Temperaturas (
+            ID_Temperatura INT AUTO_INCREMENT PRIMARY KEY,
+            Nome VARCHAR(100) NOT NULL,
+            Comodo VARCHAR(50) NOT NULL,
+            Status VARCHAR(10) DEFAULT 'off',
+            ID_Usuario INT,
+            Data_Criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            Data_Atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            codigo_casa INT DEFAULT 1,
+            FOREIGN KEY (ID_Usuario) REFERENCES Usuarios(ID_Usuario) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         $conn->exec($sql_lampadas);
         $conn->exec($sql_placas);
+        $conn->exec($sql_temperaturas);
         
         $stmt = $conn->query("SELECT COUNT(*) as total FROM Usuarios");
         $userCount = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
