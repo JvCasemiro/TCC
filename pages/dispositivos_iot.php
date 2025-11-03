@@ -1638,10 +1638,6 @@ $devices = [
                         <label for="termostatoComodo">Cômodo</label>
                         <input type="text" id="termostatoComodo" placeholder="Ex: Sala, Quarto, Cozinha" required>
                     </div>
-                    <div class="form-group">
-                        <label for="termostatoTemperatura">Temperatura Inicial (°C)</label>
-                        <input type="number" id="termostatoTemperatura" min="10" max="40" value="22" step="0.5" required>
-                    </div>
                     <div class="form-actions" style="margin-top: 20px; text-align: right;">
                         <button type="button" class="btn-cancel" onclick="document.getElementById('termostatoModal').style.display='none'">
                             Cancelar
