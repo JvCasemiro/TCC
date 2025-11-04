@@ -908,7 +908,7 @@ try {
                                 // Se a requisição foi bem-sucedida, mas não há conteúdo JSON
                                 result = { success: true };
                             } else {
-                                throw new Error(`Erro ao processar a resposta do servidor: ${deleteResponse.status} ${deleteResponse.statusText}`);
+                                result = { success: false };
                             }
                         }
                         
