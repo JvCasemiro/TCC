@@ -187,15 +187,71 @@ $updated_at = new DateTime();
             margin-bottom: 20px;
         }
         
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 15px 0;
+        }
+        
         table {
             width: 100%;
+            min-width: 600px;
             border-collapse: collapse;
         }
         
         th, td {
-            padding: 12px;
+            padding: 12px 8px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            white-space: nowrap;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .users-table {
+                padding: 10px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.9em;
+            }
+            
+            .btn {
+                padding: 5px 8px;
+                font-size: 0.85em;
+            }
+            
+            .welcome {
+                padding: 10px 15px;
+            }
+            
+            .welcome h1 {
+                font-size: 1.5em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .action-buttons {
+                flex-direction: column;
+                gap: 3px;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+                margin: 2px 0;
+            }
         }
         
         th {
@@ -713,23 +769,25 @@ $updated_at = new DateTime();
             </button>
             
             <h2>Lista de Usuários</h2>
-            <table id="usersTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome de Usuário</th>
-                        <th>Email</th>
-                        <th>Tipo</th>
-                        <th>Data de Criação</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <tr>
-                        <td colspan="6" style="text-align: center;">Carregando usuários...</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome de Usuário</th>
+                            <th>Email</th>
+                            <th>Tipo</th>
+                            <th>Data de Criação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Carregando usuários...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="tab-container" id="tabContainer">
@@ -873,12 +931,14 @@ $updated_at = new DateTime();
                                 <td>${user.tipo_usuario === 'admin' ? 'Administrador' : 'Usuário'}</td>
                                 <td>${user.data_criacao || 'N/A'}</td>
                                 <td class="actions">
-                                    <button class="btn-edit" onclick="editarUsuario(${user.id})">
-                                        <i class="fas fa-edit"></i> Editar
-                                    </button>
-                                    <button class="btn-delete" onclick="confirmDelete(${user.id})">
-                                        <i class="fas fa-trash"></i> Excluir
-                                    </button>
+                                    <div class="action-buttons">
+                                        <button class="btn-edit" onclick="editarUsuario(${user.id})">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn-delete" onclick="confirmDelete(${user.id})">
+                                            <i class="fas fa-trash"></i> Excluir
+                                        </button>
+                                    </div>
                                 </td>
                             `;
                             tableBody.appendChild(row);
