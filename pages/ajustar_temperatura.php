@@ -825,108 +825,90 @@ try {
             const messageElement = document.querySelector('#confirmDeleteModal .modal-message');
             const confirmBtn = document.getElementById('confirmDeleteBtn');
             const cancelBtn = document.getElementById('cancelDeleteBtn');
-            
-            // Show loading message
-            messageElement.textContent = 'Carregando informações da zona...';
-            modal.style.display = 'flex';
+            let zoneName = 'esta zona';
             
             try {
-                // Fetch zone name from the server
-                const response = await fetch(`../includes/get_zone_name.php?id=${zoneId}`, {
+                // Try to get zone name first
+                const nameResponse = await fetch(`../includes/get_zone_name.php?id=${zoneId}`, {
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
                         'Cache-Control': 'no-cache, no-store, must-revalidate'
-                    },
-                    credentials: 'same-origin'
+                    }
                 });
-
-                let responseText = await response.text();
-                let data;
                 
-                try {
-                    data = JSON.parse(responseText);
-                } catch (e) {
-                    console.error('Failed to parse JSON:', responseText);
-                    throw new Error('Resposta inválida do servidor');
-                }
-                
-                // Log the full response for debugging
-                console.log('Server response:', data);
-                
-                if (!response.ok) {
-                    const errorMsg = data?.message || `Erro ${response.status}: ${response.statusText}`;
-                    throw new Error(errorMsg);
-                }
-                
-                if (data && data.success) {
-                    const displayName = data.zoneName || 'este termostato';
-                    messageElement.innerHTML = `
-                        <p>Tem certeza que deseja remover o termostato da <strong>${displayName}</strong>?</p>
-                        <p style="color: #ffc107; margin-top: 10px;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>
-                    `;
-                } else {
-                    throw new Error(data?.message || 'Erro ao carregar o nome do termostato');
-                }
-            } catch (error) {
-                console.error('Erro ao buscar nome do termostato:', error);
-                messageElement.textContent = 'Tem certeza que deseja remover este termostato? Esta ação não pode ser desfeita.';
-            }
-            modal.style.display = 'flex';
-            
-            // Handle confirm button click
-            const confirmHandler = async () => {
-                try {
-                    const response = await fetch(`../includes/delete_zone.php?id=${zoneId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (!response.ok) {
-                        throw new Error(result.message || 'Erro ao remover a zona');
+                if (nameResponse.ok) {
+                    const data = await nameResponse.json();
+                    if (data.success && data.zoneName) {
+                        zoneName = `"${data.zoneName}"`;
+                    } else if (data.message) {
+                        console.warn('Aviso ao buscar nome da zona:', data.message);
                     }
+                }
+                
+                // Show confirmation with zone name
+                messageElement.innerHTML = `Tem certeza que deseja remover o termostato <strong style="color: white;">${zoneName}</strong>?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>`;
+                modal.style.display = 'flex';
+                
+                // Set up confirmation handler
+                let isConfirmed = false;
+                
+                const confirmHandler = async () => {
+                    if (isConfirmed) return;
+                    isConfirmed = true;
                     
-                    // Remove the card from the UI immediately
-                    if (card) {
-                        card.style.animation = 'fadeOut 0.3s ease';
-                        card.style.opacity = '0';
-                        card.style.transform = 'translateY(-10px)';
+                    try {
+                        messageElement.textContent = 'Removendo zona...';
+                        const deleteResponse = await fetch(`../includes/delete_zone.php?id=${zoneId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
                         
-                        // Wait for animation to complete before removing
-                        setTimeout(() => {
-                            // Show success message and reload the page
-                            showMessage('Zona removida com sucesso!', 'success');
-                            // Small delay to show the message before reloading
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 800);
-                        }, 300);
+                        const result = await deleteResponse.json();
+                        
+                        if (result.success) {
+                            showToast('Zona removida com sucesso!', 'success');
+                            // Remove the zone card from the UI
+                            const card = document.querySelector(`[data-zone-id="${zoneId}"]`);
+                            if (card) {
+                                card.style.opacity = '0';
+                                setTimeout(() => card.remove(), 300);
+                            }
+                        } else {
+                            throw new Error(result.message || 'Erro ao remover a zona');
+                        }
+                    } catch (error) {
+                        console.error('Erro ao remover zona:', error);
+                        showToast(error.message || 'Erro ao remover a zona', 'error');
+                    } finally {
+                        modal.style.display = 'none';
+                        // Clean up event listeners
+                        confirmBtn.removeEventListener('click', confirmHandler);
+                        cancelBtn.removeEventListener('click', cancelHandler);
+                        document.getElementById('modalCloseBtn').removeEventListener('click', cancelHandler);
                     }
-                } catch (error) {
-                    console.error('Erro:', error);
-                    showMessage('Erro ao remover a termostato. Tente novamente.', 'error');
-                } finally {
-                    // Clean up event listeners and hide modal
+                };
+                
+                // Set up cancel handler
+                const cancelHandler = () => {
                     confirmBtn.removeEventListener('click', confirmHandler);
                     cancelBtn.removeEventListener('click', cancelHandler);
                     modal.style.display = 'none';
-                }
-            };
-            
-            // Handle cancel button click
-            const cancelHandler = () => {
-                confirmBtn.removeEventListener('click', confirmHandler);
-                cancelBtn.removeEventListener('click', cancelHandler);
-                modal.style.display = 'none';
-            };
-            
-            // Add event listeners
-            confirmBtn.addEventListener('click', confirmHandler, { once: true });
-            cancelBtn.addEventListener('click', cancelHandler, { once: true });
+                };
+                
+                // Add event listeners
+                confirmBtn.addEventListener('click', confirmHandler);
+                cancelBtn.addEventListener('click', cancelHandler);
+                document.getElementById('modalCloseBtn').addEventListener('click', cancelHandler);
+            } catch (error) {
+                console.error('Erro ao buscar nome do termostato:', error);
+                // If we can't get the zone name, just show a generic message
+                messageElement.innerHTML = '<strong style="color: white;">Tem certeza que deseja remover o termostato?<br><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</strong>';
+                modal.style.display = 'flex';
+            }
         }
         
         // Add fadeIn animation for new cards
@@ -953,22 +935,27 @@ try {
     </script>
     
     <!-- Confirmation Modal -->
-    <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
-        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
-            <div class="modal-content" style="background: #2c3e50; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3); position: relative; margin: 20px;">
-                <div class="modal-header">
-                    <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
-                </div>
-                <br><br>
-                <p class="modal-message" style="color: #bdc3c7; margin-bottom: 25px; line-height: 1.5;"></p>
-                <div style="display: flex; justify-content: flex-end; gap: 15px;">
-                    <button id="cancelDeleteBtn" class="btn-secondary" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
-                        Cancelar
-                    </button>
-                    <button id="confirmDeleteBtn" class="btn-action btn-remove" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; color: white;">
-                        <i class="fas fa-trash"></i> Remover
-                    </button>
-                </div>
+    <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-dialog" style="background: #2c3e50; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3); overflow: hidden; border: 1px solid #3d5166;">
+            <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #3d5166; display: flex; align-items: center; justify-content: space-between;">
+                <h5 class="modal-title" style="margin: 0; font-size: 1.25rem; color: #f8f9fa; font-weight: 600;">
+                    <i class="fas fa-exclamation-triangle" style="color: #ffffff; margin-right: 10px;"></i>
+                    Confirmar Exclusão
+                </h5>
+                <button type="button" class="close" id="modalCloseBtn" style="background: none; border: none; font-size: 1.5rem; font-weight: 700; line-height: 1; color: #bdc3c7; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" aria-label="Fechar" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 25px 20px;">
+                <p class="modal-message" style="margin: 0; color: #dee2e6; line-height: 1.6; font-size: 1rem;"></p>
+            </div>
+            <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #3d5166; display: flex; justify-content: flex-end; gap: 12px; background: #2c3e50;">
+                <button type="button" id="cancelDeleteBtn" class="btn btn-secondary" style="padding: 10px 20px; border: none; border-radius: 5px; background: #6c757d; color: white; font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease-in-out; min-width: 100px;" onmouseover="this.style.background='#5a6268'" onmouseout="this.style.background='#6c757d'">
+                    Cancelar
+                </button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger" style="padding: 10px 20px; border: none; border-radius: 5px; background: #e74c3c; color: white; font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease-in-out; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 120px;" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">
+                    <i class="fas fa-trash"></i> Remover
+                </button>
             </div>
         </div>
     </div>
