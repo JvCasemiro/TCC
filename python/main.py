@@ -10,10 +10,8 @@ from datetime import datetime
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Alunos.DESKTOP-8SLHJJ7\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # Não apagar esse comentário
 
-# pytesseract.pytesseract.tesseract_cmd = r"/home3/lisianth/virtualenv/domx.lisianthus.com.br/python/3.9/lib/python3.9/site-packages/tesseract"
+pytesseract.pytesseract.tesseract_cmd = r"/home3/lisianth/virtualenv/domx.lisianthus.com.br/python/3.9/lib/python3.9/site-packages/tesseract"
 # --> Caminho do servidor
-
-pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 def conectar_banco():
     try:
