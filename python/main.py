@@ -17,10 +17,10 @@ def conectar_banco():
     try:
         import mysql.connector
         conn = mysql.connector.connect(
-            host='localhost',
-            database='tcc',
-            user='root',
-            password='',
+            host='dbonly.lisianthus.com.br',
+            database='lisianth_domx',
+            user='lisianth_domx',
+            password='domx@Mirelle',
             charset='utf8mb4'
         )
         return conn
