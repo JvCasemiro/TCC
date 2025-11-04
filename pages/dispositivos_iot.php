@@ -553,11 +553,6 @@ $devices = [
             color: #fff;
         }
         
-        .modal h2 {
-            margin-bottom: 20px;
-            color: #667eea;
-        }
-        
         .form-group {
             margin-bottom: 20px;
         }
@@ -1420,12 +1415,84 @@ $devices = [
                 document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Lâmpadas Acessas';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(3) .card-subtitle').textContent = 'Porcentagem Acesa';
                 
-                // Restaura os cards originais
-                const cardBodies = document.querySelectorAll('#monitoringModal .card-body');
-                if (cardBodies.length >= 3) {
-                    cardBodies[0].innerHTML = '<h3 id="total-lights" class="mb-0">0</h3>';
-                    cardBodies[1].innerHTML = '<h3 id="lights-on" class="mb-0">0</h3>';
-                    cardBodies[2].innerHTML = '<h3 id="percentage-on" class="mb-0">0%</h3>';
+                // Cria cards estilizados com layout horizontal
+                const cardContainer = document.querySelector('#monitoringModal .row');
+                if (cardContainer) {
+                    cardContainer.innerHTML = `
+                        <style>
+                            .stat-card {
+                                background: #fff;
+                                border-radius: 12px;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                                transition: all 0.3s ease;
+                                border: none;
+                                margin: 0 8px;
+                                position: relative;
+                                overflow: hidden;
+                            }
+                            .stat-card:before {
+                                content: '';
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                height: 4px;
+                                background: linear-gradient(90deg, #4a90e2, #5bc0de);
+                            }
+                            .stat-card:nth-child(2):before {
+                                background: linear-gradient(90deg, #5cb85c, #5bc0de);
+                            }
+                            .stat-card:nth-child(3):before {
+                                background: linear-gradient(90deg, #f0ad4e, #5bc0de);
+                            }
+                            .stat-card:hover {
+                                transform: translateY(-5px);
+                                box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+                            }
+                            .stat-value {
+                                font-size: 2rem;
+                                font-weight: 700;
+                                color: #2c3e50;
+                                margin: 8px 0;
+                                background: linear-gradient(135deg, #4a90e2, #5bc0de);
+                                -webkit-background-clip: text;
+                                -webkit-text-fill-color: transparent;
+                            }
+                            .stat-card:nth-child(2) .stat-value {
+                                background: linear-gradient(135deg, #5cb85c, #5bc0de);
+                                -webkit-background-clip: text;
+                            }
+                            .stat-card:nth-child(3) .stat-value {
+                                background: linear-gradient(135deg, #f0ad4e, #e74c3c);
+                                -webkit-background-clip: text;
+                            }
+                            .stat-label {
+                                color: #7f8c8d;
+                                font-size: 0.9rem;
+                                font-weight: 500;
+                                letter-spacing: 0.5px;
+                                text-transform: uppercase;
+                            }
+                        </style>
+                        <div class="col-md-12 px-0">
+                            <div class="d-flex justify-content-between align-items-stretch">
+                                <div class="stat-card p-4 text-center" style="flex: 1;">
+                                    <div class="stat-label">Total</div>
+                                    <div id="total-lights" class="stat-value">0</div>
+                                    <i class="fas fa-lightbulb mt-2" style="color: #f1c40f; font-size: 1.5rem;"></i>
+                                </div>
+                                <div class="stat-card p-4 text-center" style="flex: 1;">
+                                    <div class="stat-label">Acessas</div>
+                                    <div id="lights-on" class="stat-value">0</div>
+                                    <i class="fas fa-power-off mt-2" style="color: #2ecc71; font-size: 1.5rem;"></i>
+                                </div>
+                                <div class="stat-card p-4 text-center" style="flex: 1;">
+                                    <div class="stat-label">Porcentagem</div>
+                                    <div id="percentage-on" class="stat-value">0%</div>
+                                    <i class="fas fa-percentage mt-2" style="color: #e74c3c; font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                        </div>`;
                 }
             }
             
