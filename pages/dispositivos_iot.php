@@ -113,7 +113,7 @@ try {
 $devices = [
     [
         'id' => 1,
-        'name' => 'Sensor de Temperatura - Sala',
+        'name' => 'Sensor de Temperatura',
         'type' => 'sensor',
         'category' => 'temperature',
         'status' => 'online',
@@ -812,7 +812,7 @@ $devices = [
                         <div class="col-md-4">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
-                                    <h6 class="card-subtitle mb-2 text-muted">Porcentagem Acesa</h6>
+                                    <h6 class="card-subtitle mb-2 text-muted">Porcentagem Acessa</h6>
                                     <h2 class="display-4" id="percentage-on">0%</h2>
                                 </div>
                             </div>
@@ -1344,6 +1344,44 @@ $devices = [
         
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
             openMonitoringModal();
+            
+            // Atualiza o título e informações do dispositivo no modal
+            const titleElement = document.querySelector('#monitoringModal .modal-content h2');
+            const deviceNameElement = document.getElementById('deviceName');
+            const deviceLocationElement = document.getElementById('deviceLocation');
+            
+            // Define o título e ícone com base no tipo de dispositivo
+            if (deviceCategory === 'climate') {
+                titleElement.innerHTML = '<i class="fas fa-thermometer-half"></i> Monitoramento de Termostato';
+                
+                // Atualiza os contadores para termostato
+                document.querySelector('#total-lights').textContent = '1';
+                document.querySelector('#lights-on').textContent = '1';
+                document.querySelector('#percentage-on').textContent = '100%';
+                
+                // Atualiza os textos dos cards
+                document.querySelector('#monitoringModal .col-md-4:nth-child(1) .card-subtitle').textContent = 'Total de Termostatos';
+                document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Termostatos Ligados';
+                document.querySelector('#monitoringModal .col-md-4:nth-child(3) .card-subtitle').textContent = 'Porcentagem Ligados';
+                
+                // Atualiza os valores dos cards
+                const tempValue = document.querySelector('.device-value').textContent;
+                document.querySelector('#total-lights').textContent = tempValue;
+                document.querySelector('#lights-on').textContent = 'Ligado';
+                document.querySelector('#percentage-on').textContent = 'Resfriando';
+            } else {
+                // Mantém o padrão para lâmpadas
+                titleElement.innerHTML = '<i class="fas fa-lightbulb"></i> Monitoramento de Lâmpadas';
+                
+                // Reseta os textos dos cards para o padrão
+                document.querySelector('#monitoringModal .col-md-4:nth-child(1) .card-subtitle').textContent = 'Total de Lâmpadas';
+                document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Lâmpadas Acessas';
+                document.querySelector('#monitoringModal .col-md-4:nth-child(3) .card-subtitle').textContent = 'Porcentagem Acesa';
+            }
+            
+            // Remove a exibição do nome e localização do dispositivo
+            if (deviceNameElement) deviceNameElement.textContent = '';
+            if (deviceLocationElement) deviceLocationElement.textContent = '';
         }
 
         async function updateLightStatus(deviceId, deviceCategory) {
