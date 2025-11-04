@@ -1097,6 +1097,9 @@ $noLights = empty($lights);
                 if (data.success) {
                     lightToDeleteElement.remove();
                     showMessage('Lâmpada removida com sucesso!', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 100);
                 } else {
                     showMessage(`Erro ao remover lâmpada: ${data.message || 'Erro desconhecido'}`, 'error');
                 }
