@@ -819,18 +819,59 @@ try {
                 }
             });
         }, 5000);
-        function removeZone(zoneId, button) {
-            // Store the card element and zone name for later use
-            const card = button.closest('.temp-zone-card');
-            const zoneName = card ? card.querySelector('.zone-name')?.textContent || 'esta zona' : 'esta zona';
-            
-            // Show confirmation modal
+        async function removeZone(zoneId, button) {
+            // Show loading state
             const modal = document.getElementById('confirmDeleteModal');
+            const messageElement = document.querySelector('#confirmDeleteModal .modal-message');
             const confirmBtn = document.getElementById('confirmDeleteBtn');
             const cancelBtn = document.getElementById('cancelDeleteBtn');
-            const messageElement = document.querySelector('#confirmDeleteModal .modal-message');
             
-            messageElement.textContent = `Tem certeza que deseja remover ${zoneName}? Esta ação não pode ser desfeita.`;
+            // Show loading message
+            messageElement.textContent = 'Carregando informações da zona...';
+            modal.style.display = 'flex';
+            
+            try {
+                // Fetch zone name from the server
+                const response = await fetch(`../includes/get_zone_name.php?id=${zoneId}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate'
+                    },
+                    credentials: 'same-origin'
+                });
+
+                let responseText = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', responseText);
+                    throw new Error('Resposta inválida do servidor');
+                }
+                
+                // Log the full response for debugging
+                console.log('Server response:', data);
+                
+                if (!response.ok) {
+                    const errorMsg = data?.message || `Erro ${response.status}: ${response.statusText}`;
+                    throw new Error(errorMsg);
+                }
+                
+                if (data && data.success) {
+                    const displayName = data.zoneName || 'este termostato';
+                    messageElement.innerHTML = `
+                        <p>Tem certeza que deseja remover o termostato da <strong>${displayName}</strong>?</p>
+                        <p style="color: #ffc107; margin-top: 10px;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>
+                    `;
+                } else {
+                    throw new Error(data?.message || 'Erro ao carregar o nome do termostato');
+                }
+            } catch (error) {
+                console.error('Erro ao buscar nome do termostato:', error);
+                messageElement.textContent = 'Tem certeza que deseja remover este termostato? Esta ação não pode ser desfeita.';
+            }
             modal.style.display = 'flex';
             
             // Handle confirm button click
@@ -915,13 +956,16 @@ try {
     <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
         <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
             <div class="modal-content" style="background: #2c3e50; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3); position: relative; margin: 20px;">
-                <h3 style="color: #ecf0f1; margin-bottom: 15px;">Confirmar Exclusão</h3>
+                <div class="modal-header">
+                    <h2><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h2>
+                </div>
+                <br><br>
                 <p class="modal-message" style="color: #bdc3c7; margin-bottom: 25px; line-height: 1.5;"></p>
                 <div style="display: flex; justify-content: flex-end; gap: 15px;">
                     <button id="cancelDeleteBtn" class="btn-secondary" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
                         Cancelar
                     </button>
-                    <button id="confirmDeleteBtn" class="btn-action btn-remove" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; background: #e74c3c; color: white;">
+                    <button id="confirmDeleteBtn" class="btn-action btn-remove" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; color: white;">
                         <i class="fas fa-trash"></i> Remover
                     </button>
                 </div>
