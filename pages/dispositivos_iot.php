@@ -1272,7 +1272,50 @@ $devices = [
             }
         }
 
-        function openMonitoringModal() {
+        function updateThermostatsTable(thermostats) {
+            if (!thermostats || !Array.isArray(thermostats)) {
+                console.error('Dados de termostatos inválidos ou não fornecidos');
+                return;
+            }
+            
+            try {
+                const totalThermostats = thermostats.length;
+                const thermostatsOn = thermostats.filter(thermostat => {
+                    const status = thermostat.Status ? thermostat.Status.toLowerCase() : 'off';
+                    return status === 'on';
+                }).length;
+                
+                const percentage = totalThermostats > 0 ? Math.round((thermostatsOn / totalThermostats) * 100) : 0;
+                
+                // Atualiza os cards principais
+                const totalEl = document.getElementById('total-lights');
+                const onEl = document.getElementById('lights-on');
+                const percentageEl = document.getElementById('percentage-on');
+                
+                if (totalEl) totalEl.textContent = totalThermostats;
+                if (onEl) onEl.textContent = thermostatsOn;
+                if (percentageEl) percentageEl.textContent = `${percentage}%`;
+                
+                // Se houver pelo menos um termostato, exibe as informações do primeiro
+                if (thermostats.length > 0) {
+                    const thermo = thermostats[0];
+                    const tempEl = document.getElementById('temperature-value');
+                    const statusEl = document.getElementById('status-value');
+                    const modeEl = document.getElementById('mode-value');
+                    
+                    if (tempEl) tempEl.textContent = thermo.Temperatura ? `${thermo.Temperatura}°C` : 'N/A';
+                    if (statusEl) statusEl.textContent = thermo.Status === 'on' ? 'Ligado' : 'Desligado';
+                    if (modeEl) modeEl.textContent = thermo.Modo || 'N/A';
+                }
+                
+                console.log(`Atualizado: ${thermostatsOn} de ${totalThermostats} termostatos ligados (${percentage}%)`);
+                
+            } catch (error) {
+                console.error('Erro ao atualizar contadores de termostatos:', error);
+            }
+        }
+
+        function openMonitoringModal(deviceCategory = 'lighting') {
             const modal = document.getElementById('monitoringModal');
             if (!modal) return;
 
@@ -1287,11 +1330,21 @@ $devices = [
             }, 10);
             
             const loadData = () => {
-                fetch('../includes/monitor_lights.php')
+                const endpoint = deviceCategory === 'climate' 
+                    ? '../includes/monitor_thermostats.php' 
+                    : '../includes/monitor_lights.php';
+                
+                fetch(endpoint)
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success && data.lights) {
-                            updateLightsTable(data.lights);
+                        if (data.success) {
+                            if (deviceCategory === 'climate' && data.thermostats) {
+                                updateThermostatsTable(data.thermostats);
+                            } else if (data.lights) {
+                                updateLightsTable(data.lights);
+                            } else {
+                                console.error('Dados inválidos recebidos:', data);
+                            }
                         } else {
                             console.error('Erro ao carregar dados:', data?.message || 'Erro desconhecido');
                         }
@@ -1343,7 +1396,7 @@ $devices = [
         }
         
         function showMonitoringModal(deviceId, deviceName, deviceLocation, deviceCategory) {
-            openMonitoringModal();
+            openMonitoringModal(deviceCategory);
             
             // Atualiza o título e informações do dispositivo no modal
             const titleElement = document.querySelector('#monitoringModal .modal-content h2');
@@ -1354,21 +1407,18 @@ $devices = [
             if (deviceCategory === 'climate') {
                 titleElement.innerHTML = '<i class="fas fa-thermometer-half"></i> Monitoramento de Termostato';
                 
-                // Atualiza os contadores para termostato
-                document.querySelector('#total-lights').textContent = '1';
-                document.querySelector('#lights-on').textContent = '1';
-                document.querySelector('#percentage-on').textContent = '100%';
-                
                 // Atualiza os textos dos cards
                 document.querySelector('#monitoringModal .col-md-4:nth-child(1) .card-subtitle').textContent = 'Total de Termostatos';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Termostatos Ligados';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(3) .card-subtitle').textContent = 'Porcentagem Ligados';
                 
-                // Atualiza os valores dos cards
-                const tempValue = document.querySelector('.device-value').textContent;
-                document.querySelector('#total-lights').textContent = tempValue;
-                document.querySelector('#lights-on').textContent = 'Ligado';
-                document.querySelector('#percentage-on').textContent = 'Resfriando';
+                // Adiciona elementos para exibir os dados do termostato
+                const cardBodies = document.querySelectorAll('#monitoringModal .card-body');
+                if (cardBodies.length >= 3) {
+                    cardBodies[0].innerHTML = '<h3 id="temperature-value" class="mb-0">--°C</h3>';
+                    cardBodies[1].innerHTML = '<h3 id="status-value" class="mb-0">--</h3>';
+                    cardBodies[2].innerHTML = '<h3 id="mode-value" class="mb-0">--</h3>';
+                }
             } else {
                 // Mantém o padrão para lâmpadas
                 titleElement.innerHTML = '<i class="fas fa-lightbulb"></i> Monitoramento de Lâmpadas';
@@ -1377,6 +1427,14 @@ $devices = [
                 document.querySelector('#monitoringModal .col-md-4:nth-child(1) .card-subtitle').textContent = 'Total de Lâmpadas';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Lâmpadas Acessas';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(3) .card-subtitle').textContent = 'Porcentagem Acesa';
+                
+                // Restaura os cards originais
+                const cardBodies = document.querySelectorAll('#monitoringModal .card-body');
+                if (cardBodies.length >= 3) {
+                    cardBodies[0].innerHTML = '<h3 id="total-lights" class="mb-0">0</h3>';
+                    cardBodies[1].innerHTML = '<h3 id="lights-on" class="mb-0">0</h3>';
+                    cardBodies[2].innerHTML = '<h3 id="percentage-on" class="mb-0">0%</h3>';
+                }
             }
             
             // Remove a exibição do nome e localização do dispositivo
