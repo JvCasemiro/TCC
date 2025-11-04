@@ -699,6 +699,28 @@ try {
     </div>
     
     <script>
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Adiciona a classe para mostrar o toast com animação
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Remove o toast após 3 segundos
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
         function toggleZone(zoneId) {
             const card = document.querySelector(`[data-zone-id="${zoneId}"]`);
             const statusElement = card.querySelector('.zone-status');
@@ -820,12 +842,140 @@ try {
             });
         }, 5000);
         async function removeZone(zoneId, button) {
-            // Show loading state
             const modal = document.getElementById('confirmDeleteModal');
             const messageElement = document.querySelector('#confirmDeleteModal .modal-message');
             const confirmBtn = document.getElementById('confirmDeleteBtn');
             const cancelBtn = document.getElementById('cancelDeleteBtn');
+            const closeBtn = document.getElementById('modalCloseBtn');
             let zoneName = 'esta zona';
+            
+            // Mostra o modal imediatamente
+            modal.style.display = 'flex';
+            
+            try {
+                // Tenta obter o nome da zona
+                const nameResponse = await fetch(`../includes/get_zone_name.php?id=${zoneId}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate'
+                    }
+                });
+                
+                if (nameResponse.ok) {
+                    const data = await nameResponse.json();
+                    if (data.success && data.zoneName) {
+                        zoneName = `"${data.zoneName}"`;
+                    } else if (data.message) {
+                        console.warn('Aviso ao buscar nome da zona:', data.message);
+                    }
+                }
+                
+                // Atualiza a mensagem com o nome da zona
+                messageElement.innerHTML = `Tem certeza que deseja remover o termostato <strong style="color: white;">${zoneName}</strong>?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>`;
+                
+                // Configura o manipulador de confirmação
+                let isConfirmed = false;
+                
+                const confirmHandler = async () => {
+                    if (isConfirmed) return;
+                    isConfirmed = true;
+                    
+                    try {
+                        messageElement.textContent = 'Removendo zona...';
+                        confirmBtn.disabled = true;
+                        cancelBtn.disabled = true;
+                        closeBtn.style.display = 'none';
+                        
+                        // Envia o ID como parâmetro de consulta
+                        const deleteResponse = await fetch(`/TCC/includes/delete_zone.php?id=${encodeURIComponent(zoneId)}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Cache-Control': 'no-cache, no-store, must-revalidate'
+                            },
+                            credentials: 'same-origin'
+                        });
+                        
+                        let result;
+                        try {
+                            // Tenta fazer o parse da resposta como JSON
+                            result = await deleteResponse.json();
+                        } catch (e) {
+                            // Se não for possível fazer o parse, verifica se a requisição foi bem-sucedida
+                            if (deleteResponse.ok) {
+                                // Se a requisição foi bem-sucedida, mas não há conteúdo JSON
+                                result = { success: true };
+                            } else {
+                                throw new Error(`Erro ao processar a resposta do servidor: ${deleteResponse.status} ${deleteResponse.statusText}`);
+                            }
+                        }
+                        
+                        // Remove o card da zona com animação
+                        const card = button.closest('.temp-zone-card');
+                        if (card) {
+                            card.style.animation = 'fadeOut 0.3s ease';
+                            console.log('Iniciando animação de fadeOut...');
+                            setTimeout(() => {
+                                console.log('Recarregando a página...');
+                                // Força o recarregamento da página, ignorando o cache
+                                window.location.href = window.location.href + (window.location.href.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+                            }, 300);
+                        } else {
+                            console.log('Card não encontrado, recarregando a página...');
+                            window.location.reload(true);
+                        }
+                    } catch (error) {
+                        console.error('Erro ao remover zona:', error);
+                        showToast(error.message || 'Erro ao remover a zona', 'error');
+                    } finally {
+                        modal.style.display = 'none';
+                        // Limpa os event listeners
+                        confirmBtn.removeEventListener('click', confirmHandler);
+                        cancelBtn.removeEventListener('click', cancelHandler);
+                        closeBtn.removeEventListener('click', cancelHandler);
+                    }
+                };
+                
+                // Configura o manipulador de cancelamento
+                const cancelHandler = () => {
+                    modal.style.display = 'none';
+                    // Limpa os event listeners
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    cancelBtn.removeEventListener('click', cancelHandler);
+                    closeBtn.removeEventListener('click', cancelHandler);
+                };
+                
+                // Adiciona os event listeners
+                confirmBtn.addEventListener('click', confirmHandler);
+                cancelBtn.addEventListener('click', cancelHandler);
+                closeBtn.addEventListener('click', cancelHandler);
+                
+            } catch (error) {
+                console.error('Erro ao buscar nome do termostato:', error);
+                // Se não conseguir obter o nome, mostra uma mensagem genérica
+                messageElement.innerHTML = 'Tem certeza que deseja remover esta zona?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>';
+                
+                // Configura o manipulador de confirmação para o caso de erro
+                const confirmHandler = async () => {
+                    // ... (mesmo código do confirmHandler acima)
+                };
+                
+                // Configura o manipulador de cancelamento
+                const cancelHandler = () => {
+                    modal.style.display = 'none';
+                    // Limpa os event listeners
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    cancelBtn.removeEventListener('click', cancelHandler);
+                    closeBtn.removeEventListener('click', cancelHandler);
+                };
+                
+                // Adiciona os event listeners
+                confirmBtn.addEventListener('click', confirmHandler);
+                cancelBtn.addEventListener('click', cancelHandler);
+                closeBtn.addEventListener('click', cancelHandler);
+            }
             
             try {
                 // Try to get zone name first
@@ -870,7 +1020,6 @@ try {
                         const result = await deleteResponse.json();
                         
                         if (result.success) {
-                            showToast('Zona removida com sucesso!', 'success');
                             // Remove the zone card from the UI
                             const card = document.querySelector(`[data-zone-id="${zoneId}"]`);
                             if (card) {
@@ -935,27 +1084,27 @@ try {
     </script>
     
     <!-- Confirmation Modal -->
-    <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
-        <div class="modal-dialog" style="background: #2c3e50; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3); overflow: hidden; border: 1px solid #3d5166;">
-            <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #3d5166; display: flex; align-items: center; justify-content: space-between;">
-                <h5 class="modal-title" style="margin: 0; font-size: 1.25rem; color: #f8f9fa; font-weight: 600;">
-                    <i class="fas fa-exclamation-triangle" style="color: #ffffff; margin-right: 10px;"></i>
-                    Confirmar Exclusão
-                </h5>
-                <button type="button" class="close" id="modalCloseBtn" style="background: none; border: none; font-size: 1.5rem; font-weight: 700; line-height: 1; color: #bdc3c7; cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" aria-label="Fechar" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" style="padding: 25px 20px;">
-                <p class="modal-message" style="margin: 0; color: #dee2e6; line-height: 1.6; font-size: 1rem;"></p>
-            </div>
-            <div class="modal-footer" style="padding: 15px 20px; border-top: 1px solid #3d5166; display: flex; justify-content: flex-end; gap: 12px; background: #2c3e50;">
-                <button type="button" id="cancelDeleteBtn" class="btn btn-secondary" style="padding: 10px 20px; border: none; border-radius: 5px; background: #6c757d; color: white; font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease-in-out; min-width: 100px;" onmouseover="this.style.background='#5a6268'" onmouseout="this.style.background='#6c757d'">
-                    Cancelar
-                </button>
-                <button type="button" id="confirmDeleteBtn" class="btn btn-danger" style="padding: 10px 20px; border: none; border-radius: 5px; background: #e74c3c; color: white; font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: all 0.2s ease-in-out; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 120px;" onmouseover="this.style.background='#c0392b'" onmouseout="this.style.background='#e74c3c'">
-                    <i class="fas fa-trash"></i> Remover
-                </button>
+    <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-dialog" style="background: #2c3e50; border-radius: 8px; width: 90%; max-width: 400px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid #3d5166;">
+            <div class="modal-content" style="padding: 20px; color: #ecf0f1;">
+                <div class="modal-header" style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #3d5166;">
+                    <h3 style="margin: 0; color: #fff; font-size: 1.25rem; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+                        Confirmar Exclusão
+                    </h3>
+                    <button id="modalCloseBtn" style="background: none; border: none; color: #ecf0f1; font-size: 1.25rem; cursor: pointer; position: absolute; right: 15px; top: 15px;">&times;</button>
+                </div>
+                <div class="modal-body" style="margin-bottom: 20px; line-height: 1.5;">
+                    <p class="modal-message" style="margin: 0;">Tem certeza que deseja remover esta zona? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #3d5166; padding-top: 15px;">
+                    <button type="button" id="cancelDeleteBtn" class="btn btn-secondary" style="padding: 8px 16px; border: 1px solid #3d5166; border-radius: 4px; background: transparent; color: #ecf0f1; font-size: 0.875rem; cursor: pointer; transition: all 0.2s ease-in-out;">
+                        Cancelar
+                    </button>
+                    <button type="button" id="confirmDeleteBtn" class="btn btn-danger" style="padding: 8px 16px; border: none; border-radius: 4px; background: #e74c3c; color: white; font-size: 0.875rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                        <i class="fas fa-trash"></i> Remover
+                    </button>
+                </div>
             </div>
         </div>
     </div>
