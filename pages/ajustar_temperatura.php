@@ -201,47 +201,48 @@ try {
         }
         
         .temp-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            border-left: 5px solid #95a5a6;
+            margin-bottom: 20px;
+            color: #333;
         }
         
         .temp-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
         
-        .temp-card.heating {
-            border-left: 5px solid #e74c3c;
-        }
-        
-        .temp-card.cooling {
-            border-left: 5px solid #3498db;
-        }
-        
-        .temp-card.auto {
-            border-left: 5px solid #f39c12;
+        .temp-card.on {
+            border-left: 5px solid #27ae60;
         }
         
         .temp-card.off {
-            border-left: 5px solid #95a5a6;
+            border-left: 5px solid #e74c3c;
         }
         
         .temp-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
+            align-items: flex-start;
+            margin-bottom: 15px;
         }
         
         .zone-info h3 {
-            color: #2f3640;
-            margin-bottom: 5px;
-            font-size: 1.3em;
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .zone-info small {
+            color: #7f8c8d;
+            font-size: 0.9em;
         }
         
         .zone-status {
@@ -252,20 +253,16 @@ try {
             font-size: 0.9em;
         }
         
-        .zone-status.heating {
-            color: #e74c3c;
+        .zone-status i {
+            font-size: 1.2em;
         }
         
-        .zone-status.cooling {
-            color: #3498db;
-        }
-        
-        .zone-status.auto {
-            color: #f39c12;
+        .zone-status.on {
+            color: #27ae60;
         }
         
         .zone-status.off {
-            color: #95a5a6;
+            color: #e74c3c;
         }
         
         .temp-display {
@@ -362,9 +359,11 @@ try {
             background: white;
             border-radius: 8px;
             cursor: pointer;
-            text-align: center;
-            transition: all 0.3s ease;
             font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
         }
         
         .mode-btn.active {
@@ -381,7 +380,8 @@ try {
             position: relative;
             display: inline-block;
             width: 60px;
-            height: 34px;
+            height: 30px;
+            margin: 0 auto;
         }
         
         .toggle-switch input {
@@ -397,7 +397,7 @@ try {
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: #bdc3c7;
             transition: .4s;
             border-radius: 34px;
         }
@@ -407,19 +407,20 @@ try {
             content: "";
             height: 26px;
             width: 26px;
-            left: 4px;
-            bottom: 4px;
+            left: 2px;
+            bottom: 2px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         input:checked + .slider {
-            background-color: #4a90e2;
+            background-color: #27ae60;
         }
         
         input:checked + .slider:before {
-            transform: translateX(26px);
+            transform: translateX(30px);
         }
         
         .schedule-section {
@@ -551,6 +552,65 @@ try {
                 font-size: 2.5em;
             }
         }
+
+        .light-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .btn-action i {
+            font-size: 0.9em;
+        }
+        
+        .btn-remove {
+            color: #e74c3c !important;
+            border-color: #e74c3c !important;
+        }
+        
+        .btn-remove:hover {
+            background: rgba(255, 107, 107, 0.1) !important;
+        }
+
+        .zone-info small {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .zone-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .zone-status.on {
+            color: #27ae60;
+        }
+        
+        .zone-status.off {
+            color: #e74c3c;
+        }
     </style>
 </head>
 <body>
@@ -608,29 +668,29 @@ try {
                 <div class="temp-header">
                     <div class="zone-info">
                         <h3><?php echo htmlspecialchars($zone['name']); ?></h3>
-                        <small style="opacity: 0.8;"><?php echo htmlspecialchars($zone['comodo']); ?></small>
-                    </div>
-                    <div class="zone-status <?php echo $zone['status'] == 'on' ? $zone['mode'] : 'off'; ?>">
-                        <i class="fas fa-thermometer-half"></i>
-                        <span><?php 
-                            if ($zone['status'] == 'off') echo 'Desligado';
-                            elseif ($zone['mode'] == 'heating') echo 'Aquecendo';
-                            elseif ($zone['mode'] == 'cooling') echo 'Resfriando';
-                            else echo 'Automático';
-                        ?></span>
+                        <small><?php echo htmlspecialchars($zone['comodo']); ?></small>
                     </div>
                 </div>
                 
                 <div class="temp-controls">
-                    <div class="control-group">
-                        <label>Liga/Desliga</label>
-                        <label class="toggle-switch">
+                    <div class="control-group" style="text-align: center; width: 100%;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Liga/Desliga</label>
+                        <label class="toggle-switch" style="margin: 0 auto;">
                             <input type="checkbox" <?php echo $zone['status'] == 'on' ? 'checked' : ''; ?> 
                                    onchange="toggleZone(<?php echo $zone['id']; ?>)">
                             <span class="slider"></span>
                         </label>
+                        <div class="zone-status <?php echo $zone['status'] == 'on' ? 'on' : 'off'; ?>" style="margin-top: 10px;">
+                            <i class="fas fa-<?php echo $zone['status'] == 'on' ? 'power-off' : 'power-off'; ?>"></i>
+                            <span><?php echo $zone['status'] == 'on' ? 'Ligado' : 'Desligado'; ?></span>
+                        </div>
                     </div>
-                    
+                </div>
+                <div class="light-actions">
+                        <button class="btn-action btn-remove" onclick="removeZone(<?php echo $zone['id']; ?>, this)">
+                            <i class="fas fa-trash"></i> Remover
+                        </button>
+                    </div>
                 </div>
             </div>
             <?php endforeach; ?>
@@ -644,33 +704,22 @@ try {
             const statusElement = card.querySelector('.zone-status');
             const statusText = statusElement.querySelector('span');
             const tempSlider = document.getElementById(`temp-slider-${zoneId}`);
-            const modeButtons = card.querySelectorAll('.mode-btn');
             
-            const isOn = card.classList.contains('heating') || card.classList.contains('cooling') || card.classList.contains('auto');
+            const isOn = card.classList.contains('on');
             
             if (isOn) {
                 card.className = 'temp-card off';
                 statusElement.className = 'zone-status off';
                 statusText.textContent = 'Desligado';
                 tempSlider.disabled = true;
-                modeButtons.forEach(btn => {
-                    btn.style.opacity = '0.5';
-                    btn.style.pointerEvents = 'none';
-                });
             } else {
-                card.className = 'temp-card auto';
-                statusElement.className = 'zone-status auto';
-                statusText.textContent = 'Automático';
+                card.className = 'temp-card on';
+                statusElement.className = 'zone-status on';
+                statusText.textContent = 'Ligado';
                 tempSlider.disabled = false;
-                modeButtons.forEach(btn => {
-                    btn.style.opacity = '1';
-                    btn.style.pointerEvents = 'auto';
-                    btn.classList.remove('active');
-                });
-                modeButtons[2].classList.add('active');
             }
             
-            showMessage(`Zona ${isOn ? 'desligada' : 'ligada'} com sucesso!`, 'success');
+            showMessage(`Ar condicionado ${isOn ? 'desligado' : 'ligado'} com sucesso!`, 'success');
         }
         
         function changeTargetTemp(zoneId, temp) {
@@ -678,29 +727,26 @@ try {
             showMessage(`Temperatura ajustada para ${temp}°C`, 'success');
         }
         
-        function changeMode(zoneId, mode) {
+        function changeMode(zoneId) {
             const card = document.querySelector(`[data-zone-id="${zoneId}"]`);
             const statusElement = card.querySelector('.zone-status');
             const statusText = statusElement.querySelector('span');
-            const modeButtons = card.querySelectorAll('.mode-btn');
             
-            modeButtons.forEach(btn => btn.classList.remove('active'));
+            const isOn = !card.classList.contains('on');
             
-            card.className = `temp-card ${mode}`;
-            statusElement.className = `zone-status ${mode}`;
-            
-            if (mode === 'heating') {
-                modeButtons[0].classList.add('active');
-                statusText.textContent = 'Aquecendo';
-            } else if (mode === 'cooling') {
-                modeButtons[1].classList.add('active');
-                statusText.textContent = 'Resfriando';
+            if (isOn) {
+                card.className = 'temp-card on';
+                statusElement.className = 'zone-status on';
+                statusText.textContent = 'Ligado';
+                document.getElementById(`temp-slider-${zoneId}`).disabled = false;
+                showMessage('Ar condicionado ligado', 'success');
             } else {
-                modeButtons[2].classList.add('active');
-                statusText.textContent = 'Automático';
+                card.className = 'temp-card off';
+                statusElement.className = 'zone-status off';
+                statusText.textContent = 'Desligado';
+                document.getElementById(`temp-slider-${zoneId}`).disabled = true;
+                showMessage('Ar condicionado desligado', 'success');
             }
-            
-            showMessage(`Modo alterado para ${mode === 'heating' ? 'Aquecimento' : mode === 'cooling' ? 'Resfriamento' : 'Automático'}`, 'success');
         }
         
         function scheduleTemperature(zoneId) {
