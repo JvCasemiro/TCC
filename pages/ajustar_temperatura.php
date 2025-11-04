@@ -15,13 +15,31 @@ $user = [
 $created_at = new DateTime();
 $updated_at = new DateTime();
 
-$zones = [
-    ['id' => 1, 'name' => 'Sala de Estar', 'current_temp' => 22.5, 'target_temp' => 24, 'mode' => 'heating', 'status' => 'on'],
-    ['id' => 2, 'name' => 'Quarto Principal', 'current_temp' => 21.0, 'target_temp' => 20, 'mode' => 'cooling', 'status' => 'on'],
-    ['id' => 3, 'name' => 'Cozinha', 'current_temp' => 25.5, 'target_temp' => 23, 'mode' => 'cooling', 'status' => 'on'],
-    ['id' => 4, 'name' => 'Escritório', 'current_temp' => 19.0, 'target_temp' => 22, 'mode' => 'heating', 'status' => 'off'],
-    ['id' => 5, 'name' => 'Quarto Hóspedes', 'current_temp' => 20.5, 'target_temp' => 21, 'mode' => 'auto', 'status' => 'on'],
-];
+// Fetch thermostats from database
+$zones = [];
+try {
+    $stmt = $conn->prepare("SELECT * FROM Temperaturas WHERE ID_Usuario = :user_id");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $thermostats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Convert database format to the expected zones format
+    foreach ($thermostats as $t) {
+        $zones[] = [
+            'id' => $t['ID_Temperatura'],
+            'name' => $t['Nome'],
+            'current_temp' => 22.0, // Default value, can be updated from sensors
+            'target_temp' => 22,    // Default value, can be stored in the database
+            'mode' => 'auto',       // Default mode
+            'status' => strtolower($t['Status']) == 'on' ? 'on' : 'off',
+            'comodo' => $t['Comodo']
+        ];
+    }
+} catch (PDOException $e) {
+    // Log error and use empty array if there's a database error
+    error_log('Erro ao buscar termostatos: ' . $e->getMessage());
+    $zones = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -577,11 +595,20 @@ $zones = [
         </div>
         
         <div class="temperature-grid">
+            <?php if (empty($zones)): ?>
+            <div class="no-thermostats" style="grid-column: 1 / -1; text-align: center; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 1rem;">
+                <i class="fas fa-thermometer-half" style="font-size: 48px; color: #327fddff; margin-bottom: 15px;"></i>
+                <h3 style="margin-bottom: 10px;">Nenhum termostato cadastrado</h3>
+                <p style="margin-bottom: 20px; color: #ccc;">Adicione um termostato na página de Dispositivos IoT para começar</p>
+            </div>
+            
+        <?php else: ?>
             <?php foreach($zones as $zone): ?>
             <div class="temp-card <?php echo $zone['status'] == 'on' ? $zone['mode'] : 'off'; ?>" data-zone-id="<?php echo $zone['id']; ?>">
                 <div class="temp-header">
                     <div class="zone-info">
                         <h3><?php echo htmlspecialchars($zone['name']); ?></h3>
+                        <small style="opacity: 0.8;"><?php echo htmlspecialchars($zone['comodo']); ?></small>
                     </div>
                     <div class="zone-status <?php echo $zone['status'] == 'on' ? $zone['mode'] : 'off'; ?>">
                         <i class="fas fa-thermometer-half"></i>
@@ -591,16 +618,6 @@ $zones = [
                             elseif ($zone['mode'] == 'cooling') echo 'Resfriando';
                             else echo 'Automático';
                         ?></span>
-                    </div>
-                </div>
-                
-                <div class="temp-display">
-                    <div class="current-temp" id="current-temp-<?php echo $zone['id']; ?>">
-                        <?php echo number_format($zone['current_temp'], 1); ?>°C
-                    </div>
-                    <div class="temp-label">Temperatura Atual</div>
-                    <div class="target-temp" id="target-temp-<?php echo $zone['id']; ?>">
-                        Meta: <?php echo $zone['target_temp']; ?>°C
                     </div>
                 </div>
                 
@@ -614,43 +631,10 @@ $zones = [
                         </label>
                     </div>
                     
-                    <div class="control-group">
-                        <label>Temperatura Desejada</label>
-                        <div class="temp-slider-container">
-                            <input type="range" min="16" max="30" value="<?php echo $zone['target_temp']; ?>" 
-                                   class="temp-slider" id="temp-slider-<?php echo $zone['id']; ?>"
-                                   onchange="changeTargetTemp(<?php echo $zone['id']; ?>, this.value)"
-                                   <?php echo $zone['status'] == 'off' ? 'disabled' : ''; ?>>
-                            <div class="temp-values">
-                                <span>16°C</span>
-                                <span>30°C</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="control-group">
-                        <label>Modo de Operação</label>
-                        <div class="mode-selector">
-                            <div class="mode-btn <?php echo $zone['mode'] == 'heating' ? 'active' : ''; ?>" 
-                                 onclick="changeMode(<?php echo $zone['id']; ?>, 'heating')"
-                                 <?php echo $zone['status'] == 'off' ? 'style="opacity:0.5;pointer-events:none;"' : ''; ?>>
-                                <i class="fas fa-fire"></i><br>Aquecer
-                            </div>
-                            <div class="mode-btn <?php echo $zone['mode'] == 'cooling' ? 'active' : ''; ?>" 
-                                 onclick="changeMode(<?php echo $zone['id']; ?>, 'cooling')"
-                                 <?php echo $zone['status'] == 'off' ? 'style="opacity:0.5;pointer-events:none;"' : ''; ?>>
-                                <i class="fas fa-snowflake"></i><br>Resfriar
-                            </div>
-                            <div class="mode-btn <?php echo $zone['mode'] == 'auto' ? 'active' : ''; ?>" 
-                                 onclick="changeMode(<?php echo $zone['id']; ?>, 'auto')"
-                                 <?php echo $zone['status'] == 'off' ? 'style="opacity:0.5;pointer-events:none;"' : ''; ?>>
-                                <i class="fas fa-magic"></i><br>Auto
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <?php endforeach; ?>
+        <?php endif; ?>
         </div>
     </div>
     
