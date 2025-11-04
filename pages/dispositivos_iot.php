@@ -1411,14 +1411,6 @@ $devices = [
                 document.querySelector('#monitoringModal .col-md-4:nth-child(1) .card-subtitle').textContent = 'Total de Termostatos';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Termostatos Ligados';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(3) .card-subtitle').textContent = 'Porcentagem Ligados';
-                
-                // Adiciona elementos para exibir os dados do termostato
-                const cardBodies = document.querySelectorAll('#monitoringModal .card-body');
-                if (cardBodies.length >= 3) {
-                    cardBodies[0].innerHTML = '<h3 id="temperature-value" class="mb-0">--°C</h3>';
-                    cardBodies[1].innerHTML = '<h3 id="status-value" class="mb-0">--</h3>';
-                    cardBodies[2].innerHTML = '<h3 id="mode-value" class="mb-0">--</h3>';
-                }
             } else {
                 // Mantém o padrão para lâmpadas
                 titleElement.innerHTML = '<i class="fas fa-lightbulb"></i> Monitoramento de Lâmpadas';
