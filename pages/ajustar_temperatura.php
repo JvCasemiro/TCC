@@ -819,6 +819,114 @@ try {
                 }
             });
         }, 5000);
+        function removeZone(zoneId, button) {
+            // Store the card element and zone name for later use
+            const card = button.closest('.temp-zone-card');
+            const zoneName = card ? card.querySelector('.zone-name')?.textContent || 'esta zona' : 'esta zona';
+            
+            // Show confirmation modal
+            const modal = document.getElementById('confirmDeleteModal');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            const cancelBtn = document.getElementById('cancelDeleteBtn');
+            const messageElement = document.querySelector('#confirmDeleteModal .modal-message');
+            
+            messageElement.textContent = `Tem certeza que deseja remover ${zoneName}? Esta ação não pode ser desfeita.`;
+            modal.style.display = 'flex';
+            
+            // Handle confirm button click
+            const confirmHandler = async () => {
+                try {
+                    const response = await fetch(`../includes/delete_zone.php?id=${zoneId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Erro ao remover a zona');
+                    }
+                    
+                    // Remove the card from the UI immediately
+                    if (card) {
+                        card.style.animation = 'fadeOut 0.3s ease';
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(-10px)';
+                        
+                        // Wait for animation to complete before removing
+                        setTimeout(() => {
+                            // Show success message and reload the page
+                            showMessage('Zona removida com sucesso!', 'success');
+                            // Small delay to show the message before reloading
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 800);
+                        }, 300);
+                    }
+                } catch (error) {
+                    console.error('Erro:', error);
+                    showMessage('Erro ao remover a termostato. Tente novamente.', 'error');
+                } finally {
+                    // Clean up event listeners and hide modal
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    cancelBtn.removeEventListener('click', cancelHandler);
+                    modal.style.display = 'none';
+                }
+            };
+            
+            // Handle cancel button click
+            const cancelHandler = () => {
+                confirmBtn.removeEventListener('click', confirmHandler);
+                cancelBtn.removeEventListener('click', cancelHandler);
+                modal.style.display = 'none';
+            };
+            
+            // Add event listeners
+            confirmBtn.addEventListener('click', confirmHandler, { once: true });
+            cancelBtn.addEventListener('click', cancelHandler, { once: true });
+        }
+        
+        // Add fadeIn animation for new cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.temp-zone-card');
+            cards.forEach(card => {
+                card.style.animation = 'fadeIn 0.3s ease';
+            });
+        });
+        
+        // Add fadeIn and fadeOut keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; transform: translateY(0); }
+                to { opacity: 0; transform: translateY(-10px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmDeleteModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
+        <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+            <div class="modal-content" style="background: #2c3e50; padding: 25px; border-radius: 10px; width: 90%; max-width: 500px; box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3); position: relative; margin: 20px;">
+                <h3 style="color: #ecf0f1; margin-bottom: 15px;">Confirmar Exclusão</h3>
+                <p class="modal-message" style="color: #bdc3c7; margin-bottom: 25px; line-height: 1.5;"></p>
+                <div style="display: flex; justify-content: flex-end; gap: 15px;">
+                    <button id="cancelDeleteBtn" class="btn-secondary" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+                        Cancelar
+                    </button>
+                    <button id="confirmDeleteBtn" class="btn-action btn-remove" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; background: #e74c3c; color: white;">
+                        <i class="fas fa-trash"></i> Remover
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
