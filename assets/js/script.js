@@ -325,14 +325,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-const botaoIniciar = document.querySelector('.control-btn .fa-play')?.parentElement;
-if (botaoIniciar) {
-    botaoIniciar.addEventListener('click', function (e) {
-        e.preventDefault();
-        iniciarDetecao();
-    });
-}
-
 const botaoParar = document.querySelector('.control-btn .fa-stop')?.parentElement;
 if (botaoParar) {
     botaoParar.addEventListener('click', function (e) {
