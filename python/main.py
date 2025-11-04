@@ -8,7 +8,9 @@ from datetime import datetime
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # --> Não apagar esse comentário
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Alunos.DESKTOP-8SLHJJ7\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # Não apagar esse comentário
+# pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Alunos.DESKTOP-8SLHJJ7\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # Não apagar esse comentário
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\" # --> Caminho do servidor
 
 def conectar_banco():
     try:
