@@ -516,7 +516,8 @@ if ($conn === null) {
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            const buttons = document.querySelectorAll('.control-btn');
+            // Seleciona apenas os botões .control-btn que estão dentro do dashboard
+            const buttons = document.querySelectorAll('.dashboard-section .control-btn');
             buttons.forEach(button => {
                 if (!button.hasAttribute('onclick')) {
                     button.addEventListener('click', function() {
