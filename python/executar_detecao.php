@@ -24,7 +24,7 @@ try {
     
     $pythonPath = 'C:\Windows\py.exe'; // Faculdade --> Não apagar esse comentário
 
-    $pythonPath = 'C:'; // Servidor --> Não apagar esse comentário
+    $pythonPath = '/home3/lisianth/virtualenv/domx.lisianthus.com.br/python/3.9/bin'; // Servidor --> Não apagar esse comentário
 
     if (!file_exists($pythonPath)) {
         throw new Exception("Python not found at: " . $pythonPath);
