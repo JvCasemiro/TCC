@@ -1302,7 +1302,7 @@
                     <h3>Contato</h3>
                     <ul>
                         <li><i class="fas fa-phone"></i> (14) 991962216</li>
-                        <li><i class="fas fa-envelope"></i> contato@domx.com.br</li>
+                        <li><i class="fas fa-envelope"></i> contato@domx.lisianthus.com.br </li>
                     </ul>
                 </div>
             </div>

@@ -292,7 +292,7 @@ require_once __DIR__ . '/../includes/executar_bats.php';
         
         @media (max-width: 768px) {
             .container {
-                padding: 0 1rem;
+                padding: 0rem;
             }
             
             .menu-grid {
@@ -300,11 +300,15 @@ require_once __DIR__ . '/../includes/executar_bats.php';
             }
             
             .header-content {
-                padding: 0 1rem;
+                padding: 0rem;
             }
             
             .tab-header {
                 flex-direction: column;
+            }
+
+            .domx-logo {
+                right: 0.3rem;
             }
         }
     </style>
