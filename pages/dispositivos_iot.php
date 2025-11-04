@@ -1,10 +1,113 @@
 <?php
-session_start();
-require_once '../config/database.php';
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
 
+session_start();
+
+// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../index.php');
     exit;
+}
+
+// Handle AJAX requests
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    // Set JSON header for AJAX responses
+    header('Content-Type: application/json');
+    
+    // Function to send JSON response and exit
+    function sendJsonResponse($data) {
+        // Clear any previous output
+        if (ob_get_length()) ob_clean();
+        echo json_encode($data);
+        exit;
+    }
+    
+    // Handle thermostat form submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        try {
+            // Include database connection
+            require_once '../config/database.php';
+            
+            // Check if this is a thermostat form submission
+            $action = $_POST['action'] ?? '';
+            
+            if ($action === 'save_thermostat') {
+                // Validate input
+                if (empty($_POST['nome']) || empty($_POST['comodo'])) {
+                    throw new Exception('Por favor, preencha todos os campos obrigatórios.');
+                }
+                
+                $nome = trim($_POST['nome']);
+                $comodo = trim($_POST['comodo']);
+                $user_id = $_SESSION['user_id'];
+                
+                // Prepare and execute the query using PDO
+                $sql = "INSERT INTO Temperaturas (Nome, Comodo, ID_Usuario) VALUES (:nome, :comodo, :user_id)";
+                $stmt = $conn->prepare($sql);
+                
+                // Bind parameters
+                $stmt->bindParam(':nome', $nome, PDO::PARAM_STR);
+                $stmt->bindParam(':comodo', $comodo, PDO::PARAM_STR);
+                $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                
+                // Execute the query
+                if ($stmt->execute()) {
+                    sendJsonResponse([
+                        'success' => true,
+                        'message' => 'Termostato cadastrado com sucesso!',
+                        'id' => $conn->lastInsertId()
+                    ]);
+                } else {
+                    $errorInfo = $stmt->errorInfo();
+                    throw new Exception('Erro ao cadastrar termostato: ' . ($errorInfo[2] ?? 'Erro desconhecido'));
+                }
+            } else {
+                throw new Exception('Ação inválida');
+            }
+            
+        } catch (PDOException $e) {
+            sendJsonResponse([
+                'success' => false,
+                'message' => 'Erro no banco de dados: ' . $e->getMessage()
+            ]);
+        } catch (Exception $e) {
+            sendJsonResponse([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+    
+    // If we get here, the AJAX request wasn't handled
+    sendJsonResponse([
+        'success' => false,
+        'message' => 'Requisição inválida',
+        'debug' => [
+            'method' => $_SERVER['REQUEST_METHOD'],
+            'is_ajax' => true,
+            'post_data' => $_POST
+        ]
+    ]);
+}
+
+// If we get here, it's a normal page load
+// Include database connection for normal page load
+try {
+    require_once '../config/database.php';
+    
+    // Fetch thermostats for the current user
+    $stmt = $conn->prepare("SELECT * FROM Temperaturas WHERE ID_Usuario = :user_id");
+    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->execute();
+    $thermostats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+} catch (PDOException $e) {
+    // Log the error but don't stop the page from loading
+    error_log('Database error: ' . $e->getMessage());
+    $thermostats = [];
 }
 
 $devices = [
@@ -1460,13 +1563,92 @@ $devices = [
         }
         
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle thermostat form submission
+            const termostatoForm = document.getElementById('termostatoForm');
+            if (termostatoForm) {
+                // Remove any existing submit event listeners to prevent duplicates
+                const newForm = termostatoForm.cloneNode(true);
+                termostatoForm.parentNode.replaceChild(newForm, termostatoForm);
+                
+                newForm.addEventListener('submit', async function(e) {
+                    console.log('Form submission started');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const form = this;
+                    const formData = new FormData(form);
+                    formData.append('action', 'save_thermostat');
+                    
+                    const saveBtn = document.getElementById('saveThermostatBtn');
+                    if (!saveBtn) return;
+                    
+                    const originalBtnText = saveBtn.innerHTML;
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+                    
+                    try {
+                        // Convert FormData to URL-encoded format
+                        const formDataObj = {};
+                        formData.forEach((value, key) => {
+                            formDataObj[key] = value;
+                        });
+                        
+                        console.log('Sending form data:', formDataObj);
+                        
+                        const response = await fetch('', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: new URLSearchParams(formDataObj).toString()
+                        });
+                        
+                        console.log('Response status:', response.status);
+                        
+                        let data;
+                        const contentType = response.headers.get('content-type');
+                        if (contentType && contentType.includes('application/json')) {
+                            data = await response.json();
+                        } else {
+                            const text = await response.text();
+                            console.error('Non-JSON response:', text);
+                            throw new Error('Resposta inválida do servidor');
+                        }
+                        
+                        if (!response.ok) {
+                            throw new Error(data?.message || `Erro HTTP: ${response.status}`);
+                        }
+                        
+                        if (data && data.success) {
+                            showMessage(data.message, 'success');
+                            // Close modal and reset form
+                            const modal = document.getElementById('termostatoModal');
+                            if (modal) modal.style.display = 'none';
+                            form.reset();
+                            
+                            // Reload the page to show the new thermostat
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            throw new Error(data?.message || 'Erro ao salvar termostato');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showMessage(error.message || 'Ocorreu um erro ao salvar o termostato', 'error');
+                    } finally {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalBtnText;
+                    }
+                });
+            }
             // Configuração do modal de lâmpada
             const lampadaModal = document.getElementById('lampadaModal');
             const lampadaForm = document.getElementById('lampadaForm');
             
             // Configuração do modal de termostato
             const termostatoModal = document.getElementById('termostatoModal');
-            const termostatoForm = document.getElementById('termostatoForm');
             
             // Configurar fechamento dos modais
             setupModal('lampadaModal', '.close-lampada');
@@ -1632,17 +1814,17 @@ $devices = [
                 <form id="termostatoForm">
                     <div class="form-group">
                         <label for="termostatoNome">Nome do Termostato</label>
-                        <input type="text" id="termostatoNome" placeholder="Ex: Termostato da Sala" required>
+                        <input type="text" id="termostatoNome" name="nome" placeholder="Ex: Termostato da Sala" required>
                     </div>
                     <div class="form-group">
                         <label for="termostatoComodo">Cômodo</label>
-                        <input type="text" id="termostatoComodo" placeholder="Ex: Sala, Quarto, Cozinha" required>
+                        <input type="text" id="termostatoComodo" name="comodo" placeholder="Ex: Sala, Quarto, Cozinha" required>
                     </div>
                     <div class="form-actions" style="margin-top: 20px; text-align: right;">
                         <button type="button" class="btn-cancel" onclick="document.getElementById('termostatoModal').style.display='none'">
                             Cancelar
                         </button>
-                        <button type="submit" class="btn-confirm">
+                        <button type="submit" class="btn-confirm" id="saveThermostatBtn">
                             <i class="fas fa-save"></i> Salvar
                         </button>
                     </div>
