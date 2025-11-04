@@ -195,25 +195,23 @@ try {
         
         .temperature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
         }
         
         .temp-card {
-            background: #fff;
-            border-radius: 8px;
+            background: white;
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            border-left: 5px solid #95a5a6;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        
-        .temp-card:hover {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 300px;
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
@@ -380,7 +378,7 @@ try {
             position: relative;
             display: inline-block;
             width: 60px;
-            height: 30px;
+            height: 34px;
             margin: 0 auto;
         }
         
@@ -672,25 +670,41 @@ try {
                     </div>
                 </div>
                 
-                <div class="temp-controls">
+                <div class="temp-controls" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
                     <div class="control-group" style="text-align: center; width: 100%;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Liga/Desliga</label>
-                        <label class="toggle-switch" style="margin: 0 auto;">
+                        <label style="display: block; margin-bottom: 15px; font-weight: 600; color: #2f3640;">Liga/Desliga</label>
+                        <label class="toggle-switch" style="margin: 0 auto 15px;">
                             <input type="checkbox" <?php echo $zone['status'] == 'on' ? 'checked' : ''; ?> 
                                    onchange="toggleZone(<?php echo $zone['id']; ?>)">
                             <span class="slider"></span>
                         </label>
-                        <div class="zone-status <?php echo $zone['status'] == 'on' ? 'on' : 'off'; ?>" style="margin-top: 10px;">
-                            <i class="fas fa-<?php echo $zone['status'] == 'on' ? 'power-off' : 'power-off'; ?>"></i>
+                        <div class="zone-status <?php echo $zone['status'] == 'on' ? 'on' : 'off'; ?>" style="margin-top: 10px; font-size: 1.1em;">
+                            <i class="fas fa-power-off"></i>
                             <span><?php echo $zone['status'] == 'on' ? 'Ligado' : 'Desligado'; ?></span>
                         </div>
                     </div>
                 </div>
-                <div class="light-actions">
-                        <button class="btn-action btn-remove" onclick="removeZone(<?php echo $zone['id']; ?>, this)">
-                            <i class="fas fa-trash"></i> Remover
-                        </button>
-                    </div>
+                
+                <div class="temp-actions" style="margin-top: auto; padding-top: 15px; border-top: 1px solid #eee; text-align: center;">
+                    <button class="btn-remove" onclick="removeZone(<?php echo $zone['id']; ?>, this)" 
+                            style="background: #fff;
+                                   color: #e74c3c;
+                                   border: 1px solid #e74c3c;
+                                   padding: 8px 20px;
+                                   border-radius: 25px;
+                                   cursor: pointer;
+                                   display: inline-flex;
+                                   align-items: center;
+                                   justify-content: center;
+                                   gap: 8px;
+                                   font-size: 0.9em;
+                                   font-weight: 500;
+                                   transition: all 0.3s ease;
+                                   min-width: 120px;
+                                   box-shadow: 0 2px 5px rgba(231, 76, 60, 0.1);">
+                        <i class="fas fa-trash"></i>
+                        <span>Remover</span>
+                    </button>
                 </div>
             </div>
             <?php endforeach; ?>
