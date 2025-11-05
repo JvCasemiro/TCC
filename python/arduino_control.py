@@ -27,10 +27,10 @@ class ArduinoController:
         self.arduino_port = None
         self.serial_connection = None
         self.db_config = {
-            'host': 'localhost',
-            'user': 'root',
-            'password': '',
-            'database': 'tcc',
+            'host': 'dbonly.lisianthus.com.br',
+            'user': 'lisianth_domx',
+            'password': 'domx@Mirelle',
+            'database': 'lisianth_domx',
             'charset': 'utf8mb4',
             'cursorclass': pymysql.cursors.DictCursor
         }
