@@ -758,7 +758,7 @@ try {
                 ?>
             </div>
             <div class="camera-controls">
-                <button class="control-btn" id="btnIniciar" onclick="iniciarDetecao()">
+                <button class="control-btn" id="btnIniciar">
                     <i class="fas fa-play"></i> Iniciar Detecção
                 </button>
                 <button class="control-btn stop" id="btnParar" disabled>
