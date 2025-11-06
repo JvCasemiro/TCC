@@ -5,6 +5,11 @@ const int NUM_LEDS = 12;
 const int FIRST_LED_PIN = 2;
 bool ledStatus[NUM_LEDS];
 
+// Controle de temperatura (ar-condicionado)
+const int NUM_TEMPS = 4;
+const int FIRST_TEMP_PIN = 14;  // Pinos 14, 15, 16, 17
+bool tempStatus[NUM_TEMPS];
+
 // Pino do motor DC (portão)
 const int MOTOR_CONTROL_PIN = 13;  // Pino único para controle do portão
 
@@ -27,6 +32,13 @@ void setup() {
     ledStatus[i] = false;
   }
   
+  // Configurar pinos de temperatura (ar-condicionado)
+  for (int i = 0; i < NUM_TEMPS; i++) {
+    pinMode(FIRST_TEMP_PIN + i, OUTPUT);
+    digitalWrite(FIRST_TEMP_PIN + i, LOW);
+    tempStatus[i] = false;
+  }
+  
   // Configurar pino do motor
   pinMode(MOTOR_CONTROL_PIN, OUTPUT);
   digitalWrite(MOTOR_CONTROL_PIN, LOW);
@@ -34,9 +46,10 @@ void setup() {
   // Inicializar sensor DHT11
   dht.begin();
   
-  Serial.println("Sistema de Controle de LEDs, Portao e Sensor DHT11 Iniciado");
+  Serial.println("Sistema de Controle de LEDs, Temperatura, Portao e Sensor DHT11 Iniciado");
   Serial.println("Comandos aceitos:");
   Serial.println("- LEDX:ON ou LEDX:OFF (onde X é o número do LED 1-12)");
+  Serial.println("- TEMPX:ON ou TEMPX:OFF (onde X é o número da temperatura 1-4)");
   Serial.println("- GATE:OPEN ou GATE:CLOSE");
   Serial.println("- Leitura automática de temperatura e umidade a cada 2s");
 }
@@ -69,6 +82,31 @@ void loop() {
         }
       } else {
         Serial.println("ERRO: Número do LED inválido. Use um valor entre 1 e 12.");
+      }
+    }
+    else if (command.startsWith("TEMP") && command.indexOf(':') != -1) {
+      int tempNumber = command.substring(4, command.indexOf(':')).toInt();
+      String state = command.substring(command.indexOf(':') + 1);
+      
+      if (tempNumber >= 1 && tempNumber <= NUM_TEMPS) {
+        int pin = FIRST_TEMP_PIN + (tempNumber - 1);
+        
+        if (state == "ON") {
+          digitalWrite(pin, HIGH);
+          tempStatus[tempNumber-1] = true;
+          Serial.print("TEMPERATURA");
+          Serial.print(tempNumber);
+          Serial.println(": LIGADA");
+        } 
+        else if (state == "OFF") {
+          digitalWrite(pin, LOW);
+          tempStatus[tempNumber-1] = false;
+          Serial.print("TEMPERATURA");
+          Serial.print(tempNumber);
+          Serial.println(": DESLIGADA");
+        }
+      } else {
+        Serial.println("ERRO: Número da temperatura inválido. Use um valor entre 1 e 4.");
       }
     }
     else if (command.startsWith("GATE:")) {
