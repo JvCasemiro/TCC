@@ -71,10 +71,21 @@ try {
         if (!$device) {
             throw new Exception('Termostato não encontrado no banco de dados');
         }
+
+        // Determina o índice (1..N) do termostato com base na ordenação por ID
+        $idxStmt = $conn->query("SELECT ID_Temperatura FROM Temperaturas ORDER BY ID_Temperatura");
+        $ids = $idxStmt->fetchAll(PDO::FETCH_COLUMN);
+        $position = array_search($temperatureId, array_map('intval', $ids), true);
+        if ($position === false) {
+            throw new Exception('Falha ao calcular índice do termostato');
+        }
+        // Índice 1-based para o Arduino
+        $tempIndex = $position + 1;
     }
     
+    // Tenta iniciar o daemon; se falhar, continua e apenas registra log.
     if (!ensureDaemonRunning()) {
-        throw new Exception('Não foi possível iniciar o daemon do Arduino automaticamente. Execute start_arduino_daemon.bat manualmente.');
+        error_log('Aviso: Não foi possível iniciar o daemon do Arduino automaticamente. Continuando para enfileirar o comando.');
     }
     
     $queueData = [];
@@ -92,6 +103,7 @@ try {
     } else {
         $queueData[] = [
             'temperature_id' => $temperatureId,
+            'temp_index' => isset($tempIndex) ? $tempIndex : $temperatureId,
             'status' => $status,
             'timestamp' => time(),
             'type' => 'temperature'

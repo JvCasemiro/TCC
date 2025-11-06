@@ -97,6 +97,8 @@ try {
     $curlError = curl_error($ch);
     curl_close($ch);
     
+    // Mantém o mesmo comportamento tolerante de update_light.php:
+    // registra erro mas não quebra o fluxo do frontend.
     if ($httpCode !== 200 || $curlError) {
         error_log("Erro ao controlar o Arduino: HTTP $httpCode - $curlError - $result");
     }

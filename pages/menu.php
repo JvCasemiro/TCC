@@ -8,6 +8,30 @@ if (!isset($_SESSION['user_id'])) {
 $username = $_SESSION['username'];
 
 require_once __DIR__ . '/../includes/executar_bats.php';
+require_once __DIR__ . '/../includes/ensure_daemon_running.php';
+
+// Inicia o daemon do Arduino automaticamente ao carregar a página
+$daemonStatus = false;
+try {
+    // Tenta iniciar o daemon com um tempo limite maior
+    $maxAttempts = 3;
+    $attempt = 0;
+    
+    while ($attempt < $maxAttempts && !$daemonStatus) {
+        $daemonStatus = @ensureDaemonRunning();
+        if (!$daemonStatus) {
+            $attempt++;
+            // Espera um pouco antes de tentar novamente
+            usleep(500000); // 500ms
+        }
+    }
+    
+    if (!$daemonStatus) {
+        error_log("Falha ao iniciar o daemon após $maxAttempts tentativas");
+    }
+} catch (Exception $e) {
+    error_log("Erro ao iniciar daemon do Arduino: " . $e->getMessage());
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -437,6 +461,98 @@ require_once __DIR__ . '/../includes/executar_bats.php';
     </div>
 
     <script>
+        // Verificar o status do daemon ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar o status do daemon
+            checkDaemonStatus();
+            
+            // Verificar a cada 30 segundos
+            setInterval(checkDaemonStatus, 30000);
+        });
+        
+        // Função para verificar o status do daemon
+        function checkDaemonStatus() {
+            fetch('../includes/ensure_daemon_running.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        showNotification('Aviso: O daemon do Arduino não está em execução. Algumas funcionalidades podem não estar disponíveis.', 'warning');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao verificar o status do daemon:', error);
+                    showNotification('Erro ao verificar o status do daemon do Arduino.', 'error');
+                });
+        }
+        
+        // Função para exibir notificações
+        function showNotification(message, type = 'info') {
+            // Verificar se já existe uma notificação
+            let notification = document.getElementById('daemon-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'daemon-notification';
+                notification.style.position = 'fixed';
+                notification.style.bottom = '20px';
+                notification.style.right = '20px';
+                notification.style.padding = '15px 20px';
+                notification.style.borderRadius = '5px';
+                notification.style.color = 'white';
+                notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                notification.style.zIndex = '1000';
+                notification.style.maxWidth = '400px';
+                notification.style.display = 'flex';
+                notification.style.alignItems = 'center';
+                notification.style.justifyContent = 'space-between';
+                document.body.appendChild(notification);
+                
+                // Adicionar botão de fechar
+                const closeBtn = document.createElement('button');
+                closeBtn.innerHTML = '&times;';
+                closeBtn.style.background = 'none';
+                closeBtn.style.border = 'none';
+                closeBtn.style.color = 'white';
+                closeBtn.style.fontSize = '20px';
+                closeBtn.style.cursor = 'pointer';
+                closeBtn.style.marginLeft = '15px';
+                closeBtn.onclick = function() {
+                    notification.style.display = 'none';
+                };
+                notification.appendChild(closeBtn);
+            }
+            
+            // Definir cor de fundo com base no tipo
+            switch(type) {
+                case 'success':
+                    notification.style.backgroundColor = '#28a745';
+                    break;
+                case 'warning':
+                    notification.style.backgroundColor = '#ffc107';
+                    break;
+                case 'error':
+                    notification.style.backgroundColor = '#dc3545';
+                    break;
+                default:
+                    notification.style.backgroundColor = '#17a2b8';
+            }
+            
+            // Definir mensagem
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            notification.insertBefore(messageSpan, notification.firstChild);
+            
+            // Mostrar notificação
+            notification.style.display = 'flex';
+            
+            // Remover a mensagem após 5 segundos
+            setTimeout(() => {
+                notification.style.display = 'none';
+                if (messageSpan.parentNode === notification) {
+                    notification.removeChild(messageSpan);
+                }
+            }, 10000);
+        }
+        
         function showTab(tabName) {
             const tabContainer = document.getElementById('tabContainer');
             if (tabName === 'usuarios') {
