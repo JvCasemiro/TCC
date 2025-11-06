@@ -1,2 +1,10 @@
 [2025-11-07 00:42:04] [PHP] Daemon já está em execução (PID: 6156)
 [2025-11-07 00:42:05] [PHP] Daemon já está em execução (PID: 6156)
+[2025-11-07 00:49:02] [PHP] Erro: Script de inicialização não encontrado: C:\xampp\htdocs\TCC\includes/../start_arduino_daemon_auto.vbs
+[2025-11-07 00:49:08] [PHP] Erro: Script de inicialização não encontrado: C:\xampp\htdocs\TCC\includes/../start_arduino_daemon_auto.vbs
+[2025-11-07 00:49:10] [PHP] Erro: Script de inicialização não encontrado: C:\xampp\htdocs\TCC\includes/../start_arduino_daemon_auto.vbs
+[2025-11-07 00:49:13] [PHP] Erro: Script de inicialização não encontrado: C:\xampp\htdocs\TCC\includes/../start_arduino_daemon_auto.vbs
+[2025-11-07 00:49:38] [PHP] Daemon já está em execução (PID: 9868)
+[2025-11-07 00:49:47] [PHP] Daemon já está em execução (PID: 9868)
+[2025-11-07 00:49:48] [PHP] Daemon já está em execução (PID: 9868)
+[2025-11-07 00:49:56] [PHP] Daemon já está em execução (PID: 9868)
