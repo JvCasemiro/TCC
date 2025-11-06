@@ -13,6 +13,7 @@ class ArduinoDaemon:
         self.base_dir = Path(__file__).parent.parent
         self.queue_file = self.base_dir / 'arduino_queue.json'
         self.status_file = self.base_dir / 'light_status.txt'
+        self.temperature_status_file = self.base_dir / 'temperature_status.txt'
         self.pid_file = self.base_dir / 'arduino_daemon.pid'
         self.temperature_file = self.base_dir / 'temperature_data.json'
         self.running = True
@@ -151,6 +152,9 @@ class ArduinoDaemon:
             if command.get('type') == 'gate':
                 return self.process_gate_command(command)
             
+            if command.get('type') == 'temperature':
+                return self.process_temperature_command(command)
+            
             light_id = command.get('light_id')
             status = command.get('status')
             
@@ -220,6 +224,46 @@ class ArduinoDaemon:
             
         except Exception as e:
             print(f"Erro ao processar comando de portão: {str(e)}")
+            return False
+    
+    def process_temperature_command(self, command):
+        """Processa comando de temperatura"""
+        try:
+            temperature_id = command.get('temperature_id')
+            status = command.get('status')
+            
+            if not temperature_id or not status:
+                print(f"Comando de temperatura inválido: {command}")
+                return False
+            
+            # Lê o arquivo de status atual ou cria um vazio
+            status_str = self.temperature_status_file.read_text().strip() if self.temperature_status_file.exists() else ''
+            status_list = list(status_str)
+            
+            # Garante que o array tenha tamanho suficiente
+            # Nota: O índice é gerenciado pelo PHP, aqui só sincronizamos
+            while len(status_list) < 4:  # Máximo de 4 temperaturas
+                status_list.append('0')
+            
+            # O arquivo já foi atualizado pelo PHP com o índice correto
+            # Apenas envia o comando ao Arduino
+            arduino_command = f"TEMP{temperature_id}:{'ON' if status == 'ON' else 'OFF'}\n"
+            print(f"Enviando comando de temperatura: {arduino_command.strip()}")
+            
+            self.serial_connection.reset_input_buffer()
+            self.serial_connection.write(arduino_command.encode())
+            self.serial_connection.flush()
+            
+            time.sleep(0.3)
+            
+            if self.serial_connection.in_waiting > 0:
+                response = self.serial_connection.readline().decode().strip()
+                print(f"Resposta do Arduino: {response}")
+            
+            return True
+            
+        except Exception as e:
+            print(f"Erro ao processar comando de temperatura: {str(e)}")
             return False
     
     def process_sensor_data(self, data):

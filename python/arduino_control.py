@@ -13,8 +13,11 @@ class ArduinoController:
     _instance = None
     _db_connection = None
     _light_cache = {}
+    _temperature_cache = {}
     _last_light_status = None
     _last_light_status_time = 0
+    _last_temperature_status = None
+    _last_temperature_status_time = 0
     CACHE_TTL = 5
 
     def __new__(cls):
@@ -35,6 +38,7 @@ class ArduinoController:
             'cursorclass': pymysql.cursors.DictCursor
         }
         self.light_status_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'light_status.txt')
+        self.temperature_status_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'temperature_status.txt')
         atexit.register(self.cleanup)
         
     def get_db_connection(self):
@@ -206,6 +210,69 @@ class ArduinoController:
         except (serial.SerialException, OSError, IOError):
             self.serial_connection = None
             return False
+    
+    @lru_cache(maxsize=32)
+    def get_temperature_id_by_name(self, temperature_name):
+        try:
+            with self.get_db_connection().cursor() as cursor:
+                cursor.execute(
+                    "SELECT ID_Temperatura as id FROM Temperaturas WHERE Nome = %s",
+                    (temperature_name,)
+                )
+                result = cursor.fetchone()
+                return result['id'] if result else None
+        except Exception:
+            return None
+    
+    def read_temperature_status(self):
+        current_time = time.time()
+        if (self._last_temperature_status is not None and 
+            current_time - self._last_temperature_status_time < self.CACHE_TTL):
+            return self._last_temperature_status
+            
+        try:
+            with open(self.temperature_status_file, 'r') as f:
+                self._last_temperature_status = f.read().strip()
+                self._last_temperature_status_time = current_time
+                return self._last_temperature_status
+        except (IOError, OSError):
+            return None
+    
+    def control_temperature(self, temperature_name):
+        try:
+            temperature_id = self.get_temperature_id_by_name(temperature_name)
+            if not temperature_id:
+                print(f"Erro: Termostato '{temperature_name}' não encontrado")
+                return False
+                
+            status_str = self.read_temperature_status()
+            if status_str is None:
+                print("Erro: Não foi possível ler o status dos termostatos")
+                return False
+                
+            if not self.connect_to_arduino():
+                print("Erro: Não foi possível conectar ao Arduino")
+                return False
+            
+            self.serial_connection.reset_input_buffer()
+            
+            temperature_status = status_str[temperature_id-1] if (temperature_id-1) < len(status_str) else '0'
+            command = f"TEMP{temperature_id}:{'ON' if temperature_status == '1' else 'OFF'}\n"
+            print(f"Enviando comando: {command.strip()}")
+            self.serial_connection.write(command.encode())
+            self.serial_connection.flush()
+            
+            time.sleep(0.5)
+            
+            if self.serial_connection.in_waiting > 0:
+                response = self.serial_connection.readline().decode().strip()
+                print(f"Resposta do Arduino: {response}")
+            
+            return True
+            
+        except (serial.SerialException, OSError, IOError):
+            self.serial_connection = None
+            return False
 
 def update_light_status(controller, light_name, status):
     try:
@@ -223,6 +290,27 @@ def update_light_status(controller, light_name, status):
             f.truncate()
             
         controller._last_light_status = None
+        return True
+        
+    except (IOError, OSError):
+        return False
+
+def update_temperature_status(controller, temperature_name, status):
+    try:
+        temperature_id = controller.get_temperature_id_by_name(temperature_name)
+        if not temperature_id:
+            return False
+            
+        with open(controller.temperature_status_file, 'r+') as f:
+            status_list = list(f.read().strip())
+            if len(status_list) < temperature_id:
+                status_list.extend(['0'] * (temperature_id - len(status_list)))
+            status_list[temperature_id-1] = '1' if status == 'ON' else '0'
+            f.seek(0)
+            f.write(''.join(status_list))
+            f.truncate()
+            
+        controller._last_temperature_status = None
         return True
         
     except (IOError, OSError):

@@ -8,17 +8,17 @@ if (ob_get_level() == 0) {
 }
 
 //DESENVOLVIMENTO:
-// $db_host = 'localhost';
-// $db_name = 'tcc';
-// $db_user = 'root';
-// $db_password = '';
+$db_host = 'localhost';
+$db_name = 'tcc';
+$db_user = 'root';
+$db_password = '';
 
 //PRODUÇÃO:
 
-$db_host = 'dbonly.lisianthus.com.br';
-$db_name = 'lisianth_domx';
-$db_user = 'lisianth_domx';
-$db_password = 'domx@Mirelle';
+// $db_host = 'dbonly.lisianthus.com.br';
+// $db_name = 'lisianth_domx';
+// $db_user = 'lisianth_domx';
+// $db_password = 'domx@Mirelle';
 
 try {
     $conn = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_password);

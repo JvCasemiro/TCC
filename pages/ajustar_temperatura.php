@@ -739,23 +739,78 @@ try {
             const card = document.querySelector(`[data-zone-id="${zoneId}"]`);
             const statusElement = card.querySelector('.zone-status');
             const statusText = statusElement.querySelector('span');
-            const tempSlider = document.getElementById(`temp-slider-${zoneId}`);
+            const checkbox = card.querySelector('input[type="checkbox"]');
             
             const isOn = card.classList.contains('on');
+            const newStatus = isOn ? 'OFF' : 'ON';
             
-            if (isOn) {
-                card.className = 'temp-card off';
-                statusElement.className = 'zone-status off';
-                statusText.textContent = 'Desligado';
-                tempSlider.disabled = true;
-            } else {
-                card.className = 'temp-card on';
-                statusElement.className = 'zone-status on';
-                statusText.textContent = 'Ligado';
-                tempSlider.disabled = false;
+            // Desabilita o checkbox temporariamente
+            if (checkbox) {
+                checkbox.disabled = true;
             }
             
-            showMessage(`Ar condicionado ${isOn ? 'desligado' : 'ligado'} com sucesso!`, 'success');
+            fetch('../includes/update_temperature.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    temperature_id: zoneId,
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateTemperatureState(zoneId, newStatus === 'ON');
+                    showMessage(`Termostato ${newStatus === 'ON' ? 'ligado' : 'desligado'} com sucesso!`, 'success');
+                } else {
+                    showMessage(data.message || 'Erro ao atualizar temperatura', 'error');
+                    // Reverte o checkbox se houver erro
+                    if (checkbox) {
+                        checkbox.checked = isOn;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showMessage('Erro ao atualizar temperatura', 'error');
+                // Reverte o checkbox se houver erro
+                if (checkbox) {
+                    checkbox.checked = isOn;
+                }
+            })
+            .finally(() => {
+                // Reabilita o checkbox
+                if (checkbox) {
+                    checkbox.disabled = false;
+                }
+            });
+        }
+        
+        function updateTemperatureState(zoneId, isOn) {
+            const card = document.querySelector(`[data-zone-id="${zoneId}"]`);
+            if (!card) return;
+            
+            const statusElement = card.querySelector('.zone-status');
+            const statusText = statusElement ? statusElement.querySelector('span') : null;
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            
+            card.classList.toggle('on', isOn);
+            card.classList.toggle('off', !isOn);
+            
+            if (statusElement) {
+                statusElement.classList.toggle('on', isOn);
+                statusElement.classList.toggle('off', !isOn);
+            }
+            
+            if (statusText) {
+                statusText.textContent = isOn ? 'Ligado' : 'Desligado';
+            }
+            
+            if (checkbox) {
+                checkbox.checked = isOn;
+            }
         }
         
         function changeTargetTemp(zoneId, temp) {
@@ -803,6 +858,29 @@ try {
             }
         }
         
+        function loadTemperaturesStatus() {
+            fetch('../includes/get_temperature_status.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar status das temperaturas');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.temperaturas) {
+                        // Usa os dados das temperaturas do banco de dados
+                        data.temperaturas.forEach(temp => {
+                            const tempId = temp.ID_Temperatura;
+                            const isOn = temp.Status === 'ON';
+                            updateTemperatureState(tempId, isOn);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar status das temperaturas:', error);
+                });
+        }
+        
         function showMessage(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
@@ -840,21 +918,10 @@ try {
             }, 3000);
         }
         
-        setInterval(() => {
-            const zones = document.querySelectorAll('[data-zone-id]');
-            zones.forEach(zone => {
-                const zoneId = zone.getAttribute('data-zone-id');
-                const currentTempElement = document.getElementById(`current-temp-${zoneId}`);
-                const isOn = !zone.classList.contains('off');
-                
-                if (isOn) {
-                    const currentTemp = parseFloat(currentTempElement.textContent);
-                    const variation = (Math.random() - 0.5) * 0.2;
-                    const newTemp = currentTemp + variation;
-                    currentTempElement.textContent = newTemp.toFixed(1) + '°C';
-                }
-            });
-        }, 5000);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTemperaturesStatus();
+            setInterval(loadTemperaturesStatus, 5000);
+        });
         async function removeZone(zoneId, button) {
             const modal = document.getElementById('confirmDeleteModal');
             const messageElement = document.querySelector('#confirmDeleteModal .modal-message');
