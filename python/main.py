@@ -4,6 +4,7 @@ import pyodbc
 import numpy as np
 import re
 import os
+import json
 from datetime import datetime
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # --> Não apagar esse comentário
@@ -129,8 +130,47 @@ def processar_placa(img_roi, frame):
         cv2.imwrite(output_path, img_roi)
         print(f"Imagem da placa salva em: {output_path}")
         
+        # Aciona o portão automaticamente
+        acionar_portao()
+        
         return placa_detectada
     return None
+
+def acionar_portao():
+    """Adiciona comando para abrir o portão na fila do Arduino"""
+    try:
+        # Caminho do arquivo de fila do Arduino
+        queue_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'arduino_queue.json')
+        
+        # Lê a fila atual
+        queue = []
+        if os.path.exists(queue_file):
+            try:
+                with open(queue_file, 'r') as f:
+                    content = f.read()
+                    if content.strip():
+                        queue = json.loads(content)
+            except json.JSONDecodeError:
+                print("Erro ao ler arquivo de fila, criando nova fila")
+                queue = []
+        
+        # Adiciona o comando de abrir portão
+        queue.append({
+            'type': 'gate',
+            'action': 'OPEN',
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        })
+        
+        # Salva a fila atualizada
+        with open(queue_file, 'w') as f:
+            json.dump(queue, f, indent=2)
+        
+        print("Comando para abrir portão adicionado à fila do Arduino")
+        return True
+        
+    except Exception as e:
+        print(f"Erro ao acionar portão: {str(e)}")
+        return False
 
 def verificar_parada():
     """Verifica se o arquivo de parada foi criado"""
