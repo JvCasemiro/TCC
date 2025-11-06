@@ -1,7 +1,7 @@
 @echo off
 title Arduino Daemon - Controlador de LEDs
 echo ========================================
-echo Arduino Daemon - Iniciando...
+echo Controle do Arduino Daemon
 echo ========================================
 echo.
 
@@ -12,23 +12,16 @@ if exist "arduino_daemon.pid" (
     echo [AVISO] Daemon pode estar rodando!
     echo Arquivo PID encontrado: arduino_daemon.pid
     echo.
-    echo Deseja parar o daemon anterior primeiro? (S/N)
+    echo Deseja parar o daemon? (S/N)
     choice /C SN /N
-    if errorlevel 2 goto :start
+    if errorlevel 2 goto :end
     if errorlevel 1 call stop_arduino_daemon.bat
+) else (
+    echo Nenhuma instância do daemon em execução encontrada.
 )
 
-:start
-echo Iniciando daemon Python...
+:end
 echo.
-python python\arduino_daemon.py
-
-if errorlevel 1 (
-    echo.
-    echo [ERRO] Falha ao iniciar daemon!
-    echo.
-    pause
-    exit /b 1
-)
-
+echo Use o comando: python python\arduino_daemon.py para iniciar manualmente.
+echo.
 pause

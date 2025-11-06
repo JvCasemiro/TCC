@@ -7,31 +7,8 @@ if (!isset($_SESSION['user_id'])) {
 
 $username = $_SESSION['username'];
 
-require_once __DIR__ . '/../includes/executar_bats.php';
-require_once __DIR__ . '/../includes/ensure_daemon_running.php';
-
-// Inicia o daemon do Arduino automaticamente ao carregar a página
+// O daemon não será mais iniciado automaticamente
 $daemonStatus = false;
-try {
-    // Tenta iniciar o daemon com um tempo limite maior
-    $maxAttempts = 3;
-    $attempt = 0;
-    
-    while ($attempt < $maxAttempts && !$daemonStatus) {
-        $daemonStatus = @ensureDaemonRunning();
-        if (!$daemonStatus) {
-            $attempt++;
-            // Espera um pouco antes de tentar novamente
-            usleep(500000); // 500ms
-        }
-    }
-    
-    if (!$daemonStatus) {
-        error_log("Falha ao iniciar o daemon após $maxAttempts tentativas");
-    }
-} catch (Exception $e) {
-    error_log("Erro ao iniciar daemon do Arduino: " . $e->getMessage());
-}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -460,31 +437,7 @@ try {
         </div>
     </div>
 
-    <script>
-        // Verificar o status do daemon ao carregar a página
-        document.addEventListener('DOMContentLoaded', function() {
-            // Verificar o status do daemon
-            checkDaemonStatus();
-            
-            // Verificar a cada 30 segundos
-            setInterval(checkDaemonStatus, 30000);
-        });
-        
-        // Função para verificar o status do daemon
-        function checkDaemonStatus() {
-            fetch('../includes/ensure_daemon_running.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        showNotification('Aviso: O daemon do Arduino não está em execução. Algumas funcionalidades podem não estar disponíveis.', 'warning');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao verificar o status do daemon:', error);
-                    showNotification('Erro ao verificar o status do daemon do Arduino.', 'error');
-                });
-        }
-        
+    <script>        
         // Função para exibir notificações
         function showNotification(message, type = 'info') {
             // Verificar se já existe uma notificação
