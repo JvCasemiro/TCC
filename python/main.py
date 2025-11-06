@@ -23,6 +23,15 @@ def conectar_banco():
             password='domx@Mirelle',
             charset='utf8mb4'
         )
+
+        # DESENVOLVIMENTO
+        # conn = mysql.connector.connect(
+        #     host='localhost',
+        #     database='tcc',
+        #     user='root',
+        #     password='',
+        #     charset='utf8mb4'
+        # )
         return conn
     except mysql.connector.Error as err:
         print(f"Erro ao conectar ao banco de dados: {err}")

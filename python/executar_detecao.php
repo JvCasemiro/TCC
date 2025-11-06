@@ -22,7 +22,7 @@ try {
 
     // $pythonPath = 'C:\\Users\\eucli\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'; //Não apagar esse comentário
     
-    $pythonPath = 'C:\Windows\py.exe'; // Faculdade --> Não apagar esse comentário
+    // $pythonPath = 'C:\Windows\py.exe'; // Faculdade --> Não apagar esse comentário
 
     $pythonPath = '/home3/lisianth/virtualenv/domx.lisianthus.com.br/python/3.9/bin'; // Servidor --> Não apagar esse comentário
 

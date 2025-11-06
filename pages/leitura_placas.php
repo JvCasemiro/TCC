@@ -1099,6 +1099,15 @@ try {
         });
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../assets/js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnIniciar = document.getElementById('btnIniciar');
+            if (btnIniciar) {
+                btnIniciar.addEventListener('click', iniciarDetecao);
+            }
+        });
+    </script>
     <script>
     function atualizarConteudo() {
         $.get('leitura_placas.php', function(data) {
