@@ -1121,6 +1121,5 @@ try {
 
     setInterval(atualizarConteudo, 5000);
     </script>
-    <script src="../assets/js/script.js"></script>
 </body>
 </html>
