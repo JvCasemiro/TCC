@@ -1,13 +1,15 @@
 #include <Arduino.h>
 #include <DHT.h>
 
-const int NUM_LEDS = 11;
-const int FIRST_LED_PIN = 2;
+const int NUM_LEDS = 10;  // Ajustado para 10 LEDs conforme a sequência fornecida
+// Array com os pinos dos LEDs na sequência: 2, 13, 4, 5, 6, 7, 8, 9, 10, 11
+const int LED_PINS[10] = {2, 13, 4, 5, 6, 7, 8, 9, 10, 11};
 bool ledStatus[NUM_LEDS];
 
 // Controle de temperatura (ar-condicionado)
 const int NUM_TEMPS = 4;
-const int FIRST_TEMP_PIN = 14;  // Pinos 14, 15, 16, 17
+// Array com os pinos de temperatura na sequência: 14, 15, 17, 18
+const int TEMP_PINS[4] = {14, 15, 16, 18};
 bool tempStatus[NUM_TEMPS];
 
 // Pino do motor DC (portão)
@@ -29,15 +31,15 @@ void setup() {
   
   // Configurar pinos dos LEDs
   for (int i = 0; i < NUM_LEDS; i++) {
-    pinMode(FIRST_LED_PIN + i, OUTPUT);
-    digitalWrite(FIRST_LED_PIN + i, LOW);
+    pinMode(LED_PINS[i], OUTPUT);
+    digitalWrite(LED_PINS[i], LOW);
     ledStatus[i] = false;
   }
   
   // Configurar pinos de temperatura (ar-condicionado)
   for (int i = 0; i < NUM_TEMPS; i++) {
-    pinMode(FIRST_TEMP_PIN + i, OUTPUT);
-    digitalWrite(FIRST_TEMP_PIN + i, LOW);
+    pinMode(TEMP_PINS[i], OUTPUT);
+    digitalWrite(TEMP_PINS[i], LOW);
     tempStatus[i] = false;
   }
   
@@ -66,7 +68,8 @@ void loop() {
       String state = command.substring(command.indexOf(':') + 1);
       
       if (ledNumber >= 1 && ledNumber <= NUM_LEDS) {
-        int pin = FIRST_LED_PIN + (ledNumber - 1);
+        // Usa o pino correspondente da sequência
+        int pin = LED_PINS[ledNumber - 1];
         
         if (state == "ON") {
           digitalWrite(pin, HIGH);
@@ -91,7 +94,7 @@ void loop() {
       String state = command.substring(command.indexOf(':') + 1);
       
       if (tempNumber >= 1 && tempNumber <= NUM_TEMPS) {
-        int pin = FIRST_TEMP_PIN + (tempNumber - 1);
+        int pin = TEMP_PINS[tempNumber - 1];
         
         if (state == "ON") {
           digitalWrite(pin, HIGH);
