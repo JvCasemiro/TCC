@@ -9,30 +9,30 @@ from datetime import datetime
 
 # pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe" # --> Não apagar esse comentário
 
-# pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Alunos.DESKTOP-8SLHJJ7\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # Não apagar esse comentário
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Alunos.DESKTOP-8SLHJJ7\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # Não apagar esse comentário
 
-pytesseract.pytesseract.tesseract_cmd = r"/home3/lisianth/virtualenv/domx.lisianthus.com.br/python/3.9/lib/python3.9/site-packages/tesseract"
+# pytesseract.pytesseract.tesseract_cmd = r"/home3/lisianth/virtualenv/domx.lisianthus.com.br/python/3.9/lib/python3.9/site-packages/tesseract"
 # --> Caminho do servidor
 
 def conectar_banco():
     try:
         import mysql.connector
-        conn = mysql.connector.connect(
-            host='dbonly.lisianthus.com.br',
-            database='lisianth_domx',
-            user='lisianth_domx',
-            password='domx@Mirelle',
-            charset='utf8mb4'
-        )
-
-        # DESENVOLVIMENTO
         # conn = mysql.connector.connect(
-        #     host='localhost',
-        #     database='tcc',
-        #     user='root',
-        #     password='',
+        #     host='dbonly.lisianthus.com.br',
+        #     database='lisianth_domx',
+        #     user='lisianth_domx',
+        #     password='domx@Mirelle',
         #     charset='utf8mb4'
         # )
+
+        # DESENVOLVIMENTO
+        conn = mysql.connector.connect(
+            host='localhost',
+            database='tcc',
+            user='root',
+            password='',
+            charset='utf8mb4'
+        )
         return conn
     except mysql.connector.Error as err:
         print(f"Erro ao conectar ao banco de dados: {err}")

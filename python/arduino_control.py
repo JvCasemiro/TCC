@@ -29,14 +29,26 @@ class ArduinoController:
     def _init_controller(self):
         self.arduino_port = None
         self.serial_connection = None
+
+        #DESENVOLVIMENTO
         self.db_config = {
-            'host': 'dbonly.lisianthus.com.br',
-            'user': 'lisianth_domx',
-            'password': 'domx@Mirelle',
-            'database': 'lisianth_domx',
+            'host': 'localhost',
+            'user': 'root',
+            'password': '',
+            'database': 'tcc',
             'charset': 'utf8mb4',
             'cursorclass': pymysql.cursors.DictCursor
         }
+
+        #PRODUÇÃO
+        # self.db_config = {
+        #     'host': 'dbonly.lisianthus.com.br',
+        #     'user': 'lisianth_domx',
+        #     'password': 'domx@Mirelle',
+        #     'database': 'lisianth_domx',
+        #     'charset': 'utf8mb4',
+        #     'cursorclass': pymysql.cursors.DictCursor
+        # }
         self.light_status_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'light_status.txt')
         self.temperature_status_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'temperature_status.txt')
         atexit.register(self.cleanup)

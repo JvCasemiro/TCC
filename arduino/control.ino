@@ -129,7 +129,7 @@ void loop() {
         // Fechar portão - mantém pino A0 HIGH constante por 5 segundos
         Serial.println("PORTAO: FECHANDO");
         digitalWrite(MOTOR_CONTROL_PIN, HIGH);
-        delay(5000);  // Motor ligado por 5 segundos
+        delay(30000);  // Motor ligado por 30 segundos
         digitalWrite(MOTOR_CONTROL_PIN, LOW);
         Serial.println("PORTAO: FECHADO");
       }
