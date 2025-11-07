@@ -13,10 +13,12 @@ bool tempStatus[NUM_TEMPS];
 // Pino do motor DC (portão)
 const int MOTOR_CONTROL_PIN = 13;  // Pino único para controle do portão
 
-// Configuração do sensor DHT11
-#define DHTPIN A1        // Pino de dados do DHT11 conectado ao A1
+// Configuração dos sensores DHT11
+#define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
+#define DHTPIN2 A2       // Segundo sensor DHT11 conectado ao A2
 #define DHTTYPE DHT11    // Tipo do sensor DHT11
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht1(DHTPIN1, DHTTYPE);
+DHT dht2(DHTPIN2, DHTTYPE);
 
 // Variáveis para controle de tempo de leitura
 unsigned long lastSensorRead = 0;
@@ -43,8 +45,9 @@ void setup() {
   pinMode(MOTOR_CONTROL_PIN, OUTPUT);
   digitalWrite(MOTOR_CONTROL_PIN, LOW);
   
-  // Inicializar sensor DHT11
-  dht.begin();
+  // Inicializar sensores DHT11
+  dht1.begin();
+  dht2.begin();
   
   Serial.println("Sistema de Controle de LEDs, Temperatura, Portao e Sensor DHT11 Iniciado");
   Serial.println("Comandos aceitos:");
@@ -144,19 +147,29 @@ void loop() {
   if (currentMillis - lastSensorRead >= sensorInterval) {
     lastSensorRead = currentMillis;
     
-    // Ler temperatura e umidade
-    float humidity = dht.readHumidity();
-    float temperature = dht.readTemperature();
+    // Ler temperatura e umidade de ambos os sensores
+    float humidity1 = dht1.readHumidity();
+    float temperature1 = dht1.readTemperature();
+    float humidity2 = dht2.readHumidity();
+    float temperature2 = dht2.readTemperature();
     
-    // Verificar se a leitura foi bem-sucedida
-    if (isnan(humidity) || isnan(temperature)) {
+    // Verificar se as leituras foram bem-sucedidas
+    if (isnan(humidity1) || isnan(temperature1) || isnan(humidity2) || isnan(temperature2)) {
       Serial.println("DHT:ERROR");
     } else {
-      // Enviar dados no formato: DHT:TEMP:XX.XX:HUMIDITY:XX.XX
-      Serial.print("DHT:TEMP:");
-      Serial.print(temperature, 2);
+      // Calcular média das temperaturas
+      float avgTemp = (temperature1 + temperature2) / 2.0;
+      float avgHumidity = (humidity1 + humidity2) / 2.0;
+      
+      // Enviar dados no formato: DHT:TEMP1:XX.XX:TEMP2:XX.XX:AVGTEMP:XX.XX:HUMIDITY:XX.XX
+      Serial.print("DHT:TEMP1:");
+      Serial.print(temperature1, 2);
+      Serial.print(":TEMP2:");
+      Serial.print(temperature2, 2);
+      Serial.print(":AVGTEMP:");
+      Serial.print(avgTemp, 2);
       Serial.print(":HUMIDITY:");
-      Serial.println(humidity, 2);
+      Serial.println(avgHumidity, 2);
     }
   }
 }

@@ -113,15 +113,36 @@ try {
 $devices = [
     [
         'id' => 1,
-        'name' => 'Sensor de Temperatura',
+        'name' => 'Sensor de Temperatura 1',
         'type' => 'sensor',
         'category' => 'temperature',
         'status' => 'online',
-        'value' => '23.5°C',
-        'location' => 'Sala de Estar'
+        'value' => '--°C',
+        'location' => 'Sala de Estar',
+        'sensor_id' => 'temp1'
     ],
     [
         'id' => 2,
+        'name' => 'Sensor de Temperatura 2',
+        'type' => 'sensor',
+        'category' => 'temperature',
+        'status' => 'online',
+        'value' => '--°C',
+        'location' => 'Sala de Estar',
+        'sensor_id' => 'temp2'
+    ],
+    [
+        'id' => 3,
+        'name' => 'Temperatura Média',
+        'type' => 'sensor',
+        'category' => 'temperature',
+        'status' => 'online',
+        'value' => '--°C',
+        'location' => 'Sala de Estar',
+        'sensor_id' => 'avg_temp'
+    ],
+    [
+        'id' => 4,
         'name' => 'Lâmpadas',
         'type' => 'actuator',
         'category' => 'lighting',
@@ -130,7 +151,7 @@ $devices = [
         'location' => 'Quarto Principal'
     ],
     [
-        'id' => 3,
+        'id' => 5,
         'name' => 'Termostato - Ar Condicionado',
         'type' => 'actuator',
         'category' => 'climate',
@@ -726,14 +747,34 @@ $devices = [
                 </div>
                 
                 <?php if ($device['category'] === 'temperature'): ?>
-                <div class="sensor-data" id="sensorData">
+                <div class="sensor-data">
+                    <?php if (isset($device['sensor_id']) && $device['sensor_id'] === 'temp1'): ?>
                     <div class="sensor-reading">
                         <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
                         <div>
-                            <div class="label">Temperatura</div>
-                            <div class="value" id="tempValue">--°C</div>
+                            <div class="label">Temperatura 1</div>
+                            <div class="value" data-sensor-id="temp1">--°C</div>
                         </div>
                     </div>
+                    <?php elseif (isset($device['sensor_id']) && $device['sensor_id'] === 'temp2'): ?>
+                    <div class="sensor-reading">
+                        <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
+                        <div>
+                            <div class="label">Temperatura 2</div>
+                            <div class="value" data-sensor-id="temp2">--°C</div>
+                        </div>
+                    </div>
+                    <?php elseif (isset($device['sensor_id']) && $device['sensor_id'] === 'avg_temp'): ?>
+                    <div class="sensor-reading">
+                        <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
+                        <div>
+                            <div class="label">Temperatura Média</div>
+                            <div class="value" data-sensor-id="avg_temp">--°C</div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <?php if (isset($device['sensor_id']) && $device['sensor_id'] === 'temp1'): ?>
                     <div class="sensor-reading">
                         <i class="fas fa-tint" style="color: #4ecdc4;"></i>
                         <div>
@@ -741,6 +782,7 @@ $devices = [
                             <div class="value" id="humValue">--%</div>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
                 
@@ -1902,24 +1944,66 @@ $devices = [
                 .then(response => response.json())
                 .then(data => {
                     console.log('Dados recebidos:', data);
-                    const tempValue = document.getElementById('tempValue');
-                    const humValue = document.getElementById('humValue');
                     
-                    if (tempValue && humValue) {
-                        if (data.status === 'online') {
-                            tempValue.textContent = data.temperature.toFixed(1) + '°C';
+                    // Atualiza os valores dos sensores individuais e da média
+                    if (data.status === 'online') {
+                        // Sensor 1
+                        const temp1Element = document.querySelector('[data-sensor-id="temp1"]');
+                        if (temp1Element) {
+                            temp1Element.textContent = data.temperature1.toFixed(1) + '°C';
+                        }
+                        
+                        // Sensor 2
+                        const temp2Element = document.querySelector('[data-sensor-id="temp2"]');
+                        if (temp2Element) {
+                            temp2Element.textContent = data.temperature2.toFixed(1) + '°C';
+                        }
+                        
+                        // Média
+                        const avgTempElement = document.querySelector('[data-sensor-id="avg_temp"]');
+                        if (avgTempElement) {
+                            avgTempElement.textContent = data.temperature.toFixed(1) + '°C';
+                        }
+                        
+                        // Umidade (usando a média dos sensores)
+                        const humValue = document.getElementById('humValue');
+                        if (humValue) {
                             humValue.textContent = data.humidity.toFixed(1) + '%';
-                        } else if (data.status === 'error') {
-                            tempValue.textContent = 'Erro';
+                        }
+                    } else if (data.status === 'error') {
+                        // Em caso de erro, mostra erro em todos os sensores
+                        document.querySelectorAll('[data-sensor-id^="temp"]').forEach(el => {
+                            el.textContent = 'Erro';
+                        });
+                        
+                        const humValue = document.getElementById('humValue');
+                        if (humValue) {
                             humValue.textContent = 'Erro';
-                        } else {
-                            tempValue.textContent = '--°C';
+                        }
+                    } else {
+                        // Estado de espera
+                        document.querySelectorAll('[data-sensor-id^="temp"]').forEach(el => {
+                            el.textContent = '--°C';
+                        });
+                        
+                        const humValue = document.getElementById('humValue');
+                        if (humValue) {
                             humValue.textContent = '--%';
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Erro ao buscar dados do sensor:', error);
+                    
+                    // Em caso de erro na requisição, mostra erro em todos os sensores
+                    document.querySelectorAll('[data-sensor-id^="temp"]').forEach(el => {
+                        el.textContent = 'Erro';
+                    });
+                    
+                    const humValue = document.getElementById('humValue');
+                    if (humValue) {
+                        humValue.textContent = 'Erro';
+                    }
                 });
         }
         

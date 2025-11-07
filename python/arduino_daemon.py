@@ -440,17 +440,40 @@ class ArduinoDaemon:
             return False
                 
     def process_sensor_data(self, data):
-        """Processa dados do sensor DHT11"""
+        """Processa dados dos sensores DHT11"""
         try:
             if data.startswith('DHT:'):
                 parts = data.split(':')
                 
-                if len(parts) >= 5 and parts[1] == 'TEMP' and parts[3] == 'HUMIDITY':
+                # Novo formato: DHT:TEMP1:XX.XX:TEMP2:XX.XX:AVGTEMP:XX.XX:HUMIDITY:XX.XX
+                if (len(parts) >= 9 and parts[1] == 'TEMP1' and parts[3] == 'TEMP2' and 
+                    parts[5] == 'AVGTEMP' and parts[7] == 'HUMIDITY'):
+                    temperature1 = float(parts[2])
+                    temperature2 = float(parts[4])
+                    avg_temperature = float(parts[6])
+                    humidity = float(parts[8])
+                    
+                    sensor_data = {
+                        'temperature1': temperature1,
+                        'temperature2': temperature2,
+                        'temperature': avg_temperature,  # Mantido para compatibilidade
+                        'humidity': humidity,
+                        'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'status': 'online'
+                    }
+                    
+                    self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
+                    print(f"Temperatura 1: {temperature1}°C | Temperatura 2: {temperature2}°C | Média: {avg_temperature}°C | Umidade: {humidity}%")
+                    return True
+                # Formato antigo para compatibilidade
+                elif len(parts) >= 5 and parts[1] == 'TEMP' and parts[3] == 'HUMIDITY':
                     temperature = float(parts[2])
                     humidity = float(parts[4])
                     
                     sensor_data = {
-                        'temperature': temperature,
+                        'temperature1': temperature,
+                        'temperature2': temperature,  # Mesmo valor para manter compatibilidade
+                        'temperature': temperature,   # Mantido para compatibilidade
                         'humidity': humidity,
                         'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
                         'status': 'online'
@@ -461,13 +484,15 @@ class ArduinoDaemon:
                     return True
                 elif 'ERROR' in data:
                     sensor_data = {
-                        'temperature': 0,
+                        'temperature1': 0,
+                        'temperature2': 0,
+                        'temperature': 0,  # Mantido para compatibilidade
                         'humidity': 0,
                         'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
                         'status': 'error'
                     }
                     self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
-                    print("Erro na leitura do sensor DHT11")
+                    print("Erro na leitura dos sensores DHT11")
             
             return False
             
