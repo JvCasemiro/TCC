@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <DHT.h>
 
-const int NUM_LEDS = 12;
+const int NUM_LEDS = 11;
 const int FIRST_LED_PIN = 2;
 bool ledStatus[NUM_LEDS];
 
@@ -11,7 +11,7 @@ const int FIRST_TEMP_PIN = 14;  // Pinos 14, 15, 16, 17
 bool tempStatus[NUM_TEMPS];
 
 // Pino do motor DC (portão)
-const int MOTOR_CONTROL_PIN = 13;  // Pino único para controle do portão
+const int MOTOR_CONTROL_PIN = 12;  // Pino único para controle do portão
 
 // Configuração dos sensores DHT11
 #define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
