@@ -54,7 +54,6 @@ void setup() {
   Serial.println("- LEDX:ON ou LEDX:OFF (onde X é o número do LED 1-12)");
   Serial.println("- TEMPX:ON ou TEMPX:OFF (onde X é o número da temperatura 1-4)");
   Serial.println("- GATE:OPEN ou GATE:CLOSE");
-  Serial.println("- Leitura automática de temperatura e umidade a cada 2s");
 }
 
 void loop() {
@@ -147,29 +146,24 @@ void loop() {
   if (currentMillis - lastSensorRead >= sensorInterval) {
     lastSensorRead = currentMillis;
     
-    // Ler temperatura e umidade de ambos os sensores
-    float humidity1 = dht1.readHumidity();
+    // Ler temperatura de ambos os sensores
     float temperature1 = dht1.readTemperature();
-    float humidity2 = dht2.readHumidity();
     float temperature2 = dht2.readTemperature();
     
     // Verificar se as leituras foram bem-sucedidas
-    if (isnan(humidity1) || isnan(temperature1) || isnan(humidity2) || isnan(temperature2)) {
+    if (isnan(temperature1) || isnan(temperature2)) {
       Serial.println("DHT:ERROR");
     } else {
       // Calcular média das temperaturas
       float avgTemp = (temperature1 + temperature2) / 2.0;
-      float avgHumidity = (humidity1 + humidity2) / 2.0;
       
-      // Enviar dados no formato: DHT:TEMP1:XX.XX:TEMP2:XX.XX:AVGTEMP:XX.XX:HUMIDITY:XX.XX
+      // Enviar dados no formato: DHT:TEMP1:XX.XX:TEMP2:XX.XX:AVGTEMP:XX.XX
       Serial.print("DHT:TEMP1:");
       Serial.print(temperature1, 2);
       Serial.print(":TEMP2:");
       Serial.print(temperature2, 2);
       Serial.print(":AVGTEMP:");
-      Serial.print(avgTemp, 2);
-      Serial.print(":HUMIDITY:");
-      Serial.println(avgHumidity, 2);
+      Serial.println(avgTemp, 2);
     }
   }
 }

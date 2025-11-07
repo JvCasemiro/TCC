@@ -463,7 +463,7 @@ class ArduinoDaemon:
                     }
                     
                     self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
-                    print(f"Temperatura 1: {temperature1}°C | Temperatura 2: {temperature2}°C | Média: {avg_temperature}°C | Umidade: {humidity}%")
+                    print(f"Temperatura 1: {temperature1}°C | Temperatura 2: {temperature2}°C | Média: {avg_temperature}°C")
                     return True
                 # Formato antigo para compatibilidade
                 elif len(parts) >= 5 and parts[1] == 'TEMP' and parts[3] == 'HUMIDITY':
@@ -480,7 +480,7 @@ class ArduinoDaemon:
                     }
                     
                     self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
-                    print(f"Temperatura: {temperature}°C | Umidade: {humidity}%")
+                    print(f"Temperatura: {temperature}°C")
                     return True
                 elif 'ERROR' in data:
                     sensor_data = {

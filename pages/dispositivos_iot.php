@@ -773,16 +773,6 @@ $devices = [
                         </div>
                     </div>
                     <?php endif; ?>
-                    
-                    <?php if (isset($device['sensor_id']) && $device['sensor_id'] === 'temp1'): ?>
-                    <div class="sensor-reading">
-                        <i class="fas fa-tint" style="color: #4ecdc4;"></i>
-                        <div>
-                            <div class="label">Umidade</div>
-                            <div class="value" id="humValue">--%</div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
                 
@@ -1964,32 +1954,16 @@ $devices = [
                         if (avgTempElement) {
                             avgTempElement.textContent = data.temperature.toFixed(1) + '°C';
                         }
-                        
-                        // Umidade (usando a média dos sensores)
-                        const humValue = document.getElementById('humValue');
-                        if (humValue) {
-                            humValue.textContent = data.humidity.toFixed(1) + '%';
-                        }
                     } else if (data.status === 'error') {
                         // Em caso de erro, mostra erro em todos os sensores
                         document.querySelectorAll('[data-sensor-id^="temp"]').forEach(el => {
                             el.textContent = 'Erro';
                         });
-                        
-                        const humValue = document.getElementById('humValue');
-                        if (humValue) {
-                            humValue.textContent = 'Erro';
-                        }
                     } else {
                         // Estado de espera
                         document.querySelectorAll('[data-sensor-id^="temp"]').forEach(el => {
                             el.textContent = '--°C';
                         });
-                        
-                        const humValue = document.getElementById('humValue');
-                        if (humValue) {
-                            humValue.textContent = '--%';
-                        }
                     }
                 })
                 .catch(error => {
@@ -1999,11 +1973,6 @@ $devices = [
                     document.querySelectorAll('[data-sensor-id^="temp"]').forEach(el => {
                         el.textContent = 'Erro';
                     });
-                    
-                    const humValue = document.getElementById('humValue');
-                    if (humValue) {
-                        humValue.textContent = 'Erro';
-                    }
                 });
         }
         
