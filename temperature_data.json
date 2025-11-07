@@ -1,8 +1,8 @@
 {
   "temperature1": 0,
-  "temperature2": 0,
-  "temperature": 0,
+  "temperature2": 23.8,
+  "temperature": 23.8,
   "humidity": 0,
-  "last_update": "2025-11-07 20:44:33",
-  "status": "error"
+  "last_update": "2025-11-07 20:59:36",
+  "status": "online"
 }

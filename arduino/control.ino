@@ -153,20 +153,41 @@ void loop() {
     float temperature1 = dht1.readTemperature();
     float temperature2 = dht2.readTemperature();
     
-    // Verificar se as leituras foram bem-sucedidas
-    if (isnan(temperature1) || isnan(temperature2)) {
-      Serial.println("DHT:ERROR");
+    // Verificar se as leituras foram bem-sucedidas e formatar a saída
+    Serial.print("DHT:");
+    
+    // Sensor 1
+    if (isnan(temperature1)) {
+      Serial.print("TEMP1:ERROR");
     } else {
-      // Calcular média das temperaturas
-      float avgTemp = (temperature1 + temperature2) / 2.0;
-      
-      // Enviar dados no formato: DHT:TEMP1:XX.XX:TEMP2:XX.XX:AVGTEMP:XX.XX
-      Serial.print("DHT:TEMP1:");
+      Serial.print("TEMP1:");
       Serial.print(temperature1, 2);
-      Serial.print(":TEMP2:");
+    }
+    
+    Serial.print(":");
+    
+    // Sensor 2
+    if (isnan(temperature2)) {
+      Serial.print("TEMP2:ERROR");
+    } else {
+      Serial.print("TEMP2:");
       Serial.print(temperature2, 2);
+    }
+    
+    // Calcular e exibir média apenas se ambos os sensores estiverem funcionando
+    if (!isnan(temperature1) && !isnan(temperature2)) {
+      float avgTemp = (temperature1 + temperature2) / 2.0;
       Serial.print(":AVGTEMP:");
       Serial.println(avgTemp, 2);
+    } else {
+      // Se algum sensor falhar, mostre a média apenas do sensor que está funcionando
+      float avgTemp = isnan(temperature1) ? temperature2 : temperature1;
+      if (!isnan(avgTemp)) {
+        Serial.print(":AVGTEMP:");
+        Serial.println(avgTemp, 2);
+      } else {
+        Serial.println(":AVGTEMP:ERROR");
+      }
     }
   }
 }

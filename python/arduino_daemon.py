@@ -442,57 +442,82 @@ class ArduinoDaemon:
     def process_sensor_data(self, data):
         """Processa dados dos sensores DHT11"""
         try:
-            if data.startswith('DHT:'):
-                parts = data.split(':')
+            if not data.startswith('DHT:'):
+                return False
                 
-                # Novo formato: DHT:TEMP1:XX.XX:TEMP2:XX.XX:AVGTEMP:XX.XX:HUMIDITY:XX.XX
-                if (len(parts) >= 9 and parts[1] == 'TEMP1' and parts[3] == 'TEMP2' and 
-                    parts[5] == 'AVGTEMP' and parts[7] == 'HUMIDITY'):
-                    temperature1 = float(parts[2])
-                    temperature2 = float(parts[4])
-                    avg_temperature = float(parts[6])
-                    humidity = float(parts[8])
-                    
-                    sensor_data = {
-                        'temperature1': temperature1,
-                        'temperature2': temperature2,
-                        'temperature': avg_temperature,  # Mantido para compatibilidade
-                        'humidity': humidity,
-                        'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
-                        'status': 'online'
-                    }
-                    
-                    self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
-                    print(f"Temperatura 1: {temperature1}°C | Temperatura 2: {temperature2}°C | Média: {avg_temperature}°C")
-                    return True
-                # Formato antigo para compatibilidade
-                elif len(parts) >= 5 and parts[1] == 'TEMP' and parts[3] == 'HUMIDITY':
-                    temperature = float(parts[2])
-                    humidity = float(parts[4])
-                    
-                    sensor_data = {
-                        'temperature1': temperature,
-                        'temperature2': temperature,  # Mesmo valor para manter compatibilidade
-                        'temperature': temperature,   # Mantido para compatibilidade
-                        'humidity': humidity,
-                        'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
-                        'status': 'online'
-                    }
-                    
-                    self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
-                    print(f"Temperatura: {temperature}°C")
-                    return True
-                elif 'ERROR' in data:
-                    sensor_data = {
-                        'temperature1': 0,
-                        'temperature2': 0,
-                        'temperature': 0,  # Mantido para compatibilidade
-                        'humidity': 0,
-                        'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
-                        'status': 'error'
-                    }
-                    self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
-                    print("Erro na leitura dos sensores DHT11")
+            print(f"Dados recebidos do sensor: {data}")
+            parts = data.strip().split(':')
+            
+            # Inicializa os valores padrão
+            temp1 = None
+            temp2 = None
+            avg_temp = None
+            
+            # Processa os pares chave:valor
+            i = 1  # Começa em 1 para pular o 'DHT'
+            while i < len(parts) - 1:
+                key = parts[i]
+                value = parts[i + 1]
+                
+                if key == 'TEMP1':
+                    if value != 'ERROR':
+                        try:
+                            temp1 = float(value)
+                        except ValueError:
+                            temp1 = None
+                elif key == 'TEMP2':
+                    if value != 'ERROR':
+                        try:
+                            temp2 = float(value)
+                        except ValueError:
+                            temp2 = None
+                elif key == 'AVGTEMP':
+                    if value != 'ERROR':
+                        try:
+                            avg_temp = float(value)
+                        except ValueError:
+                            avg_temp = None
+                
+                i += 2  # Avança para o próximo par chave:valor
+            
+            # Se não conseguiu calcular a média, tenta calcular agora
+            if avg_temp is None and temp1 is not None and temp2 is not None:
+                avg_temp = (temp1 + temp2) / 2.0
+            elif avg_temp is None and temp1 is not None:
+                avg_temp = temp1
+            elif avg_temp is None and temp2 is not None:
+                avg_temp = temp2
+            
+            # Prepara os dados do sensor
+            sensor_data = {
+                'temperature1': temp1 if temp1 is not None else 0,
+                'temperature2': temp2 if temp2 is not None else 0,
+                'temperature': avg_temp if avg_temp is not None else 0,
+                'humidity': 0,  # O DHT11 não está fornecendo umidade no momento
+                'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'status': 'error' if temp1 is None and temp2 is None else 'online'
+            }
+            
+            # Salva os dados no arquivo
+            self.temperature_file.write_text(json.dumps(sensor_data, indent=2))
+            
+            # Log dos dados processados
+            status_msg = []
+            if temp1 is not None:
+                status_msg.append(f"Sensor 1: {temp1:.2f}°C")
+            else:
+                status_msg.append("Sensor 1: ERRO")
+                
+            if temp2 is not None:
+                status_msg.append(f"Sensor 2: {temp2:.2f}°C")
+            else:
+                status_msg.append("Sensor 2: ERRO")
+                
+            if avg_temp is not None:
+                status_msg.append(f"Média: {avg_temp:.2f}°C")
+                
+            print(" | ".join(status_msg))
+            return True
             
             return False
             
