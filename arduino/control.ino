@@ -15,6 +15,9 @@ bool tempStatus[NUM_TEMPS];
 // Pino do motor DC (portão)
 const int MOTOR_CONTROL_PIN = 12;  // Pino único para controle do portão
 
+// Pino do relé da piscina
+const int POOL_RELAY_PIN = 30;  // Pino para controle da piscina
+
 // Configuração dos sensores DHT11
 #define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
 #define DHTPIN2 A3       // Segundo sensor DHT11 conectado ao A2
@@ -43,9 +46,13 @@ void setup() {
     tempStatus[i] = false;
   }
   
-  // Configurar pino do motor
+  // Configurar pinos de saída
   pinMode(MOTOR_CONTROL_PIN, OUTPUT);
   digitalWrite(MOTOR_CONTROL_PIN, LOW);
+  
+  // Configurar pino do relé da piscina
+  pinMode(POOL_RELAY_PIN, OUTPUT);
+  digitalWrite(POOL_RELAY_PIN, LOW);
   
   // Inicializar sensores DHT11
   dht1.begin();
@@ -56,6 +63,7 @@ void setup() {
   Serial.println("- LEDX:ON ou LEDX:OFF (onde X é o número do LED 1-12)");
   Serial.println("- TEMPX:ON ou TEMPX:OFF (onde X é o número da temperatura 1-4)");
   Serial.println("- GATE:OPEN ou GATE:CLOSE");
+  Serial.println("- POOL:ON ou POOL:OFF");
 }
 
 void loop() {
@@ -113,6 +121,16 @@ void loop() {
       } else {
         Serial.println("ERRO: Número da temperatura inválido. Use um valor entre 1 e 4.");
       }
+    }
+    else if (command == "POOL:ON") {
+      // Ligar piscina
+      digitalWrite(POOL_RELAY_PIN, HIGH);
+      Serial.println("PISCINA: LIGADA");
+    }
+    else if (command == "POOL:OFF") {
+      // Desligar piscina
+      digitalWrite(POOL_RELAY_PIN, LOW);
+      Serial.println("PISCINA: DESLIGADA");
     }
     else if (command.startsWith("GATE:")) {
       String action = command.substring(5);

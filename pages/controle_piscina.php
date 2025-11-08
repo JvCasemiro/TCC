@@ -498,6 +498,7 @@ if ($conn === null) {
             
             // Estado inicial
             updateButtonStates();
+        });
         
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');

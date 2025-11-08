@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "pool": true,
+        "status": "ON",
+        "timestamp": 1762562775
+    },
+    {
+        "pool": true,
+        "status": "OFF",
+        "timestamp": 1762562777
+    }
+]
