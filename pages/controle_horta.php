@@ -55,30 +55,34 @@ try {
         }
         
         body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #0a0f2c 0%, #0a0f2c 100%);
+            color: #ffffff;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+            max-width: 500px;
+            margin: 1rem auto 0;
+            padding: 20px;
         }
         
         .card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            margin: 2rem 0;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
         
         h2 {
-            color: #2c3e50;
+            color: #ffffff;
             margin-bottom: 1.5rem;
-            font-size: 1.8rem;
+            font-size: 2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .gate-control {
@@ -87,10 +91,12 @@ try {
         }
         
         .gate-status {
-            font-size: 24px;
-            color: rgb(0, 0, 0);
-            margin-bottom: 15px;
-            font-weight: bold;
+            font-size: 28px;
+            color: #ffffff;
+            margin: 20px 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .control-buttons {
@@ -109,47 +115,51 @@ try {
         .btn {
             padding: 18px 30px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             max-width: 300px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin: 10px auto;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
         
         .btn-open {
-            background-color: #2ecc71;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
             color: white;
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
         .btn-close {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             opacity: 0.6;
             cursor: not-allowed;
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
         .btn-open:hover {
-            background-color: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(46, 204, 113, 0.3);
         }
         
         .btn-close:hover {
-            background-color: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(231, 76, 60, 0.3);
         }
         
         .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
         .btn:disabled {
@@ -162,39 +172,40 @@ try {
             align-items: center;
             justify-content: center;
             gap: 8px;
-            background-color: #3498db;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
             border: none;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 30px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 20px auto 0;
             width: fit-content;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
         .back-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(52, 152, 219, 0.4);
             color: white;
         }
         
         .back-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: translateY(1px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
         }
         
         /* Header styles */
         header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
         }
         
         .header-content {
@@ -262,30 +273,40 @@ try {
         }
         
         .logout-btn {
-            background-color: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
             border: none;
             padding: 0.6rem 1.5rem;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: background-color 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
         .logout-btn:hover {
-            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(231, 76, 60, 0.4);
+        }
+        
+        .logout-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.2);
         }
         
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
+                margin-top: 0.5rem;
             }
             
             .card {
                 padding: 1.5rem;
+                margin: 1rem 0;
             }
             
             h2 {
@@ -295,6 +316,11 @@ try {
             .btn {
                 padding: 15px 20px;
                 font-size: 16px;
+                max-width: 100%;
+            }
+            
+            .gate-status {
+                font-size: 22px;
             }
         }
     </style>
@@ -337,15 +363,15 @@ try {
     
     <div class="container">
         <div class="card">
-            <h2>Controle da Irrigação da Horta</h2>
+            <h2><i class="fas fa-seedling" style="margin-right: 10px;"></i> Controle da Irrigação da Horta</h2>
             <div class="gate-control">
                 <div class="gate-status" id="gardenStatus">STATUS: DESLIGADO</div>
                 <div class="control-buttons">
                     <button class="btn btn-open" id="turnOnGarden">
-                        <i class="fas fa-tint"></i> Ligar Irrigação
+                        <i class="fas fa-tint"></i> LIGAR IRRIGAÇÃO
                     </button>
                     <button class="btn btn-close" id="turnOffGarden">
-                        <i class="fas fa-power-off"></i> Desligar Irrigação
+                        <i class="fas fa-power-off"></i> DESLIGAR IRRIGAÇÃO
                     </button>
                 </div>
             </div>

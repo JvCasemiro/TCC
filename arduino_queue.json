@@ -18,5 +18,25 @@
         "garden": true,
         "status": "OFF",
         "timestamp": 1762562919
+    },
+    {
+        "garden": true,
+        "status": "ON",
+        "timestamp": 1762563008
+    },
+    {
+        "garden": true,
+        "status": "OFF",
+        "timestamp": 1762563008
+    },
+    {
+        "garden": true,
+        "status": "ON",
+        "timestamp": 1762563032
+    },
+    {
+        "garden": true,
+        "status": "OFF",
+        "timestamp": 1762563034
     }
 ]
