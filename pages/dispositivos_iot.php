@@ -438,6 +438,9 @@ $devices = [
             font-weight: bold;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background-color: rgba(255, 0, 0, 0.3); /* Cor de fundo vermelha temporária para destacar */
+            padding: 5px 10px;
+            border-radius: 5px;
         }
         
         .device-actions {
@@ -1929,30 +1932,47 @@ $devices = [
             }
         });
         
+        // Função para atualizar os dados dos sensores
         function updateSensorData() {
+            console.log('Atualizando dados dos sensores...');
             fetch('../get_temperature.php')
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Resposta recebida de get_temperature.php');
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Dados recebidos:', data);
                     
                     // Atualiza os valores dos sensores individuais e da média
+                    console.log('Status dos dados:', data.status);
                     if (data.status === 'online') {
+                        console.log('Dados recebidos para atualização:', data);
+                        
                         // Sensor 1
+                        console.log('Buscando elemento com data-sensor-id="temp1"...');
                         const temp1Element = document.querySelector('[data-sensor-id="temp1"]');
+                        console.log('Elemento do sensor 1 encontrado:', temp1Element);
+                        console.log('HTML do elemento pai:', temp1Element ? temp1Element.parentElement.outerHTML : 'Elemento não encontrado');
                         if (temp1Element) {
-                            temp1Element.textContent = data.temperature1.toFixed(1) + '°C';
+                            console.log('Valor do sensor 1 antes da atualização:', temp1Element.textContent);
+                            // Verifica se o valor é 0 (que é considerado falso em JavaScript)
+                            const temp1Value = (data.temperature1 === 0 || data.temperature1) ? data.temperature1 : '--';
+                            temp1Element.textContent = (typeof temp1Value === 'number' ? temp1Value.toFixed(1) : temp1Value) + '°C';
+                            console.log('Valor do sensor 1 após atualização:', temp1Element.textContent);
                         }
                         
                         // Sensor 2
                         const temp2Element = document.querySelector('[data-sensor-id="temp2"]');
                         if (temp2Element) {
-                            temp2Element.textContent = data.temperature2.toFixed(1) + '°C';
+                            const temp2Value = (data.temperature2 === 0 || data.temperature2) ? data.temperature2 : '--';
+                            temp2Element.textContent = (typeof temp2Value === 'number' ? temp2Value.toFixed(1) : temp2Value) + '°C';
                         }
                         
                         // Média
                         const avgTempElement = document.querySelector('[data-sensor-id="avg_temp"]');
                         if (avgTempElement) {
-                            avgTempElement.textContent = data.temperature.toFixed(1) + '°C';
+                            const avgTempValue = (data.temperature === 0 || data.temperature) ? data.temperature : '--';
+                            avgTempElement.textContent = (typeof avgTempValue === 'number' ? avgTempValue.toFixed(1) : avgTempValue) + '°C';
                         }
                     } else if (data.status === 'error') {
                         // Em caso de erro, mostra erro em todos os sensores
@@ -1976,10 +1996,10 @@ $devices = [
                 });
         }
         
-        if (document.getElementById('sensorData')) {
-            updateSensorData();
-            setInterval(updateSensorData, 2000);
-        }
+        // Inicializa a atualização dos sensores
+        console.log('Iniciando atualização dos sensores...');
+        updateSensorData();
+        setInterval(updateSensorData, 2000);
     </script>
     
     <div id="lampadaModal" class="modal">

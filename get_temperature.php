@@ -3,6 +3,8 @@ header('Content-Type: application/json');
 
 $temperature_file = 'temperature_data.json';
 $default_data = [
+    'temperature1' => 0,
+    'temperature2' => 0,
     'temperature' => 0,
     'humidity' => 0,
     'last_update' => 'N/A',
