@@ -174,20 +174,7 @@ void loop() {
       Serial.print(temperature2, 2);
     }
     
-    // Calcular e exibir média apenas se ambos os sensores estiverem funcionando
-    if (!isnan(temperature1) && !isnan(temperature2)) {
-      float avgTemp = (temperature1 + temperature2) / 2.0;
-      Serial.print(":AVGTEMP:");
-      Serial.println(avgTemp, 2);
-    } else {
-      // Se algum sensor falhar, mostre a média apenas do sensor que está funcionando
-      float avgTemp = isnan(temperature1) ? temperature2 : temperature1;
-      if (!isnan(avgTemp)) {
-        Serial.print(":AVGTEMP:");
-        Serial.println(avgTemp, 2);
-      } else {
-        Serial.println(":AVGTEMP:ERROR");
-      }
-    }
+    // Finaliza a linha
+    Serial.println();
   }
 }

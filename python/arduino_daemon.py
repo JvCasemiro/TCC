@@ -478,7 +478,6 @@ class ArduinoDaemon:
             sensor_data = {
                 'temperature1': temp1 if temp1 is not None else 0,
                 'temperature2': temp2 if temp2 is not None else 0,
-                'humidity': 0,  # O DHT11 não está fornecendo umidade no momento
                 'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
                 'status': 'error' if temp1 is None and temp2 is None else 'online'
             }
