@@ -17,7 +17,7 @@ const int MOTOR_CONTROL_PIN = 12;  // Pino único para controle do portão
 
 // Configuração dos sensores DHT11
 #define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
-#define DHTPIN2 A2       // Segundo sensor DHT11 conectado ao A2
+#define DHTPIN2 A3       // Segundo sensor DHT11 conectado ao A2
 #define DHTTYPE DHT11    // Tipo do sensor DHT11
 DHT dht1(DHTPIN1, DHTTYPE);
 DHT dht2(DHTPIN2, DHTTYPE);
