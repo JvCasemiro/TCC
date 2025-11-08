@@ -56,7 +56,7 @@ if ($conn === null) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle</title>
+    <title>Controle da Piscina</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="shortcut icon" href="../assets/img/logo_domx_sem_nome.png" type="image/x-icon">
     <style>
@@ -73,8 +73,8 @@ if ($conn === null) {
         }
         
         .container {
-            max-width: 1200px;
-            margin: 6.5rem auto;
+            max-width: 500px;
+            margin: 1rem auto 0;
             padding: 20px;
         }
         
@@ -186,221 +186,184 @@ if ($conn === null) {
         }
         
         .user-info p:last-child {
-            margin-top: 12px;
             padding-top: 8px;
             border-top: 1px solid #2c3e50;
             color: #95a5a6;
         }
         
-        .welcome {
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin: 15px 0;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .welcome h1 {
-            color: #2f3640;
-            margin-bottom: 5px;
-        }
-        
-        .welcome p {
-            color: #666;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
         .card {
             background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
         }
         
-        .card:hover {
-            transform: translateY(-5px);
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
         
-        .card h3 {
-            color: #4a90e2;
+        .gate-control {
+            margin: 10px 0 0 0;
+            padding: 0;
+        }
+        
+        .gate-status {
+            font-size: 24px;
+            color: rgb(0, 0, 0);
             margin-bottom: 15px;
+            font-weight: bold;
         }
         
-        .card p {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .icon {
-            font-size: 36px;
-            color: #4a90e2;
-            margin-bottom: 15px;
-        }
-        
-        .button-container {
+        .control-buttons {
             display: flex;
-            gap: 10px;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0 10px 0;
             width: 100%;
         }
         
-        .button-container .control-btn {
-            width: 48%;
-            padding: 10px 5px;
-            font-size: 13px;
-            white-space: nowrap;
+        .btn i {
+            font-size: 24px;
         }
-
+        
+        .btn {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 300px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-open {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-close {
+            background-color: #e74c3c;
+            color: white;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-open:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-close:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .control-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .control-btn.off {
+            background: #e74c3c;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin: 20px auto 0;
+            width: fit-content;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .back-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+            color: white;
+        }
+        
+        .back-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
         .logout-btn {
             background-color: #e74c3c;
             color: white;
             border: none;
             padding: 0.6rem 1.5rem;
-            border-radius: 25px;
+            border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.4s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
+            gap: 8px;
+            transition: all 0.3s ease;
         }
         
         .logout-btn:hover {
             background-color: #c0392b;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
         }
         
-        .logout-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.3);
-        }
-        
-        .logout-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .logout-btn:hover::before {
-            left: 100%;
-        }
-        
-        .back-btn {
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.4s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-right: 10px;
-            text-decoration: none;
-        }
-        
-        .back-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(108, 117, 125, 0.3);
-        }
-        
-        .back-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .back-btn:hover::before {
-            left: 100%;
-        }
-        
-        .control-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.4s ease-in-out;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            margin-top: 15px;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0rem;
-        }
-        
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        }
-        
-        .control-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-        }
-        
-        .control-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .control-btn:hover::before {
-            left: 100%;
-        }
-        
-        .control-btn i {
-            margin-right: 8px;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
+        @media (max-width: 768px) {            
             .header-content {
                 flex-direction: column;
                 gap: 10px;
@@ -426,7 +389,7 @@ if ($conn === null) {
                         <i class="fas fa-chevron-down" style="margin-left: 5px; font-size: 12px;"></i>
                     </span>
                     <div class="dropdown-content" id="userDropdown">
-                    <div class="user-info">
+                        <div class="user-info">
                             <h4><i class="fas fa-user"></i> <?php echo htmlspecialchars($user['username']); ?></h4>
                             <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?></p>
                             <p><i class="fas fa-user-tag"></i> <?php echo htmlspecialchars($user['user_type']); ?></p>
@@ -435,8 +398,8 @@ if ($conn === null) {
                         </div>
                     </div>
                 </div>
-                <a href="menu.php" class="back-btn" style="text-decoration: none; display: inline-block; color: white;">
-                    <i class="fas fa-arrow-left"></i> Voltar ao Menu
+                <a href="dashboard.php" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Voltar
                 </a>
                 <form action="../auth/logout.php" method="post" style="display: inline;">
                     <button type="submit" class="logout-btn">
@@ -448,97 +411,94 @@ if ($conn === null) {
     </header>
     
     <div class="container">
-        <div class="welcome">
-            <h1>Painel de Controle</h1>
-            <p>Gerencie seus dispositivos de automação residencial de forma fácil e intuitiva.</p>
-        </div>
-        
-        <div class="dashboard-grid">
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-lightbulb"></i>
-                </div>
-                <h3>Luzes</h3>
-                <p>Controle todas as luzes da sua casa de forma remota.</p>
-                <button class="control-btn" onclick="window.location.href='gerenciar_luzes.php'">
-                    <i class="fas fa-cog"></i>
-                    Gerenciar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-thermometer-half"></i>
-                </div>
-                <h3>Temperatura</h3>
-                <p>Ajuste a temperatura dos ambientes e programe horários.</p>
-                <button class="control-btn" onclick="window.location.href='ajustar_temperatura.php'">
-                    <i class="fas fa-sliders-h"></i>
-                    Ajustar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3>Segurança</h3>
-                <p>Monitore câmeras e sensores de segurança em tempo real.</p>
-                <button class="control-btn" onclick="window.location.href='monitorar_seguranca.php'">
-                    <i class="fas fa-eye"></i>
-                    Verificar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-car"></i>
-                </div>
-                <h3>Controle de Acesso</h3>
-                <p>Controle o portão por leitura de placas ou acionamento manual.</p>
-                <div class="button-container">
-                    <button class="control-btn" onclick="window.location.href='leitura_placas.php'">
-                        <i class="fas fa-search"></i>
-                        Monitorar
+        <div class="card">
+            <h2>Controle da Piscina</h2>
+            <div class="gate-control">
+                <div class="gate-status" id="poolStatus">STATUS: DESLIGADO</div>
+                <div class="control-buttons">
+                    <button class="btn btn-open" id="turnOnPool">
+                        <i class="fas fa-swimming-pool"></i> Ligar Piscina
                     </button>
-                    <button class="control-btn" onclick="window.location.href='controle_portao.php'">
-                        <i class="fas fa-door-open"></i>
-                        Controlar
+                    <button class="btn btn-close" id="turnOffPool">
+                        <i class="fas fa-power-off"></i> Desligar Piscina
                     </button>
                 </div>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-swimming-pool"></i>
-                </div>
-                <h3>Piscina</h3>
-                <p>Controle o sistema de filtragem da piscina.</p>
-                <button class="control-btn" onclick="window.location.href='controle_piscina.php'">
-                    <i class="fas fa-cog"></i>
-                    Controlar
-                </button>
             </div>
         </div>
     </div>
     
     <script>
-        function showMessage(message, type = 'info') {
-            alert(message);
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Seleciona apenas os botões .control-btn que estão dentro do dashboard
-            const buttons = document.querySelectorAll('.dashboard-section .control-btn');
-            buttons.forEach(button => {
-                if (!button.hasAttribute('onclick')) {
-                    button.addEventListener('click', function() {
-                        showMessage('Funcionalidade em desenvolvimento. Em breve disponível!', 'warning');
-                    });
+            const turnOnBtn = document.getElementById('turnOnPool');
+            const turnOffBtn = document.getElementById('turnOffPool');
+            const poolStatus = document.getElementById('poolStatus');
+            let isPoolOn = false;
+            
+            // Função para atualizar o estado dos botões
+            function updateButtonStates() {
+                turnOnBtn.disabled = isPoolOn;
+                turnOffBtn.disabled = !isPoolOn;
+                turnOnBtn.style.opacity = isPoolOn ? '0.6' : '1';
+                turnOffBtn.style.opacity = isPoolOn ? '1' : '0.6';
+                turnOnBtn.style.cursor = isPoolOn ? 'not-allowed' : 'pointer';
+                turnOffBtn.style.cursor = isPoolOn ? 'pointer' : 'not-allowed';
+                poolStatus.textContent = `STATUS: ${isPoolOn ? 'LIGADO' : 'DESLIGADO'}`;
+                poolStatus.style.color = isPoolOn ? '#27ae60' : '#e74c3c';
+            }
+            
+            // Evento para ligar a piscina
+            turnOnBtn.addEventListener('click', function() {
+                if (!isPoolOn) {
+                    isPoolOn = true;
+                    updateButtonStates();
+                    
+                    // Envia comando para ligar a piscina
+                    fetch('../includes/control_pool.php?action=on')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                alert('Erro ao ligar a piscina: ' + (data.message || 'Erro desconhecido'));
+                                isPoolOn = false;
+                                updateButtonStates();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            alert('Erro ao se comunicar com o servidor');
+                            isPoolOn = false;
+                            updateButtonStates();
+                        });
                 }
             });
-        });
-
+            
+            // Evento para desligar a piscina
+            turnOffBtn.addEventListener('click', function() {
+                if (isPoolOn) {
+                    isPoolOn = false;
+                    updateButtonStates();
+                    
+                    // Envia comando para desligar a piscina
+                    fetch('../includes/control_pool.php?action=off')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                alert('Erro ao desligar a piscina: ' + (data.message || 'Erro desconhecido'));
+                                isPoolOn = true;
+                                updateButtonStates();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            alert('Erro ao se comunicar com o servidor');
+                            isPoolOn = true;
+                            updateButtonStates();
+                        });
+                }
+            });
+            
+            // Estado inicial
+            updateButtonStates();
+        
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
