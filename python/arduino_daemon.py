@@ -23,7 +23,8 @@ class ArduinoDaemon:
         
         if not self.temperature_file.exists():
             self.temperature_file.write_text(json.dumps({
-                'temperature': 0,
+                'temperature1': 0,
+                'temperature2': 0,
                 'humidity': 0,
                 'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
                 'status': 'waiting'
@@ -451,7 +452,6 @@ class ArduinoDaemon:
             # Inicializa os valores padrão
             temp1 = None
             temp2 = None
-            avg_temp = None
             
             # Processa os pares chave:valor
             i = 1  # Começa em 1 para pular o 'DHT'
@@ -471,28 +471,13 @@ class ArduinoDaemon:
                             temp2 = float(value)
                         except ValueError:
                             temp2 = None
-                elif key == 'AVGTEMP':
-                    if value != 'ERROR':
-                        try:
-                            avg_temp = float(value)
-                        except ValueError:
-                            avg_temp = None
                 
                 i += 2  # Avança para o próximo par chave:valor
-            
-            # Se não conseguiu calcular a média, tenta calcular agora
-            if avg_temp is None and temp1 is not None and temp2 is not None:
-                avg_temp = (temp1 + temp2) / 2.0
-            elif avg_temp is None and temp1 is not None:
-                avg_temp = temp1
-            elif avg_temp is None and temp2 is not None:
-                avg_temp = temp2
             
             # Prepara os dados do sensor
             sensor_data = {
                 'temperature1': temp1 if temp1 is not None else 0,
                 'temperature2': temp2 if temp2 is not None else 0,
-                'temperature': avg_temp if avg_temp is not None else 0,
                 'humidity': 0,  # O DHT11 não está fornecendo umidade no momento
                 'last_update': time.strftime('%Y-%m-%d %H:%M:%S'),
                 'status': 'error' if temp1 is None and temp2 is None else 'online'
@@ -504,17 +489,14 @@ class ArduinoDaemon:
             # Log dos dados processados
             status_msg = []
             if temp1 is not None:
-                status_msg.append(f"Sensor 1: {temp1:.2f}°C")
+                status_msg.append(f"Andar de Cima: {temp1:.2f}°C")
             else:
-                status_msg.append("Sensor 1: ERRO")
+                status_msg.append("Andar de Cima: ERRO")
                 
             if temp2 is not None:
-                status_msg.append(f"Sensor 2: {temp2:.2f}°C")
+                status_msg.append(f"Andar de Baixo: {temp2:.2f}°C")
             else:
-                status_msg.append("Sensor 2: ERRO")
-                
-            if avg_temp is not None:
-                status_msg.append(f"Média: {avg_temp:.2f}°C")
+                status_msg.append("Andar de Baixo: ERRO")
                 
             print(" | ".join(status_msg))
             return True

@@ -731,14 +731,14 @@ $devices = [
                     <div class="sensor-reading" style="margin: 0 10px;">
                         <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
                         <div>
-                            <div class="label">Temperatura 1</div>
+                            <div class="label">Andar de Cima</div>
                             <div class="value" data-sensor-id="temp1">--°C</div>
                         </div>
                     </div>
                     <div class="sensor-reading" style="margin: 0 10px;">
                         <i class="fas fa-thermometer-half" style="color: #4a90e2;"></i>
                         <div>
-                            <div class="label">Temperatura 2</div>
+                            <div class="label">Andar de Baixo</div>
                             <div class="value" data-sensor-id="temp2">--°C</div>
                         </div>
                     </div>
