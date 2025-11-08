@@ -113,33 +113,13 @@ try {
 $devices = [
     [
         'id' => 1,
-        'name' => 'Sensor de Temperatura 1',
+        'name' => 'Sensores de Temperatura',
         'type' => 'sensor',
         'category' => 'temperature',
         'status' => 'online',
         'value' => '--°C',
         'location' => 'Sala de Estar',
-        'sensor_id' => 'temp1'
-    ],
-    [
-        'id' => 2,
-        'name' => 'Sensor de Temperatura 2',
-        'type' => 'sensor',
-        'category' => 'temperature',
-        'status' => 'online',
-        'value' => '--°C',
-        'location' => 'Sala de Estar',
-        'sensor_id' => 'temp2'
-    ],
-    [
-        'id' => 3,
-        'name' => 'Temperatura Média',
-        'type' => 'sensor',
-        'category' => 'temperature',
-        'status' => 'online',
-        'value' => '--°C',
-        'location' => 'Sala de Estar',
-        'sensor_id' => 'avg_temp'
+        'sensor_id' => 'both_temps'  // Novo ID para indicar que mostra ambos os sensores
     ],
     [
         'id' => 4,
@@ -438,9 +418,6 @@ $devices = [
             font-weight: bold;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            background-color: rgba(255, 0, 0, 0.3); /* Cor de fundo vermelha temporária para destacar */
-            padding: 5px 10px;
-            border-radius: 5px;
         }
         
         .device-actions {
@@ -749,33 +726,22 @@ $devices = [
                     <h3><?php echo htmlspecialchars($device['name']); ?></h3>
                 </div>
                 
-                <?php if ($device['category'] === 'temperature'): ?>
-                <div class="sensor-data">
-                    <?php if (isset($device['sensor_id']) && $device['sensor_id'] === 'temp1'): ?>
-                    <div class="sensor-reading">
+                <?php if ($device['category'] === 'temperature' && isset($device['sensor_id']) && $device['sensor_id'] === 'both_temps'): ?>
+                <div class="sensor-data" style="display: flex; justify-content: space-around; width: 100%;">
+                    <div class="sensor-reading" style="margin: 0 10px;">
                         <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
                         <div>
                             <div class="label">Temperatura 1</div>
                             <div class="value" data-sensor-id="temp1">--°C</div>
                         </div>
                     </div>
-                    <?php elseif (isset($device['sensor_id']) && $device['sensor_id'] === 'temp2'): ?>
-                    <div class="sensor-reading">
-                        <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
+                    <div class="sensor-reading" style="margin: 0 10px;">
+                        <i class="fas fa-thermometer-half" style="color: #4a90e2;"></i>
                         <div>
                             <div class="label">Temperatura 2</div>
                             <div class="value" data-sensor-id="temp2">--°C</div>
                         </div>
                     </div>
-                    <?php elseif (isset($device['sensor_id']) && $device['sensor_id'] === 'avg_temp'): ?>
-                    <div class="sensor-reading">
-                        <i class="fas fa-thermometer-half" style="color: #ff6b6b;"></i>
-                        <div>
-                            <div class="label">Temperatura Média</div>
-                            <div class="value" data-sensor-id="avg_temp">--°C</div>
-                        </div>
-                    </div>
-                    <?php endif; ?>
                 </div>
                 <?php endif; ?>
                 
@@ -1943,36 +1909,23 @@ $devices = [
                 .then(data => {
                     console.log('Dados recebidos:', data);
                     
-                    // Atualiza os valores dos sensores individuais e da média
-                    console.log('Status dos dados:', data.status);
                     if (data.status === 'online') {
-                        console.log('Dados recebidos para atualização:', data);
+                        console.log('Atualizando valores dos sensores...');
                         
-                        // Sensor 1
-                        console.log('Buscando elemento com data-sensor-id="temp1"...');
+                        // Atualiza o Sensor 1
                         const temp1Element = document.querySelector('[data-sensor-id="temp1"]');
-                        console.log('Elemento do sensor 1 encontrado:', temp1Element);
-                        console.log('HTML do elemento pai:', temp1Element ? temp1Element.parentElement.outerHTML : 'Elemento não encontrado');
                         if (temp1Element) {
-                            console.log('Valor do sensor 1 antes da atualização:', temp1Element.textContent);
-                            // Verifica se o valor é 0 (que é considerado falso em JavaScript)
                             const temp1Value = (data.temperature1 === 0 || data.temperature1) ? data.temperature1 : '--';
                             temp1Element.textContent = (typeof temp1Value === 'number' ? temp1Value.toFixed(1) : temp1Value) + '°C';
-                            console.log('Valor do sensor 1 após atualização:', temp1Element.textContent);
+                            console.log('Sensor 1 atualizado para:', temp1Element.textContent);
                         }
                         
-                        // Sensor 2
+                        // Atualiza o Sensor 2
                         const temp2Element = document.querySelector('[data-sensor-id="temp2"]');
                         if (temp2Element) {
                             const temp2Value = (data.temperature2 === 0 || data.temperature2) ? data.temperature2 : '--';
                             temp2Element.textContent = (typeof temp2Value === 'number' ? temp2Value.toFixed(1) : temp2Value) + '°C';
-                        }
-                        
-                        // Média
-                        const avgTempElement = document.querySelector('[data-sensor-id="avg_temp"]');
-                        if (avgTempElement) {
-                            const avgTempValue = (data.temperature === 0 || data.temperature) ? data.temperature : '--';
-                            avgTempElement.textContent = (typeof avgTempValue === 'number' ? avgTempValue.toFixed(1) : avgTempValue) + '°C';
+                            console.log('Sensor 2 atualizado para:', temp2Element.textContent);
                         }
                     } else if (data.status === 'error') {
                         // Em caso de erro, mostra erro em todos os sensores
