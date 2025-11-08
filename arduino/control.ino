@@ -7,9 +7,9 @@ const int LED_PINS[10] = {2, 13, 4, 5, 6, 7, 8, 9, 10, 11};
 bool ledStatus[NUM_LEDS];
 
 // Controle de temperatura (ar-condicionado)
-const int NUM_TEMPS = 4;
-// Array com os pinos de temperatura na sequência: 14, 15, 17, 18
-const int TEMP_PINS[4] = {14, 15, 16, 18};
+const int NUM_TEMPS = 3;
+// Array com os pinos de temperatura na sequência: 14, 15, 16
+const int TEMP_PINS[3] = {14, 15, 16};
 bool tempStatus[NUM_TEMPS];
 
 // Pino do motor DC (portão)
