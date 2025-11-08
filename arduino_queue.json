@@ -8,5 +8,15 @@
         "pool": true,
         "status": "OFF",
         "timestamp": 1762562777
+    },
+    {
+        "garden": true,
+        "status": "ON",
+        "timestamp": 1762562918
+    },
+    {
+        "garden": true,
+        "status": "OFF",
+        "timestamp": 1762562919
     }
 ]
