@@ -56,7 +56,7 @@ try {
         
         body {
             background: linear-gradient(135deg, #0a0f2c 0%, #0a0f2c 100%);
-            color: #ffffff;
+            color: #000;
         }
         
         .container {
@@ -66,7 +66,7 @@ try {
         }
         
         .card {
-            background: rgba(255, 255, 255, 0.1);
+            background: #ffffff;
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             padding: 2.5rem;
@@ -77,7 +77,7 @@ try {
         }
         
         h2 {
-            color: #ffffff;
+            color: #000;
             margin-bottom: 1.5rem;
             font-size: 2rem;
             font-weight: 600;
@@ -92,7 +92,7 @@ try {
         
         .gate-status {
             font-size: 28px;
-            color: #ffffff;
+            color: #000;
             margin: 20px 0;
             font-weight: 600;
             text-transform: uppercase;
@@ -491,7 +491,7 @@ try {
     </header>
     <div class="container">
         <div class="card">
-            <h2><i class="fas fa-seedling" style="margin-right: 10px;"></i> Controle da Irrigação da Horta</h2>
+            <h2>Controle da Irrigação da Horta</h2>
             <div class="gate-control">
                 <div class="gate-status" id="gardenStatus">STATUS: DESLIGADO</div>
                 <div class="control-buttons">
