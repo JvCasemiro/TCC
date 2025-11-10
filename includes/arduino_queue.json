@@ -1,0 +1,12 @@
+[
+    {
+        "type": "gate",
+        "action": "OPEN",
+        "timestamp": "2025-11-10 23:55:26"
+    },
+    {
+        "type": "gate",
+        "action": "CLOSE",
+        "timestamp": "2025-11-10 23:55:27"
+    }
+]

@@ -411,7 +411,6 @@ if ($conn === null) {
     
     <div class="container">
         <div class="card">
-            <h2>Controle da Piscina</h2>
             <div class="gate-control">
                 <div class="gate-status" id="poolStatus">STATUS: DESLIGADO</div>
                 <div class="control-buttons">

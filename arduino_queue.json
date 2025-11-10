@@ -38,5 +38,45 @@
         "garden": true,
         "status": "OFF",
         "timestamp": 1762563034
+    },
+    {
+        "garden": true,
+        "status": "ON",
+        "timestamp": 1762813940
+    },
+    {
+        "garden": true,
+        "status": "OFF",
+        "timestamp": 1762813941
+    },
+    {
+        "garden": true,
+        "status": "ON",
+        "timestamp": 1762814021
+    },
+    {
+        "garden": true,
+        "status": "OFF",
+        "timestamp": 1762814022
+    },
+    {
+        "type": "gate",
+        "action": "OPEN",
+        "timestamp": "2025-11-10 23:52:09"
+    },
+    {
+        "type": "gate",
+        "action": "CLOSE",
+        "timestamp": "2025-11-10 23:52:09"
+    },
+    {
+        "type": "gate",
+        "action": "OPEN",
+        "timestamp": "2025-11-10 23:54:54"
+    },
+    {
+        "type": "gate",
+        "action": "CLOSE",
+        "timestamp": "2025-11-10 23:54:56"
     }
 ]

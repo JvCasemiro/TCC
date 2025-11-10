@@ -76,13 +76,10 @@ try {
             backdrop-filter: blur(10px);
         }
         
-        h2 {
-            color: #000;
-            margin-bottom: 1.5rem;
-            font-size: 2rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
         }
         
         .gate-control {
@@ -91,12 +88,10 @@ try {
         }
         
         .gate-status {
-            font-size: 28px;
-            color: #000;
-            margin: 20px 0;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-size: 24px;
+            color: rgb(0, 0, 0);
+            margin-bottom: 15px;
+            font-weight: bold;
         }
         
         .control-buttons {
@@ -491,7 +486,6 @@ try {
     </header>
     <div class="container">
         <div class="card">
-            <h2>Controle da Irrigação da Horta</h2>
             <div class="gate-control">
                 <div class="gate-status" id="gardenStatus">STATUS: DESLIGADO</div>
                 <div class="control-buttons">

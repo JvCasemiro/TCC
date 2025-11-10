@@ -73,8 +73,8 @@ if ($conn === null) {
         }
         
         .container {
-            max-width: 1200px;
-            margin: 6.5rem auto;
+            max-width: 500px;
+            margin: 1rem auto 0;
             padding: 20px;
         }
         
@@ -186,80 +186,35 @@ if ($conn === null) {
         }
         
         .user-info p:last-child {
-            margin-top: 12px;
             padding-top: 8px;
             border-top: 1px solid #2c3e50;
             color: #95a5a6;
         }
         
-        .welcome {
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin: 15px 0;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .welcome h1 {
-            color: #2f3640;
-            margin-bottom: 5px;
-        }
-        
-        .welcome p {
-            color: #666;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
         .card {
             background: white;
-            border-radius: 8px;
+            border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            min-height: auto;
         }
         
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card h3 {
+        .card h1 {
             color: #4a90e2;
             margin-bottom: 15px;
+            font-size: 24px;
         }
         
         .card p {
             color: #666;
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 16px;
+            margin-bottom: 30px;
         }
         
-        .icon {
-            font-size: 36px;
-            color: #4a90e2;
-            margin-bottom: 15px;
-        }
-        
-        .button-container {
-            display: flex;
-            gap: 10px;
-            justify-content: space-between;
-            width: 100%;
-        }
-        
-        .button-container .control-btn {
-            width: 48%;
-            padding: 10px 5px;
-            font-size: 13px;
-            white-space: nowrap;
-        }
-
         .logout-btn {
             background-color: #e74c3c;
             color: white;
@@ -304,24 +259,98 @@ if ($conn === null) {
             left: 100%;
         }
         
+        .varal-control {
+            margin: 10px 0 0 0;
+            padding: 0;
+        }
+        
+        .varal-icon {
+            font-size: 100px;
+            color: #2c3e50;
+            margin: 10px 0 20px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .varal-status {
+            font-size: 24px;
+            color:rgb(0, 0, 0);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .control-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0 10px 0;
+            width: 100%;
+        }
+        
+        .btn i {
+            font-size: 24px;
+        }
+        
+        .btn {
+            padding: 18px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 280px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-open {
+            background-color: #2ecc71;
+            color: white;
+            font-size: 18px;
+            padding: 18px 30px;
+        }
+        
+        .btn-close {
+            background-color: #e74c3c;
+            color: white;
+            font-size: 18px;
+            padding: 18px 30px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+        
+        .btn i {
+            font-size: 18px;
+        }
+        
         .back-btn {
-            background-color: #4a90e2;
+            background-color: #6c757d;
             color: white;
             border: none;
             padding: 0.6rem 1.5rem;
             border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            transition: all 0.4s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-            display: flex;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             margin-right: 10px;
-            text-decoration: none;
         }
+        
         
         .back-btn:active {
             transform: translateY(0);
@@ -343,64 +372,54 @@ if ($conn === null) {
             left: 100%;
         }
         
-        .control-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .back-btn {
+            background-color: #4a90e2;
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 0.6rem 1.5rem;
             border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             transition: all 0.4s ease-in-out;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            margin-top: 15px;
-            width: 100%;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 0rem;
+            gap: 0.5rem;
+            margin-right: 10px;
+            text-decoration: none;
+        }
+        
+        .control-btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
         }
         
         .control-btn:hover {
+            background: #3a7bc8;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
         }
         
         .control-btn:active {
             transform: translateY(0);
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
         }
         
-        .control-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .control-btn:hover::before {
-            left: 100%;
-        }
-        
-        .control-btn i {
-            margin-right: 8px;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
+        @media (max-width: 768px) {            
             .header-content {
                 flex-direction: column;
                 gap: 10px;
@@ -408,6 +427,9 @@ if ($conn === null) {
             
             .user-menu {
                 margin-top: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
     </style>
@@ -435,8 +457,8 @@ if ($conn === null) {
                         </div>
                     </div>
                 </div>
-                <a href="menu.php" class="back-btn" style="text-decoration: none; display: inline-block; color: white;">
-                    <i class="fas fa-arrow-left"></i> Voltar ao Menu
+                <a href="dashboard.php" class="back-btn" style="text-decoration: none; display: inline-block; color: white;">
+                    <i class="fas fa-arrow-left"></i> Voltar
                 </a>
                 <form action="../auth/logout.php" method="post" style="display: inline;">
                     <button type="submit" class="logout-btn">
@@ -446,136 +468,103 @@ if ($conn === null) {
             </div>
         </div>
     </header>
-    
     <div class="container">
-        <div class="welcome">
-            <h1>Painel de Controle</h1>
-            <p>Gerencie seus dispositivos de automação residencial de forma fácil e intuitiva.</p>
-        </div>
-        
-        <div class="dashboard-grid">
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-lightbulb"></i>
-                </div>
-                <h3>Luzes</h3>
-                <p>Controle todas as luzes da sua casa de forma remota.</p>
-                <button class="control-btn" onclick="window.location.href='gerenciar_luzes.php'">
-                    <i class="fas fa-cog"></i>
-                    Gerenciar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-thermometer-half"></i>
-                </div>
-                <h3>Temperatura</h3>
-                <p>Ajuste a temperatura dos ambientes e programe horários.</p>
-                <button class="control-btn" onclick="window.location.href='ajustar_temperatura.php'">
-                    <i class="fas fa-sliders-h"></i>
-                    Ajustar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h3>Segurança</h3>
-                <p>Monitore câmeras e sensores de segurança em tempo real.</p>
-                <button class="control-btn" onclick="window.location.href='monitorar_seguranca.php'">
-                    <i class="fas fa-eye"></i>
-                    Verificar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-car"></i>
-                </div>
-                <h3>Controle de Acesso</h3>
-                <p>Controle o portão por leitura de placas ou acionamento manual.</p>
-                <div class="button-container">
-                    <button class="control-btn" onclick="window.location.href='leitura_placas.php'">
-                        <i class="fas fa-search"></i>
-                        Monitorar
+        <div class="card">
+            <div class="varal-control">
+                <div class="varal-status" id="varalStatus">STATUS: FECHADO</div>
+                <div class="control-buttons">
+                    <button class="btn btn-open" id="openvaral">
+                        <i class="fas fa-lock-open"></i> Abrir Varal
                     </button>
-                    <button class="control-btn" onclick="window.location.href='controle_portao.php'">
-                        <i class="fas fa-door-open"></i>
-                        Controlar
+                    <button class="btn btn-close" id="closevaral">
+                        <i class="fas fa-lock"></i> Fechar Varal
                     </button>
                 </div>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-swimming-pool"></i>
-                </div>
-                <h3>Piscina</h3>
-                <p>Controle o sistema de filtragem da piscina.</p>
-                <button class="control-btn" onclick="window.location.href='controle_piscina.php'">
-                    <i class="fas fa-cog"></i>
-                    Controlar
-                </button>
-            </div>
-            
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-seedling"></i>
-                </div>
-                <h3>Horta</h3>
-                <p>Controle o sistema de irrigação da horta.</p>
-                <button class="control-btn" onclick="window.location.href='controle_horta.php'">
-                    <i class="fas fa-cog"></i>
-                    Controlar
-                </button>
-            </div>
-
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-tshirt"></i>
-                </div>
-                <h3>Varal</h3>
-                <p>Controle o sistema de abrir e fechar o varal.</p>
-                <button class="control-btn" onclick="window.location.href='controle_varal.php'">
-                    <i class="fas fa-cog"></i>
-                    Controlar
-                </button>
             </div>
         </div>
     </div>
     
     <script>
-        function showMessage(message, type = 'info') {
-            alert(message);
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Seleciona apenas os botões .control-btn que estão dentro do dashboard
-            const buttons = document.querySelectorAll('.dashboard-section .control-btn');
-            buttons.forEach(button => {
-                if (!button.hasAttribute('onclick')) {
-                    button.addEventListener('click', function() {
-                        showMessage('Funcionalidade em desenvolvimento. Em breve disponível!', 'warning');
-                    });
+            const openBtn = document.getElementById('openvaral');
+            const closeBtn = document.getElementById('closevaral');
+            const varalStatus = document.getElementById('varalStatus');
+            let varalState = false;
+            
+            function updateButtonStates() {
+                openBtn.disabled = varalState;
+                closeBtn.disabled = !varalState;
+                openBtn.style.opacity = varalState ? '0.6' : '1';
+                closeBtn.style.opacity = varalState ? '1' : '0.6';
+                openBtn.style.cursor = varalState ? 'not-allowed' : 'pointer';
+                closeBtn.style.cursor = varalState ? 'pointer' : 'not-allowed';
+            }
+            
+            function updatevaralStatus(isOpen) {
+                varalState = isOpen;
+                if (isOpen) {
+                    varalStatus.textContent = 'STATUS: ABERTO';
+                    varalStatus.style.color = '#2ecc71';
+                } else {
+                    varalStatus.textContent = 'STATUS: FECHADO';
+                    varalStatus.style.color = '#e74c3c';
+                }
+                updateButtonStates();
+            }
+            
+            function sendvaralCommand(action) {
+                fetch('../includes/control_varal.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ action: action })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (action === 'OPEN') {
+                            updatevaralStatus(true);
+                            setTimeout(() => {
+                                updatevaralStatus(true);
+                            }, 5000);
+                        } else if (action === 'CLOSE') {
+                            updatevaralStatus(false);
+                            setTimeout(() => {
+                                updatevaralStatus(false);
+                            }, 5000);
+                        }
+                    } else {
+                        alert('Erro ao enviar comando: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao comunicar com o servidor');
+                });
+            }
+            
+            openBtn.addEventListener('click', function() {
+                if (!varalState) { 
+                    sendvaralCommand('OPEN');
                 }
             });
+            
+            closeBtn.addEventListener('click', function() {
+                if (varalState) { 
+                    sendvaralCommand('CLOSE');
+                }
+            });
+            
+            updatevaralStatus(false);
         });
-
+        
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-        
-        window.onclick = function(event) {
-            if (!event.target.matches('.user-name') && !event.target.closest('.user-name')) {
-                const dropdown = document.getElementById('userDropdown');
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
+            if (dropdown) {
+                dropdown.classList.toggle("show");
             }
         }
     </script>
-</body>
+    </body>
 </html>
