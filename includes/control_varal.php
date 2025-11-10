@@ -26,7 +26,7 @@ try {
     }
     
     $queue[] = [
-        'type' => 'gate',
+        'type' => 'varal',
         'action' => $action,
         'timestamp' => date('Y-m-d H:i:s')
     ];
