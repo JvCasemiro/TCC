@@ -326,8 +326,7 @@ if ($conn === null) {
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            transition: all 0.3s ease;
-            margin: 20px auto 0;
+            transition: all 0.3s ea
             width: fit-content;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -380,7 +379,7 @@ if ($conn === null) {
         <div class="header-content">
             <div class="logo">
                 <img src="../assets/img/logo.png" alt="Logo">
-                Automação Residencial
+                DOMX - Automação Residencial
             </div>
             <div class="user-menu">
                 <div class="user-dropdown">
@@ -398,11 +397,11 @@ if ($conn === null) {
                         </div>
                     </div>
                 </div>
-                <a href="dashboard.php" class="back-btn">
+                <a href="dashboard.php" class="back-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem; border-radius: 25px; background: linear-gradient(135deg, #4a90e2 0%, #3a7bc8 100%); color: white; font-size: 14px; transition: all 0.4s ease-in-out; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);">
                     <i class="fas fa-arrow-left"></i> Voltar
                 </a>
-                <form action="../auth/logout.php" method="post" style="display: inline;">
-                    <button type="submit" class="logout-btn">
+                <form action="../auth/logout.php" method="post" style="display: inline-block; margin-left: 8px;">
+                    <button type="submit" class="logout-btn" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 25px; cursor: pointer; font-size: 14px; transition: all 0.4s ease-in-out; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3); display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fas fa-sign-out-alt"></i> Sair
                     </button>
                 </form>

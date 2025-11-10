@@ -168,35 +168,92 @@ try {
         }
         
         .back-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            gap: 0.5rem;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #4a90e2 0%, #3a7bc8 100%);
             color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+            font-size: 14px;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 20px auto 0;
-            width: fit-content;
-            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         .back-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(52, 152, 219, 0.4);
-            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(74, 144, 226, 0.3);
         }
         
-        .back-btn:active {
-            transform: translateY(1px);
-            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+        .logout-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+                padding: 0 15px;
+            }
+            
+            .user-menu {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            
+            .user-dropdown {
+                order: 1;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .back-btn, .logout-btn {
+                padding: 0.5rem 1rem;
+                font-size: 13px;
+            }
+            
+            .container {
+                padding: 10px;
+                margin-top: 0.5rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+                margin: 1rem 0;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 15px 20px;
+                font-size: 16px;
+                max-width: 100%;
+            }
+            
+            .gate-status {
+                font-size: 22px;
+            }
         }
         
         /* Header styles */
@@ -221,11 +278,83 @@ try {
             height: 40px;
         }
         
-        .user-info {
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #333;
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 15px;
+        }
+        
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-dropdown {
             position: relative;
+            display: inline-block;
+        }
+        
+        .user-name {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-name:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 250px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            z-index: 1000;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+        }
+        
+        .user-info {
+            padding: 15px;
+            border-bottom: 1px solid #2c3e50;
+            min-width: 250px;
+        }
         }
         
         .user-name {
@@ -326,41 +455,40 @@ try {
     </style>
 </head>
 <body>
+    
     <header>
         <div class="header-content">
             <div class="logo">
                 <img src="../assets/img/logo.png" alt="Logo">
+                DOMX - Automação Residencial
             </div>
-            <div class="user-info">
-                <span class="user-name" onclick="toggleDropdown()">
-                    <?php echo htmlspecialchars($user['username']); ?>
-                    <i class="fas fa-chevron-down"></i>
-                </span>
-                <div class="user-dropdown" id="userDropdown">
-                    <div class="dropdown-item">
-                        <i class="fas fa-user"></i> <?php echo htmlspecialchars($user['email']); ?>
+            <div class="user-menu">
+                <div class="user-dropdown">
+                    <span class="user-name" onclick="toggleDropdown()">
+                        <i class="fas fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
+                        <i class="fas fa-chevron-down" style="margin-left: 5px; font-size: 12px;"></i>
+                    </span>
+                    <div class="dropdown-content" id="userDropdown">
+                        <div class="user-info">
+                            <h4><i class="fas fa-user"></i> <?php echo htmlspecialchars($user['username']); ?></h4>
+                            <p><i class="fas fa-envelope"></i> <?php echo htmlspecialchars($user['email']); ?></p>
+                            <p><i class="fas fa-user-tag"></i> <?php echo htmlspecialchars($user['user_type']); ?></p>
+                            <p><i class="far fa-calendar-plus"></i> Criado em: <?php echo $created_at->format('d/m/Y'); ?></p>
+                            <p><i class="fas fa-sync-alt"></i> Atualizado: <?php echo $updated_at->format('d/m/Y H:i'); ?></p>
+                        </div>
                     </div>
-                    <div class="dropdown-item">
-                        <i class="fas fa-calendar-plus"></i> Membro desde: <?php echo $created_at->format('d/m/Y'); ?>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a href="atualizar_usuario.php" class="dropdown-item">
-                        <i class="fas fa-user-edit"></i> Editar Perfil
-                    </a>
-                    <a href="dashboard.php" class="dropdown-item">
-                        <i class="fas fa-tachometer-alt"></i> Painel de Controle
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <form action="../auth/logout.php" method="post" style="display: contents;">
-                        <button type="submit" class="dropdown-item" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-size: 1rem; color: #333; padding: 0.75rem 1rem;">
-                            <i class="fas fa-sign-out-alt"></i> Sair
-                        </button>
-                    </form>
                 </div>
+                <a href="dashboard.php" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+                <form action="../auth/logout.php" method="post">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </form>
             </div>
         </div>
     </header>
-    
     <div class="container">
         <div class="card">
             <h2><i class="fas fa-seedling" style="margin-right: 10px;"></i> Controle da Irrigação da Horta</h2>
