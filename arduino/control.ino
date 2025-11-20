@@ -180,11 +180,11 @@ void loop() {
     Serial.println("PORTAO: FECHANDO");
     digitalWrite(GATE_EN1_PIN, HIGH);
     digitalWrite(GATE_EN2_PIN, LOW);
-    analogWrite(GATE_ENA_PIN, 70);
+    analogWrite(GATE_ENA_PIN, 70); // mais força para fechar
     delay(3500);
     analogWrite(GATE_ENA_PIN, 0);
     digitalWrite(GATE_EN1_PIN, LOW);
-    digitalWrite(GATE_EN2_PIN, LOW);
+    digitalWrite(GATE_EN2_PIN, HIGH);
     Serial.println("PORTAO: FECHADO");
   }
 }
