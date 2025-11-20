@@ -3,7 +3,7 @@
 
 const int NUM_LEDS = 10;  // Ajustado para 10 LEDs conforme a sequência fornecida
 // Array com os pinos dos LEDs na sequência: 2, 13, 4, 5, 6, 7, 8, 9, 10, 11
-const int LED_PINS[10] = {2, 13, 4, 5, 6, 7, 8, 9, 10, 11};
+const int LED_PINS[10] = {42, 13, 4, 45, 6, 7, 8, 9, 10, 11};
 bool ledStatus[NUM_LEDS];
 
 // Controle de temperatura (ar-condicionado)
@@ -20,6 +20,11 @@ const int POOL_RELAY_PIN = 30;  // Pino para controle da piscina
 
 // Pino do relé da irrigação da horta
 const int GARDEN_RELAY_PIN = 31;  // Pino para controle da irrigação da horta
+
+// Pinos da ponte H do portão
+const int GATE_EN1_PIN = 2;  // Direção 1
+const int GATE_EN2_PIN = 3;  // Direção 2
+const int GATE_ENA_PIN = 5;  // PWM de velocidade
 
 // Configuração dos sensores DHT11
 #define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
@@ -59,6 +64,14 @@ void setup() {
   
   pinMode(GARDEN_RELAY_PIN, OUTPUT);
   digitalWrite(GARDEN_RELAY_PIN, LOW);
+
+  // Configurar pinos da ponte H do portão
+pinMode(GATE_EN1_PIN, OUTPUT);
+pinMode(GATE_EN2_PIN, OUTPUT);
+pinMode(GATE_ENA_PIN, OUTPUT);
+digitalWrite(GATE_EN1_PIN, LOW);
+digitalWrite(GATE_EN2_PIN, LOW);
+analogWrite(GATE_ENA_PIN, 0);
   
   // Inicializar sensores DHT11
   dht1.begin();
@@ -153,31 +166,28 @@ void loop() {
       String action = command.substring(5);
       
       if (action == "OPEN") {
-        // Abrir portão - envia pulsos rápidos no pino A0 por 5 segundos
         Serial.println("PORTAO: ABRINDO");
-        unsigned long startTime = millis();
-        while (millis() - startTime < 5000) {
-          digitalWrite(MOTOR_CONTROL_PIN, HIGH);
-          delay(50);  // Pulso HIGH de 50ms
-          digitalWrite(MOTOR_CONTROL_PIN, LOW);
-          delay(50);  // Pulso LOW de 50ms
-        }
-        digitalWrite(MOTOR_CONTROL_PIN, LOW);  // Garantir que está LOW
-        Serial.println("PORTAO: ABERTO");
-      }
-      else if (action == "CLOSE") {
-        // Fechar portão - mantém pino A0 HIGH constante por 5 segundos
-        Serial.println("PORTAO: FECHANDO");
-        digitalWrite(MOTOR_CONTROL_PIN, HIGH);
-        delay(30000);  // Motor ligado por 30 segundos
-        digitalWrite(MOTOR_CONTROL_PIN, LOW);
-        Serial.println("PORTAO: FECHADO");
-      }
-      else {
-        Serial.println("ERRO: Comando de portão inválido. Use GATE:OPEN ou GATE:CLOSE");
-      }
-    }
+        digitalWrite(GATE_EN1_PIN, LOW);
+    digitalWrite(GATE_EN2_PIN, HIGH);
+    analogWrite(GATE_ENA_PIN, 70);
+    delay(3500);
+    analogWrite(GATE_ENA_PIN, 0);
+    digitalWrite(GATE_EN1_PIN, LOW);
+    digitalWrite(GATE_EN2_PIN, LOW);
+    Serial.println("PORTAO: ABERTO");
   }
+  else if (action == "CLOSE") {
+    Serial.println("PORTAO: FECHANDO");
+    digitalWrite(GATE_EN1_PIN, HIGH);
+    digitalWrite(GATE_EN2_PIN, LOW);
+    analogWrite(GATE_ENA_PIN, 70);
+    delay(3500);
+    analogWrite(GATE_ENA_PIN, 0);
+    digitalWrite(GATE_EN1_PIN, LOW);
+    digitalWrite(GATE_EN2_PIN, LOW);
+    Serial.println("PORTAO: FECHADO");
+  }
+}
   
   // Leitura periódica do sensor DHT11
   unsigned long currentMillis = millis();
@@ -212,4 +222,5 @@ void loop() {
     // Finaliza a linha
     Serial.println();
   }
+}
 }

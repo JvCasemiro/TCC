@@ -76,7 +76,7 @@ class ArduinoDaemon:
                 )
                 
                 # Dá um tempo para o Arduino reiniciar
-                time.sleep(2)
+                time.sleep(2.5)
                 
                 # Limpa buffers
                 ser.reset_input_buffer()
@@ -86,13 +86,15 @@ class ArduinoDaemon:
                 test_command = "LED1:ON\n"
                 print(f"  Enviando comando: {test_command.strip()}")
                 ser.write(test_command.encode())
-                time.sleep(0.5)
+                time.sleep(0.7)
                 
                 # Verifica resposta
                 if ser.in_waiting > 0:
                     response = ser.readline().decode(errors='ignore').strip()
                     print(f"  Resposta do Arduino: {response}")
-                    if 'LIGADO' in response.upper() or 'DESLIGADO' in response.upper() or 'OK' in response.upper():
+                    upper_resp = response.upper()
+                    if ('LIGADO' in upper_resp or 'DESLIGADO' in upper_resp or 'OK' in upper_resp or
+                        upper_resp.startswith('LE') or 'LED' in upper_resp):
                         print(f"  Arduino encontrado em {port.device}!")
                         # Desliga o LED de teste
                         ser.write(b"LED1:OFF\n")
