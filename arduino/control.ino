@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <DHT.h>
+#include <Servo.h>
 
 const int NUM_LEDS = 10;  // Ajustado para 10 LEDs conforme a sequência fornecida
 // Array com os pinos dos LEDs na sequência: 2, 13, 4, 5, 6, 7, 8, 9, 10, 11
@@ -14,6 +15,10 @@ bool tempStatus[NUM_TEMPS];
 
 // Pino do motor DC (portão)
 const int MOTOR_CONTROL_PIN = 12;  // Pino único para controle do portão
+
+Servo gateServo;
+const int GATE_OPEN_ANGLE = 40;
+const int GATE_CLOSE_ANGLE = 180;
 
 // Pino do relé da piscina
 const int POOL_RELAY_PIN = 30;  // Pino para controle da piscina
@@ -55,8 +60,8 @@ void setup() {
   }
   
   // Configurar pinos de saída
-  pinMode(MOTOR_CONTROL_PIN, OUTPUT);
-  digitalWrite(MOTOR_CONTROL_PIN, LOW);
+  gateServo.attach(MOTOR_CONTROL_PIN);
+  gateServo.write(GATE_CLOSE_ANGLE);
   
   // Configurar pinos dos relés
   pinMode(POOL_RELAY_PIN, OUTPUT);
@@ -167,27 +172,17 @@ void loop() {
       
       if (action == "OPEN") {
         Serial.println("PORTAO: ABRINDO");
-        digitalWrite(GATE_EN1_PIN, LOW);
-    digitalWrite(GATE_EN2_PIN, HIGH);
-    analogWrite(GATE_ENA_PIN, 70);
-    delay(3500);
-    analogWrite(GATE_ENA_PIN, 0);
-    digitalWrite(GATE_EN1_PIN, LOW);
-    digitalWrite(GATE_EN2_PIN, LOW);
-    Serial.println("PORTAO: ABERTO");
-  }
-  else if (action == "CLOSE") {
-    Serial.println("PORTAO: FECHANDO");
-    digitalWrite(GATE_EN1_PIN, HIGH);
-    digitalWrite(GATE_EN2_PIN, LOW);
-    analogWrite(GATE_ENA_PIN, 70); // mais força para fechar
-    delay(3500);
-    analogWrite(GATE_ENA_PIN, 0);
-    digitalWrite(GATE_EN1_PIN, LOW);
-    digitalWrite(GATE_EN2_PIN, HIGH);
-    Serial.println("PORTAO: FECHADO");
-  }
-}
+        gateServo.write(GATE_OPEN_ANGLE);
+        delay(800);
+        Serial.println("PORTAO: ABERTO");
+      }
+      else if (action == "CLOSE") {
+        Serial.println("PORTAO: FECHANDO");
+        gateServo.write(GATE_CLOSE_ANGLE);
+        delay(800);
+        Serial.println("PORTAO: FECHADO");
+      }
+    }
   
   // Leitura periódica do sensor DHT11
   unsigned long currentMillis = millis();
