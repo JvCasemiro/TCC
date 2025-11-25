@@ -210,18 +210,25 @@ class ArduinoDaemon:
                 print(f"Resposta do Arduino: {response}")
                 if 'TEST' in response:
                     print("Conexão com o Arduino estabelecida com sucesso!")
+                    # Sincroniza estados após conectar
+                    try:
+                        self._sync_all_lights()
+                        self._sync_all_temperatures()
+                    except Exception as e:
+                        print(f"Aviso: falha ao sincronizar após conexão: {e}")
                     return True
+            else:
+                # Se chegou aqui, não recebeu a resposta esperada
+                print("Aviso: Não foi possível verificar a conexão com o Arduino")
+                print("A conexão foi estabelecida, mas o Arduino não respondeu como esperado")
+                # Ainda assim tenta sincronizar os estados
+                try:
+                    self._sync_all_lights()
+                    self._sync_all_temperatures()
+                except Exception as e:
+                    print(f"Aviso: falha ao sincronizar após conexão parcial: {e}")
+                return True
             
-            # Se chegou aqui, não recebeu a resposta esperada
-            print("Aviso: Não foi possível verificar a conexão com o Arduino")
-            print("A conexão foi estabelecida, mas o Arduino não respondeu como esperado")
-            return True
-            
-            
-            self._sync_all_lights()
-            self._sync_all_temperatures()
-            
-            return True
         except (serial.SerialException, OSError) as e:
             print(f"Erro ao conectar ao Arduino: {str(e)}")
             self.serial_connection = None

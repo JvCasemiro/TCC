@@ -183,6 +183,12 @@ void loop() {
         Serial.println("PORTAO: FECHADO");
       }
     }
+    else if (command.startsWith("ECHO:")) {
+      // Echo back the payload after "ECHO:"
+      String payload = command.substring(5);
+      Serial.println(payload);
+    }
+  }
   
   // Leitura periódica do sensor DHT11
   unsigned long currentMillis = millis();
