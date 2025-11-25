@@ -158,6 +158,7 @@ def acionar_portao():
         queue.append({
             'type': 'gate',
             'action': 'OPEN',
+            'auto': True,
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         })
         

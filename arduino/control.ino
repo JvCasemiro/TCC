@@ -19,6 +19,8 @@ const int MOTOR_CONTROL_PIN = 12;  // Pino único para controle do portão
 Servo gateServo;
 const int GATE_OPEN_ANGLE = 40;
 const int GATE_CLOSE_ANGLE = 180;
+bool gateIsOpen = false;
+unsigned long gateAutoCloseAt = 0;
 
 // Pino do relé da piscina
 const int POOL_RELAY_PIN = 30;  // Pino para controle da piscina
@@ -71,12 +73,12 @@ void setup() {
   digitalWrite(GARDEN_RELAY_PIN, LOW);
 
   // Configurar pinos da ponte H do portão
-pinMode(GATE_EN1_PIN, OUTPUT);
-pinMode(GATE_EN2_PIN, OUTPUT);
-pinMode(GATE_ENA_PIN, OUTPUT);
-digitalWrite(GATE_EN1_PIN, LOW);
-digitalWrite(GATE_EN2_PIN, LOW);
-analogWrite(GATE_ENA_PIN, 0);
+  pinMode(GATE_EN1_PIN, OUTPUT);
+  pinMode(GATE_EN2_PIN, OUTPUT);
+  pinMode(GATE_ENA_PIN, OUTPUT);
+  digitalWrite(GATE_EN1_PIN, LOW);
+  digitalWrite(GATE_EN2_PIN, LOW);
+  analogWrite(GATE_ENA_PIN, 0);
   
   // Inicializar sensores DHT11
   dht1.begin();
@@ -168,19 +170,34 @@ void loop() {
       Serial.println("IRRIGACAO HORTA: DESLIGADA");
     }
     else if (command.startsWith("GATE:")) {
-      String action = command.substring(5);
+      String payload = command.substring(5);
+      String action = payload;
+      String mode = "";
+      int sep = payload.indexOf(':');
+      if (sep != -1) {
+        action = payload.substring(0, sep);
+        mode = payload.substring(sep + 1);
+      }
       
       if (action == "OPEN") {
         Serial.println("PORTAO: ABRINDO");
         gateServo.write(GATE_OPEN_ANGLE);
         delay(800);
         Serial.println("PORTAO: ABERTO");
+        gateIsOpen = true;
+        if (mode == "AUTO") {
+          gateAutoCloseAt = millis() + 20000UL;
+        } else {
+          gateAutoCloseAt = 0;
+        }
       }
       else if (action == "CLOSE") {
         Serial.println("PORTAO: FECHANDO");
         gateServo.write(GATE_CLOSE_ANGLE);
         delay(800);
         Serial.println("PORTAO: FECHADO");
+        gateIsOpen = false;
+        gateAutoCloseAt = 0;
       }
     }
     else if (command.startsWith("ECHO:")) {
@@ -223,5 +240,13 @@ void loop() {
     // Finaliza a linha
     Serial.println();
   }
-}
+  
+  if (gateIsOpen && gateAutoCloseAt > 0 && (long)(millis() - gateAutoCloseAt) >= 0) {
+    Serial.println("PORTAO: FECHANDO");
+    gateServo.write(GATE_CLOSE_ANGLE);
+    delay(800);
+    Serial.println("PORTAO: FECHADO");
+    gateIsOpen = false;
+    gateAutoCloseAt = 0;
+  }
 }

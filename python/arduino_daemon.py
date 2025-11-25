@@ -355,12 +355,14 @@ class ArduinoDaemon:
         """Processa comando do portão"""
         try:
             action = command.get('action')
+            auto = bool(command.get('auto', False))
             
             if action not in ['OPEN', 'CLOSE']:
                 print(f"Ação de portão inválida: {action}")
                 return False
             
-            arduino_command = f"GATE:{action}\n"
+            suffix = ':AUTO' if (action == 'OPEN' and auto) else ''
+            arduino_command = f"GATE:{action}{suffix}\n"
             print(f"Enviando comando de portão: {arduino_command.strip()}")
             
             self.serial_connection.reset_input_buffer()
