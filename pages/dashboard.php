@@ -531,18 +531,6 @@ if ($conn === null) {
                     Controlar
                 </button>
             </div>
-
-            <div class="card">
-                <div class="icon">
-                    <i class="fas fa-tshirt"></i>
-                </div>
-                <h3>Varal</h3>
-                <p>Controle o sistema de abrir e fechar o varal.</p>
-                <button class="control-btn" onclick="window.location.href='controle_varal.php'">
-                    <i class="fas fa-cog"></i>
-                    Controlar
-                </button>
-            </div>
         </div>
     </div>
     
