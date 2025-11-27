@@ -318,6 +318,30 @@ class ArduinoDaemon:
             light_id = command.get('light_id')
             status = command.get('status')
             
+            # Controle da piscina
+            if command.get('pool') or command.get('type') == 'pool':
+                if not status:
+                    print(f"Comando de piscina inválido: {command}")
+                    return False
+                arduino_command = f"POOL:{'ON' if status == 'ON' else 'OFF'}\n"
+                print(f"Enviando comando de piscina: {arduino_command.strip()}")
+                
+                if not hasattr(self, 'serial_connection') or not self.serial_connection or not self.serial_connection.is_open:
+                    print("Erro: Conexão serial não está disponível")
+                    return False
+                
+                self.serial_connection.reset_input_buffer()
+                self.serial_connection.write(arduino_command.encode())
+                self.serial_connection.flush()
+                
+                time.sleep(0.3)
+                
+                if self.serial_connection.in_waiting > 0:
+                    response = self.serial_connection.readline().decode().strip()
+                    print(f"Resposta do Arduino: {response}")
+                
+                return True
+            
             if not light_id or not status:
                 print(f"Comando inválido: {command}")
                 return False

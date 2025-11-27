@@ -4,7 +4,7 @@
 
 const int NUM_LEDS = 10;  // Ajustado para 10 LEDs conforme a sequência fornecida
 // Array com os pinos dos LEDs na sequência: 2, 13, 4, 5, 6, 7, 8, 9, 10, 11
-const int LED_PINS[10] = {42, 13, 4, 45, 6, 7, 8, 9, 10, 11};
+const int LED_PINS[10] = {2, 13, 4, 5, 6, 7, 8, 9, 10, 11};
 bool ledStatus[NUM_LEDS];
 
 // Controle de temperatura (ar-condicionado)

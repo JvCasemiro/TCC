@@ -1,6 +1,6 @@
 {
-  "temperature1": 26.8,
-  "temperature2": 27.4,
-  "last_update": "2025-11-25 21:48:19",
-  "status": "online"
+  "temperature1": 0,
+  "temperature2": 0,
+  "last_update": "2025-11-27 20:12:23",
+  "status": "error"
 }
