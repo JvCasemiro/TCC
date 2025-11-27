@@ -67,10 +67,12 @@ void setup() {
   
   // Configurar pinos dos relés
   pinMode(POOL_RELAY_PIN, OUTPUT);
-  digitalWrite(POOL_RELAY_PIN, LOW);
+  // Relé ativo em LOW: HIGH = DESLIGADO (inicial), LOW = LIGADO
+  digitalWrite(POOL_RELAY_PIN, HIGH);
   
   pinMode(GARDEN_RELAY_PIN, OUTPUT);
-  digitalWrite(GARDEN_RELAY_PIN, LOW);
+  // Relé ativo em LOW: HIGH = DESLIGADO (inicial), LOW = LIGADO
+  digitalWrite(GARDEN_RELAY_PIN, HIGH);
 
   // Configurar pinos da ponte H do portão
   pinMode(GATE_EN1_PIN, OUTPUT);
@@ -150,23 +152,23 @@ void loop() {
       }
     }
     else if (command == "POOL:ON") {
-      // Ligar piscina
-      digitalWrite(POOL_RELAY_PIN, HIGH);
+      // Ligar piscina (relé ativo em LOW)
+      digitalWrite(POOL_RELAY_PIN, LOW);
       Serial.println("PISCINA: LIGADA");
     }
     else if (command == "POOL:OFF") {
-      // Desligar piscina
-      digitalWrite(POOL_RELAY_PIN, LOW);
+      // Desligar piscina (relé ativo em LOW)
+      digitalWrite(POOL_RELAY_PIN, HIGH);
       Serial.println("PISCINA: DESLIGADA");
     }
     else if (command == "GARDEN:ON") {
-      // Ligar irrigação da horta
-      digitalWrite(GARDEN_RELAY_PIN, HIGH);
+      // Ligar irrigação da horta (relé ativo em LOW)
+      digitalWrite(GARDEN_RELAY_PIN, LOW);
       Serial.println("IRRIGACAO HORTA: LIGADA");
     }
     else if (command == "GARDEN:OFF") {
-      // Desligar irrigação da horta
-      digitalWrite(GARDEN_RELAY_PIN, LOW);
+      // Desligar irrigação da horta (relé ativo em LOW)
+      digitalWrite(GARDEN_RELAY_PIN, HIGH);
       Serial.println("IRRIGACAO HORTA: DESLIGADA");
     }
     else if (command.startsWith("GATE:")) {
