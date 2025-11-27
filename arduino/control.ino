@@ -28,11 +28,6 @@ const int POOL_RELAY_PIN = 30;  // Pino para controle da piscina
 // Pino do relé da irrigação da horta
 const int GARDEN_RELAY_PIN = 31;  // Pino para controle da irrigação da horta
 
-// Pinos da ponte H do portão
-const int GATE_EN1_PIN = 2;  // Direção 1
-const int GATE_EN2_PIN = 3;  // Direção 2
-const int GATE_ENA_PIN = 5;  // PWM de velocidade
-
 // Configuração dos sensores DHT11
 #define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
 #define DHTPIN2 A3       // Segundo sensor DHT11 conectado ao A2
@@ -73,14 +68,7 @@ void setup() {
   pinMode(GARDEN_RELAY_PIN, OUTPUT);
   // Relé ativo em LOW: HIGH = DESLIGADO (inicial), LOW = LIGADO
   digitalWrite(GARDEN_RELAY_PIN, HIGH);
-
-  // Configurar pinos da ponte H do portão
-  pinMode(GATE_EN1_PIN, OUTPUT);
-  pinMode(GATE_EN2_PIN, OUTPUT);
-  pinMode(GATE_ENA_PIN, OUTPUT);
-  digitalWrite(GATE_EN1_PIN, LOW);
-  digitalWrite(GATE_EN2_PIN, LOW);
-  analogWrite(GATE_ENA_PIN, 0);
+ 
   
   // Inicializar sensores DHT11
   dht1.begin();
