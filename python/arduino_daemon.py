@@ -45,7 +45,7 @@ class ArduinoDaemon:
         print(f"Portas encontradas: {[p.device for p in ports]}")
         
         # Lista de identificadores conhecidos do Arduino
-        arduino_ids = ['arduino', 'ch340', 'cp210', 'ftdi', 'usb serial']
+        arduino_ids = ['arduino', 'uno', 'mega', 'ch340', 'cp210', 'ftdi', 'usb serial']
         
         for port in ports:
             print(f"\nVerificando porta: {port.device}")
@@ -75,8 +75,32 @@ class ArduinoDaemon:
                     write_timeout=2
                 )
                 
+                # Tenta forçar o reset via DTR para capturar o banner de inicialização
+                try:
+                    ser.dtr = False
+                    time.sleep(0.1)
+                    ser.dtr = True
+                except Exception:
+                    pass
+                
                 # Dá um tempo para o Arduino reiniciar
                 time.sleep(2.5)
+                
+                # Verifica se recebemos algum banner de inicialização
+                banner_found = False
+                start_time = time.time()
+                while time.time() - start_time < 4.0:
+                    if ser.in_waiting > 0:
+                        line = ser.readline().decode(errors='ignore').strip()
+                        if line:
+                            print(f"  RX: {line}")
+                        upper = line.upper()
+                        if ('SISTEMA DE CONTROLE' in upper or 'COMANDOS ACEITOS' in upper or
+                            upper.startswith('DHT:') or 'PORTAO:' in upper or 'PISCINA:' in upper):
+                            banner_found = True
+                            break
+                    else:
+                        time.sleep(0.05)
                 
                 # Limpa buffers
                 ser.reset_input_buffer()
@@ -86,27 +110,39 @@ class ArduinoDaemon:
                 test_command = "LED1:ON\n"
                 print(f"  Enviando comando: {test_command.strip()}")
                 ser.write(test_command.encode())
-                time.sleep(0.7)
+                ser.flush()
+                time.sleep(1.0)
                 
-                # Verifica resposta
-                if ser.in_waiting > 0:
-                    response = ser.readline().decode(errors='ignore').strip()
-                    print(f"  Resposta do Arduino: {response}")
-                    upper_resp = response.upper()
-                    if ('LIGADO' in upper_resp or 'DESLIGADO' in upper_resp or 'OK' in upper_resp or
-                        upper_resp.startswith('LE') or 'LED' in upper_resp):
-                        print(f"  Arduino encontrado em {port.device}!")
-                        # Desliga o LED de teste
-                        ser.write(b"LED1:OFF\n")
-                        ser.flush()
-                        time.sleep(0.1)
-                        ser.close()
-                        print("="*50 + "\n")
-                        return port.device
+                # Tenta ler múltiplas linhas por um curto período
+                got_valid_reply = False
+                start_time = time.time()
+                while time.time() - start_time < 2.0 and ser.in_waiting >= 0:
+                    if ser.in_waiting > 0:
+                        response = ser.readline().decode(errors='ignore').strip()
+                        if response:
+                            print(f"  Resposta do Arduino: {response}")
+                        upper_resp = response.upper()
+                        if ('LIGADO' in upper_resp or 'DESLIGADO' in upper_resp or 'OK' in upper_resp or
+                            upper_resp.startswith('LE') or 'LED' in upper_resp):
+                            got_valid_reply = True
+                            break
+                    else:
+                        time.sleep(0.05)
+                
+                if got_valid_reply:
+                    print(f"  Arduino encontrado em {port.device}!")
+                    # Desliga o LED de teste
+                    ser.write(b"LED1:OFF\n")
+                    ser.flush()
+                    time.sleep(0.1)
+                    ser.close()
+                    print("="*50 + "\n")
+                    return port.device
                 
                 # Se não obteve resposta, tenta um comando simples de eco
                 ser.write(b"ECHO:TEST\n")
-                time.sleep(0.5)
+                ser.flush()
+                time.sleep(0.8)
                 if ser.in_waiting > 0:
                     response = ser.readline().decode(errors='ignore').strip()
                     print(f"  Resposta ao ECHO: {response}")
@@ -115,6 +151,13 @@ class ArduinoDaemon:
                         ser.close()
                         print("="*50 + "\n")
                         return port.device
+                
+                # Se parece ser Arduino, considere válido mesmo sem resposta
+                if is_arduino_like:
+                    print(f"  Parece ser Arduino e a porta respondeu ao abrir. Aceitando {port.device}.")
+                    ser.close()
+                    print("="*50 + "\n")
+                    return port.device
                 
                 # Se chegou até aqui, não é um Arduino compatível
                 print(f"  Dispositivo em {port.device} não respondeu como esperado")
@@ -190,11 +233,33 @@ class ArduinoDaemon:
                 dsrdtr=False
             )
             
-            # Desativa o reset automático ao conectar
-            self.serial_connection.dtr = False
+            # Tenta forçar o reset via DTR para capturar o banner de inicialização
+            try:
+                self.serial_connection.dtr = False
+                time.sleep(0.1)
+                self.serial_connection.dtr = True
+            except Exception:
+                pass
             
-            # Dá tempo para o Arduino reiniciar
-            time.sleep(2)
+            # Dá tempo para o Arduino reiniciar e emitir o banner
+            time.sleep(2.5)
+            
+            # Tenta ler o banner de inicialização
+            try:
+                start_time = time.time()
+                while time.time() - start_time < 3.0:
+                    if self.serial_connection.in_waiting > 0:
+                        line = self.serial_connection.readline().decode(errors='ignore').strip()
+                        if line:
+                            print(f"RX: {line}")
+                        upper = line.upper()
+                        if ('SISTEMA DE CONTROLE' in upper or 'COMANDOS ACEITOS' in upper or
+                            upper.startswith('DHT:') or 'PORTAO:' in upper or 'PISCINA:' in upper):
+                            break
+                    else:
+                        time.sleep(0.05)
+            except Exception:
+                pass
             
             # Limpa buffers
             self.serial_connection.reset_input_buffer()
