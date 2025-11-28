@@ -254,12 +254,12 @@ class ArduinoController:
         try:
             temperature_id = self.get_temperature_id_by_name(temperature_name)
             if not temperature_id:
-                print(f"Erro: Termostato '{temperature_name}' não encontrado")
+                print(f"Erro: arcondicionado '{temperature_name}' não encontrado")
                 return False
                 
             status_str = self.read_temperature_status()
             if status_str is None:
-                print("Erro: Não foi possível ler o status dos termostatos")
+                print("Erro: Não foi possível ler o status dos arcondicionados")
                 return False
                 
             if not self.connect_to_arduino():

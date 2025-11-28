@@ -57,12 +57,12 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQ
                 if ($stmt->execute()) {
                     sendJsonResponse([
                         'success' => true,
-                        'message' => 'Termostato cadastrado com sucesso!',
+                        'message' => 'arcondicionado cadastrado com sucesso!',
                         'id' => $conn->lastInsertId()
                     ]);
                 } else {
                     $errorInfo = $stmt->errorInfo();
-                    throw new Exception('Erro ao cadastrar termostato: ' . ($errorInfo[2] ?? 'Erro desconhecido'));
+                    throw new Exception('Erro ao cadastrar arcondicionado: ' . ($errorInfo[2] ?? 'Erro desconhecido'));
                 }
             } else {
                 throw new Exception('Ação inválida');
@@ -459,7 +459,7 @@ $devices = [
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
-        /* Estilo específico para o botão de cadastrar termostato */
+        /* Estilo específico para o botão de cadastrar arcondicionado */
         .device-card[data-category="climate"] .btn-monitor {
             background: linear-gradient(135deg, rgba(33, 150, 243, 0.2) 0%, rgba(25, 118, 210, 0.2) 100%);
             color: #2196F3;
@@ -755,7 +755,7 @@ $devices = [
                         </a>
                     <?php elseif ($device['category'] === 'climate'): ?>
                         <button type="button" class="btn-monitor" onclick="event.stopPropagation(); document.getElementById('termostatoModal').style.display='block'">
-                            <i class="fas fa-thermometer-half"></i> Cadastrar Termostato
+                            <i class="fas fa-thermometer-half"></i> Cadastrar Ar-Condicionado
                         </button>
                         <a href="#" class="btn-monitor" onclick="event.stopPropagation(); showMonitoringModal(<?php echo $device['id']; ?>, '<?php echo addslashes($device['name']); ?>', '<?php echo addslashes($device['location']); ?>', '<?php echo $device['category']; ?>')">
                             <i class="fas fa-chart-line"></i> Monitorar
@@ -1017,7 +1017,7 @@ $devices = [
             }
         }
         
-        /* Estilo específico para o modal de termostato */
+        /* Estilo específico para o modal de arcondicionado */
         #termostatoModal .modal-header {
             background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
             border-bottom: none;
@@ -1270,7 +1270,7 @@ $devices = [
 
         function updateThermostatsTable(thermostats) {
             if (!thermostats || !Array.isArray(thermostats)) {
-                console.error('Dados de termostatos inválidos ou não fornecidos');
+                console.error('Dados de arcondicionado inválidos ou não fornecidos');
                 return;
             }
             
@@ -1292,7 +1292,7 @@ $devices = [
                 if (onEl) onEl.textContent = thermostatsOn;
                 if (percentageEl) percentageEl.textContent = `${percentage}%`;
                 
-                // Se houver pelo menos um termostato, exibe as informações do primeiro
+                // Se houver pelo menos um arcondicionado, exibe as informações do primeiro
                 if (thermostats.length > 0) {
                     const thermo = thermostats[0];
                     const tempEl = document.getElementById('temperature-value');
@@ -1304,10 +1304,10 @@ $devices = [
                     if (modeEl) modeEl.textContent = thermo.Modo || 'N/A';
                 }
                 
-                console.log(`Atualizado: ${thermostatsOn} de ${totalThermostats} termostatos ligados (${percentage}%)`);
+                console.log(`Atualizado: ${thermostatsOn} de ${totalThermostats} arcondicionado ligados (${percentage}%)`);
                 
             } catch (error) {
-                console.error('Erro ao atualizar contadores de termostatos:', error);
+                console.error('Erro ao atualizar contadores de arcondicionado:', error);
             }
         }
 
@@ -1401,11 +1401,11 @@ $devices = [
             
             // Define o título e ícone com base no tipo de dispositivo
             if (deviceCategory === 'climate') {
-                titleElement.innerHTML = '<i class="fas fa-thermometer-half"></i> Monitoramento de Termostato';
+                titleElement.innerHTML = '<i class="fas fa-thermometer-half"></i> Monitoramento de Ar-Condicionado';
                 
                 // Atualiza os textos dos cards
-                document.querySelector('#monitoringModal .col-md-4:nth-child(1) .card-subtitle').textContent = 'Total de Termostatos';
-                document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Termostatos Ligados';
+                document.querySelector('#monitoringModal .col-md-4:nth-child(1) .card-subtitle').textContent = 'Total de Ar-Condicionado';
+                document.querySelector('#monitoringModal .col-md-4:nth-child(2) .card-subtitle').textContent = 'Ar-Condicionado Ligados';
                 document.querySelector('#monitoringModal .col-md-4:nth-child(3) .card-subtitle').textContent = 'Porcentagem Ligados';
             } else {
                 // Mantém o padrão para lâmpadas
@@ -1788,11 +1788,11 @@ $devices = [
                                 window.location.reload();
                             }, 1500);
                         } else {
-                            throw new Error(data?.message || 'Erro ao salvar termostato');
+                            throw new Error(data?.message || 'Erro ao salvar arcondicionado');
                         }
                     } catch (error) {
                         console.error('Error:', error);
-                        showMessage(error.message || 'Ocorreu um erro ao salvar o termostato', 'error');
+                        showMessage(error.message || 'Ocorreu um erro ao salvar o arcondicionado', 'error');
                     } finally {
                         saveBtn.disabled = false;
                         saveBtn.innerHTML = originalBtnText;
@@ -1803,7 +1803,7 @@ $devices = [
             const lampadaModal = document.getElementById('lampadaModal');
             const lampadaForm = document.getElementById('lampadaForm');
             
-            // Configuração do modal de termostato
+            // Configuração do modal de arcondicionado
             const termostatoModal = document.getElementById('termostatoModal');
             
             // Configurar fechamento dos modais
@@ -1821,7 +1821,7 @@ $devices = [
                 }
             });
             
-            // Resetar formulário ao fechar o modal de termostato
+            // Resetar formulário ao fechar o modal de arcondicionado
             if (termostatoModal) {
                 termostatoModal.addEventListener('click', function(event) {
                     if (event.target === termostatoModal || event.target.classList.contains('close-btn')) {
@@ -1869,7 +1869,7 @@ $devices = [
                 };
             }
             
-            // Envio do formulário de termostato
+            // Envio do formulário de arcondicionado
             if (termostatoForm) {
                 termostatoForm.onsubmit = function(e) {
                     e.preventDefault();
@@ -1882,9 +1882,9 @@ $devices = [
                         return false;
                     }
                     
-                    // Aqui você pode adicionar a lógica para enviar os dados do termostato
+                    // Aqui você pode adicionar a lógica para enviar os dados do arcondicionado
                     // Por enquanto, apenas mostramos uma mensagem de sucesso
-                    showMessage('Termostato cadastrado com sucesso!', 'success');
+                    showMessage('Ar-Condicionado cadastrado com sucesso!', 'success');
                     termostatoModal.style.display = 'none';
                     termostatoForm.reset();
                     
@@ -1984,18 +1984,18 @@ $devices = [
         </div>
     </div>
     
-    <!-- Modal de Cadastro de Termostato -->
+    <!-- Modal de Cadastro de arcondicionado -->
     <div id="termostatoModal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2><i class="fas fa-thermometer-half"></i> Cadastrar Novo Termostato</h2>
+                <h2><i class="fas fa-thermometer-half"></i> Cadastrar Novo Ar-Condicionado</h2>
                 <span class="close-btn" onclick="document.getElementById('termostatoModal').style.display='none';">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="termostatoForm">
                     <div class="form-group">
-                        <label for="termostatoNome">Nome do Termostato</label>
-                        <input type="text" id="termostatoNome" name="nome" placeholder="Ex: Termostato da Sala" required>
+                        <label for="termostatoNome">Nome do Ar-Condicionado</label>
+                        <input type="text" id="termostatoNome" name="nome" placeholder="Ex: Ar-Condicionado da Sala" required>
                     </div>
                     <div class="form-group">
                         <label for="termostatoComodo">Cômodo</label>

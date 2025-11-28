@@ -37,7 +37,7 @@ try {
     }
 } catch (PDOException $e) {
     // Log error and use empty array if there's a database error
-    error_log('Erro ao buscar termostatos: ' . $e->getMessage());
+    error_log('Erro ao buscar arcondicionados: ' . $e->getMessage());
     $zones = [];
 }
 ?>
@@ -656,8 +656,8 @@ try {
             <?php if (empty($zones)): ?>
             <div class="no-thermostats" style="grid-column: 1 / -1; text-align: center; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 1rem;">
                 <i class="fas fa-thermometer-half" style="font-size: 48px; color: #327fddff; margin-bottom: 15px;"></i>
-                <h3 style="margin-bottom: 10px;">Nenhum termostato cadastrado</h3>
-                <p style="margin-bottom: 20px; color: #ccc;">Adicione um termostato na página de Dispositivos IoT para começar</p>
+                <h3 style="margin-bottom: 10px;">Nenhum arcondicionado cadastrado</h3>
+                <p style="margin-bottom: 20px; color: #ccc;">Adicione um arcondicionado na página de Dispositivos IoT para começar</p>
             </div>
             
         <?php else: ?>
@@ -763,7 +763,7 @@ try {
             .then(data => {
                 if (data.success) {
                     updateTemperatureState(zoneId, newStatus === 'ON');
-                    showMessage(`Termostato ${newStatus === 'ON' ? 'ligado' : 'desligado'} com sucesso!`, 'success');
+                    showMessage(`arcondicionado ${newStatus === 'ON' ? 'ligado' : 'desligado'} com sucesso!`, 'success');
                 } else {
                     showMessage(data.message || 'Erro ao atualizar temperatura', 'error');
                     // Reverte o checkbox se houver erro
@@ -953,7 +953,7 @@ try {
                 }
                 
                 // Atualiza a mensagem com o nome da zona
-                messageElement.innerHTML = `Tem certeza que deseja remover o termostato <strong style="color: white;">${zoneName}</strong>?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>`;
+                messageElement.innerHTML = `Tem certeza que deseja remover o arcondicionado <strong style="color: white;">${zoneName}</strong>?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>`;
                 
                 // Configura o manipulador de confirmação
                 let isConfirmed = false;
@@ -1034,7 +1034,7 @@ try {
                 closeBtn.addEventListener('click', cancelHandler);
                 
             } catch (error) {
-                console.error('Erro ao buscar nome do termostato:', error);
+                console.error('Erro ao buscar nome do arcondicionado:', error);
                 // Se não conseguir obter o nome, mostra uma mensagem genérica
                 messageElement.innerHTML = 'Tem certeza que deseja remover esta zona?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>';
                 
@@ -1078,7 +1078,7 @@ try {
                 }
                 
                 // Show confirmation with zone name
-                messageElement.innerHTML = `Tem certeza que deseja remover o termostato <strong style="color: white;">${zoneName}</strong>?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>`;
+                messageElement.innerHTML = `Tem certeza que deseja remover o arcondicionado <strong style="color: white;">${zoneName}</strong>?<br><br><p style="color: #ffc107;"><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</p>`;
                 modal.style.display = 'flex';
                 
                 // Set up confirmation handler
@@ -1134,9 +1134,9 @@ try {
                 cancelBtn.addEventListener('click', cancelHandler);
                 document.getElementById('modalCloseBtn').addEventListener('click', cancelHandler);
             } catch (error) {
-                console.error('Erro ao buscar nome do termostato:', error);
+                console.error('Erro ao buscar nome do arcondicionado:', error);
                 // If we can't get the zone name, just show a generic message
-                messageElement.innerHTML = '<strong style="color: white;">Tem certeza que deseja remover o termostato?<br><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</strong>';
+                messageElement.innerHTML = '<strong style="color: white;">Tem certeza que deseja remover o arcondicionado?<br><i class="fas fa-exclamation-circle"></i> Esta ação não pode ser desfeita.</strong>';
                 modal.style.display = 'flex';
             }
         }

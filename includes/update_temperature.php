@@ -70,7 +70,7 @@ try {
     $stmt->execute([$status, $temperatureId]);
     
     if ($stmt->rowCount() === 0) {
-        throw new Exception('Termostato não encontrado');
+        throw new Exception('arcondicionado não encontrado');
     }
     
     $temperatureController->updateTemperatureStatus($temperatureId, $status);
@@ -103,7 +103,7 @@ try {
         error_log("Erro ao controlar o Arduino: HTTP $httpCode - $curlError - $result");
     }
     
-    sendJsonResponse(true, "Termostato {$temperatureId} " . strtolower($status), [
+    sendJsonResponse(true, "arcondicionado {$temperatureId} " . strtolower($status), [
         'status' => $status,
         'porcentagem' => $status === 'ON' ? 100 : 0
     ]);

@@ -63,7 +63,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Erro ao buscar informações das termostatos: ' . $e->getMessage()
+        'message' => 'Erro ao buscar informações das arcondicionados: ' . $e->getMessage()
     ]);
 }
 ?>

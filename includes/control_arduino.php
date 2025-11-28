@@ -69,15 +69,15 @@ try {
         $device = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$device) {
-            throw new Exception('Termostato não encontrado no banco de dados');
+            throw new Exception('arcondicionado não encontrado no banco de dados');
         }
 
-        // Determina o índice (1..N) do termostato com base na ordenação por ID
+        // Determina o índice (1..N) do arcondicionado com base na ordenação por ID
         $idxStmt = $conn->query("SELECT ID_Temperatura FROM Temperaturas ORDER BY ID_Temperatura");
         $ids = $idxStmt->fetchAll(PDO::FETCH_COLUMN);
         $position = array_search($temperatureId, array_map('intval', $ids), true);
         if ($position === false) {
-            throw new Exception('Falha ao calcular índice do termostato');
+            throw new Exception('Falha ao calcular índice do arcondicionado');
         }
         // Índice 1-based para o Arduino
         $tempIndex = $position + 1;
