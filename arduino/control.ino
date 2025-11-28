@@ -26,7 +26,7 @@ unsigned long gateAutoCloseAt = 0;
 const int POOL_RELAY_PIN = 30;  // Pino para controle da piscina
 
 // Pino do relé da irrigação da irrigacao
-const int GARDEN_RELAY_PIN = 31;  // Pino para controle da irrigação da irrigacao
+const int GARDEN_RELAY_PIN = 26;  // Pino para controle da irrigação da irrigacao
 
 // Configuração dos sensores DHT11
 #define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
