@@ -552,9 +552,7 @@ if ($conn === null) {
             });
             
             closeBtn.addEventListener('click', function() {
-                if (gateState) { 
-                    sendGateCommand('CLOSE');
-                }
+                sendGateCommand('CLOSE');
             });
             
             updateGateStatus(false);
