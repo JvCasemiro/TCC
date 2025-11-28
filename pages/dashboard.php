@@ -519,6 +519,18 @@ if ($conn === null) {
                     Controlar
                 </button>
             </div>
+
+            <div class="card">
+                <div class="icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <h3>Irrigação</h3>
+                <p>Controle o sistema de irrigação.</p>
+                <button class="control-btn" onclick="window.location.href='controle_horta.php'">
+                    <i class="fas fa-cog"></i>
+                    Controlar
+                </button>
+            </div>
         </div>
     </div>
     
