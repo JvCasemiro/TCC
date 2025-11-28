@@ -279,7 +279,7 @@ class ArduinoDaemon:
                     try:
                         self._sync_all_lights()
                         self._sync_all_temperatures()
-                        # Garante que piscina e horta iniciem DESLIGADAS
+                        # Garante que piscina e irrigacao iniciem DESLIGADAS
                         for cmd in ("POOL:OFF\n", "GARDEN:OFF\n"):
                             try:
                                 self.serial_connection.reset_input_buffer()
@@ -299,7 +299,7 @@ class ArduinoDaemon:
                 try:
                     self._sync_all_lights()
                     self._sync_all_temperatures()
-                    # Garante que piscina e horta iniciem DESLIGADAS
+                    # Garante que piscina e irrigacao iniciem DESLIGADAS
                     for cmd in ("POOL:OFF\n", "GARDEN:OFF\n"):
                         try:
                             self.serial_connection.reset_input_buffer()
@@ -425,13 +425,13 @@ class ArduinoDaemon:
                 
                 return True
 
-            # Controle da horta (irrigação do jardim)
+            # Controle da irrigacao (irrigação do jardim)
             if command.get('garden') or command.get('type') == 'garden':
                 if not status:
-                    print(f"Comando de horta inválido: {command}")
+                    print(f"Comando de irrigacao inválido: {command}")
                     return False
                 arduino_command = f"GARDEN:{'ON' if status == 'ON' else 'OFF'}\n"
-                print(f"Enviando comando de horta: {arduino_command.strip()}")
+                print(f"Enviando comando de irrigacao: {arduino_command.strip()}")
                 
                 if not hasattr(self, 'serial_connection') or not self.serial_connection or not self.serial_connection.is_open:
                     print("Erro: Conexão serial não está disponível")

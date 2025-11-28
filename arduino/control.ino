@@ -25,8 +25,8 @@ unsigned long gateAutoCloseAt = 0;
 // Pino do relé da piscina
 const int POOL_RELAY_PIN = 30;  // Pino para controle da piscina
 
-// Pino do relé da irrigação da horta
-const int GARDEN_RELAY_PIN = 31;  // Pino para controle da irrigação da horta
+// Pino do relé da irrigação da irrigacao
+const int GARDEN_RELAY_PIN = 31;  // Pino para controle da irrigação da irrigacao
 
 // Configuração dos sensores DHT11
 #define DHTPIN1 A1       // Primeiro sensor DHT11 conectado ao A1
@@ -150,14 +150,14 @@ void loop() {
       Serial.println("PISCINA: DESLIGADA");
     }
     else if (command == "GARDEN:ON") {
-      // Ligar irrigação da horta (relé ativo em LOW)
+      // Ligar irrigação da irrigacao (relé ativo em LOW)
       digitalWrite(GARDEN_RELAY_PIN, LOW);
-      Serial.println("IRRIGACAO HORTA: LIGADA");
+      Serial.println("IRRIGACAO irrigacao: LIGADA");
     }
     else if (command == "GARDEN:OFF") {
-      // Desligar irrigação da horta (relé ativo em LOW)
+      // Desligar irrigação da irrigacao (relé ativo em LOW)
       digitalWrite(GARDEN_RELAY_PIN, HIGH);
-      Serial.println("IRRIGACAO HORTA: DESLIGADA");
+      Serial.println("IRRIGACAO irrigacao: DESLIGADA");
     }
     else if (command.startsWith("GATE:")) {
       String payload = command.substring(5);

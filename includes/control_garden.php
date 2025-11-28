@@ -49,7 +49,7 @@ if (file_exists($queueFile)) {
     $queueData = json_decode($content, true) ?: [];
 }
 
-// Adiciona o comando da irrigação da horta à fila
+// Adiciona o comando da irrigação da irrigacao à fila
 $queueData[] = [
     'garden' => true,
     'status' => $action === 'on' ? 'ON' : 'OFF',
@@ -62,5 +62,5 @@ if (file_put_contents($queueFile, json_encode($queueData, JSON_PRETTY_PRINT)) ==
 }
 
 // Responde com sucesso
-sendJsonResponse(true, $action === 'on' ? 'Irrigação da horta sendo ligada' : 'Irrigação da horta sendo desligada');
+sendJsonResponse(true, $action === 'on' ? 'Irrigação sendo ligada' : 'Irrigação sendo desligada');
 ?>
