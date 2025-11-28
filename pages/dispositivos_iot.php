@@ -113,7 +113,7 @@ try {
 $devices = [
     [
         'id' => 1,
-        'name' => 'Sensores de Temperatura',
+        'name' => 'Termostato',
         'type' => 'sensor',
         'category' => 'temperature',
         'status' => 'online',
@@ -132,7 +132,7 @@ $devices = [
     ],
     [
         'id' => 5,
-        'name' => 'Termostato - Ar Condicionado',
+        'name' => 'Ar Condicionado',
         'type' => 'actuator',
         'category' => 'climate',
         'status' => 'online',
